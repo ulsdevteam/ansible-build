@@ -1,0 +1,20 @@
+---
+- name: oel 7.5 perl db build
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+
+  tasks:
+
+  - name: Install mariadb
+    yum:
+      name: mariadb
+      state: latest
+
+  - name: Install perl database modules
+    yum:
+      name:
+        - perl-DBI
+        - perl-DBD-MySQL
+      state: latest
+

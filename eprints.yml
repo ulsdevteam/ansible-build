@@ -1,0 +1,69 @@
+- name: oel 7.5 Eprints build
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+
+  tasks:
+
+  - name: install Perl for Eprints
+    yum:
+      name:
+        - perl
+        - perl-Time-HiRes
+        - perl-XML-LibXML
+        - perl-XML-SAX
+        - perl-MIME-Lite
+        - perl-Digest-MD5
+        - perl-Digest-SHA
+        - perl-IO-Socket-SSL
+        - perl-CGI
+        - perl-CPAN
+        - perl-App-cpanminus
+      state: latest  
+        
+  - name: install ImageMagick
+    yum:
+      name:
+        - ImageMagick
+      state: latest  
+        
+  - name: install TexLive for Latex
+    yum:
+      name:
+        - texlive-latex
+      state: latest  
+        
+  - name: install Poppler
+    yum:
+      name:
+        - poppler-utils
+      state: latest  
+              
+  - name: install mod_perl
+    yum:
+      name:
+        - mod_perl
+      state: latest  
+      
+  - name: Xapian Search 
+    yum:
+      name:
+        - xapian-core
+      state: latest 
+      
+  - name: GeoIP 
+    yum:
+      name:
+        - GeoIP 
+        - perl-Geo-IP 
+      state: latest    
+      
+  - name: Add the eprints user
+    user:
+      name: eprints
+      
+  - name: add eprints to apache group
+    user:
+      name: eprints
+      groups: apache
+      append: yes

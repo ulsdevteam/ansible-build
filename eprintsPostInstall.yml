@@ -1,0 +1,54 @@
+- name: oel 7.5 post install eprints tasks
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+
+  tasks:
+
+  - name: /opt/eprints3/var to 770
+    file: 
+      path: /opt/eprints3/var
+      mode: '770'
+
+  - name: /opt/eprints3/lib/epm/ to 770
+    file:  
+      path: /opt/eprints3/lib/epm/
+      mode: '770'
+
+  - name: upload eprints.conf
+    copy:
+      src: resources/eprints.conf
+      dest: /etc/httpd/conf.d/
+
+  - name: selinux httpd_sys_script_rw_t /opt/eprints3/archives/.*
+    sefcontext:
+      target: '/opt/eprints3/archives/.*'
+      setype: httpd_sys_script_rw_t
+      state: present
+
+  - name: Apply context /opt/eprints3/archives/.*
+    command: restorecon /opt/eprints3/archives/.*
+
+  - name: selinux httpd_sys_script_rw_t /opt/eprints3/var/.*
+    sefcontext:
+      target: '/opt/eprints3/var/.*'
+      setype: httpd_sys_script_rw_t
+      state: present
+
+  - name: Apply context /opt/eprints3/var/.*
+    command: restorecon -irv /opt/eprints3/var/.*
+
+  - name: selinux httpd_sys_script_rw_t /opt/eprints3/lib/.*
+    sefcontext:
+      target: '/opt/eprints3/lib/.*'
+      setype: httpd_sys_script_rw_t
+      state: present
+
+  - name: Apply context /opt/eprints3/lib/.*
+    command: restorecon -irv /opt/eprints3/lib/.*
+
+  - name: selinux  httpd_can_network_connect
+    seboolean:
+      name: httpd_can_network_connect
+      state: yes
+      persistent: yes

@@ -1,0 +1,28 @@
+
+- name: oel 7.5 shibboleth build
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+
+  tasks:
+
+#separate component: shibboleth
+  - name: Add Shibboleth Repo for use with RHEL 7.5
+    copy:
+      src: resources/shibboleth.repo
+      dest: "/etc/yum.repos.d/"
+
+  - name: install shibboleth
+    yum:
+      name: shibboleth
+      state: latest
+
+  - name: enable shibd
+    service:
+      name: shibd
+      enabled: yes
+
+  - name: start shibd
+    service:
+      name: shibd
+      state: started

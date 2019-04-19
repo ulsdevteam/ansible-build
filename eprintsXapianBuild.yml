@@ -1,0 +1,123 @@
+- name: oel 7.5 eprints xapian build
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+
+  tasks:
+
+  - name: add usr/local/lib to list of library paths on the system
+    copy:
+      src: resources/local.conf
+      dest: /etc/ld.so.conf.d/local.conf
+
+  - name: exec ldconfig to load new conf
+    command: ldconfig
+
+  - name: install perl-Devel-Leak
+    yum:
+      name: perl-Devel-Leak
+      state: latest
+
+  - name: c++ compiler
+    yum: 
+      name: gcc-c++
+      state: latest
+
+  - name: install zlib-devel 
+    yum:
+      name: zlib-devel
+      state: latest
+
+  - name: install libuuid-devel
+    yum:
+      name:  libuuid-devel
+      state: latest
+
+#Xapian core
+  - name: get xapian core
+    get_url:
+      url: https://oligarchy.co.uk/xapian/1.2.25/xapian-core-1.2.25.tar.xz
+      dest: /usr/local/src/
+      checksum: sha256:7c77ff259bc92414c620015d6798f5f3e2c52907936096ec97c23c17fc0d6403
+
+  - name: Extract xapian core
+    unarchive:
+      src: /usr/local/src/xapian-core-1.2.25.tar.xz
+      dest: /usr/local/src/
+      remote_src: yes
+
+  - name: configure xapian core and build makefile
+    command: ./configure CXX=/usr/bin/c++
+    args:
+      chdir: /usr/local/src/xapian-core-1.2.25
+
+  - name: compile xapian core
+    make:
+      chdir: /usr/local/src/xapian-core-1.2.25
+
+  - name: install xapian core
+    make:
+      chdir: /usr/local/src/xapian-core-1.2.25
+      target: install
+
+#Test-Simple
+  - name: get Test-Simple
+    get_url:
+      url: https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Test-Simple-1.302162.tar.gz
+      dest: /usr/local/src/
+
+  - name: extract Test-Simple
+    unarchive:
+      src: /usr/local/src/Test-Simple-1.302162.tar.gz
+      dest: /usr/local/src/
+      remote_src: yes
+
+  - name: generate makefile
+    command: /usr/bin/perl Makefile.PL
+    args:
+      chdir: /usr/local/src/Test-Simple-1.302162
+
+  - name: compile Test-Simple
+    make:
+      chdir: /usr/local/src/Test-Simple-1.302162
+
+  - name: test Test-Simple
+    make:
+      chdir: /usr/local/src/Test-Simple-1.302162
+      target: test
+
+  - name: install Test-Simple
+    make:
+      chdir: /usr/local/src/Test-Simple-1.302162
+      target: install
+
+#Search::Xapian
+  - name: get Search::Xapian
+    get_url:
+      url: https://cpan.metacpan.org/authors/id/O/OL/OLLY/Search-Xapian-1.2.25.0.tar.gz
+      dest: /usr/local/src/
+
+  - name: extract Search::Xapian
+    unarchive:
+      src: /usr/local/src/Search-Xapian-1.2.25.0.tar.gz
+      dest: /usr/local/src/
+      remote_src: yes
+
+  - name: generate makefile
+    command: /usr/bin/perl Makefile.PL XAPIAN_CONFIG=/usr/local/bin/xapian-config
+    args:
+      chdir: /usr/local/src/Search-Xapian-1.2.25.0
+
+  - name: compile Search::Xapian
+    make:
+      chdir: /usr/local/src/Search-Xapian-1.2.25.0
+
+  - name: test Search::Xapian
+    make:
+      chdir: /usr/local/src/Search-Xapian-1.2.25.0
+      target: test
+
+  - name: install Search::Xapian
+    make:
+      chdir: /usr/local/src/Search-Xapian-1.2.25.0
+      target: install

@@ -1,0 +1,89 @@
+- name: oel 7.5 mysql build
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+
+  tasks:
+
+  - name: Include vars of mysqlvars.yml into the 'mysqlvars' variable
+    include_vars:
+      file: mysqlvars.yml
+      name: mysqlvars
+
+
+#just on servers where we want to host a mysql db
+  - name: install mariadb-server
+    yum:
+      name: mariadb-server
+      state: present
+
+#depends on mariadbserver
+  - name: start mariadb
+    service:
+      name: mariadb
+      state: started
+
+#mariadbserver only for the rest of these mysql relevant plays
+  - name: install MySQL-python for use with ansible mysql module
+    yum:
+      name: MySQL-python
+      state: latest
+
+
+### mysql_secure_installation
+
+# ulsprovision will log in with blank default password
+
+  - name: set password for root@localhost localhost
+    mysql_user:
+      user: root
+      password: "{{ mysqlvars.password }}"
+      host: localhost
+
+# password is now set
+# we'll upload a .my.cnf with the new credentials for future commands
+
+
+  - name: Add mysql root password
+    copy:
+      src: resources/my.cnf
+      dest: "/root/.my.cnf"
+
+  - name: populate .my.cnf password 
+    lineinfile:
+      path: /root/.my.cnf
+      regexp: 'password='
+      line: "password={{ mysqlvars.password }}"
+
+  - name: set password for root@localhost 127.0.0.1
+    mysql_user:
+      user: root
+      password: "{{ mysqlvars.password }}"
+      host: 127.0.0.1
+
+  - name: "set password for root@localhost ::1"
+    mysql_user:
+      user: root
+      password: "{{ mysqlvars.password }}"
+      host: "::1"
+
+  - name: remove anonymous mysql users
+    mysql_user:
+      name: ''
+      host_all: yes
+      state: absent
+
+  - name: remove test database
+    mysql_db:
+      name: test
+      state: absent
+
+  - name: disallow root access from remote hosts
+    command: mysql -uroot -p"{{ mysqlvars.password }}" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+
+#only mariadbserver
+
+  - name: enable mariadb
+    service:
+      name: mariadb
+      enabled: yes

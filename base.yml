@@ -1,0 +1,51 @@
+
+- name: oel 7.5 base build
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+
+  tasks:
+
+  - name: install wget
+    yum:
+      name: wget
+      state: latest
+
+#candidate for addition to the base vmware template
+  - name: add students group
+    group:
+      name: ulssysstu
+      state: present
+
+
+  - name: install rsync
+    yum:
+      name: rsync
+      state: latest
+
+
+  - name: install git
+    yum:
+      name: git
+      state: latest
+
+
+# selinux
+
+  - name: install policycoreutils-python
+    yum:
+      name: policycoreutils-python
+      state: latest
+
+
+  - name: install libselinux-python
+    yum:
+      name: libselinux-python
+      state: latest
+
+  - name: set up email for root
+    lineinfile:
+       path: /etc/aliases
+       state: present
+       regexp: 'root:           uls-systemsdevelopment@pitt.edu'
+       line: 'root:           uls-systemsdevelopment@pitt.edu'

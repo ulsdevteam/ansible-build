@@ -1,0 +1,26 @@
+- name: oel 7.5 text_processing build
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+
+  tasks:
+
+  - name: install gcc
+    yum:
+      name:
+        - gcc
+      state: latest  
+
+  - name: install automake
+    yum:
+      name:
+        - automake
+      state: latest  
+  
+  - name: install autoconf
+    yum:
+      name:
+        - autoconf 
+      state: latest  
+        
+        

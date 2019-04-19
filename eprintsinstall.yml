@@ -1,0 +1,41 @@
+- name: oel 7.5 eprints 3.4.0 installation
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+
+  tasks:
+
+#Eprints and Flavors
+  - name: get eprints core
+    get_url:
+      url: https://files.eprints.org/2305/4/eprints-3.4.0.tar.gz
+      dest: /usr/local/src/
+
+  - name: get eprints flavors
+    get_url: https://files.eprints.org/2305/5/eprints-3.4.0-flavours.tar.gz
+    dest: /usr/local/src/
+
+#extract both into /usr/local/src/eprints-3.4.0
+  - name: Extract eprints
+    unarchive:
+      src: /usr/local/src/eprints-3.4.0.tar.gz
+      dest: /usr/local/src/
+
+  - name: Extract eprints flavors into same directory to merge it with the eprints package
+    unarchive:
+      src: /usr/local/src/erpints-3.4.0-flavours.tar.gz
+      dest: /usr/local/src/
+
+  - name: configure eprints and prepare makefile
+    command: ./configure  --with-smtp-server=smtp.pitt.edu --with-user=eprints --with-group=eprints
+    args:
+      chdir: /usr/local/src/eprints-3.4.0
+
+  - name: compile eprints
+    make:
+      chdir: /usr/local/src/eprints-3.4.0
+
+  - name: install eprints
+    make:
+      chdir: /usr/local/src/eprints-3.4.0
+      target: install

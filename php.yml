@@ -1,0 +1,28 @@
+- name: oel 7.5 php build
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+
+  tasks:
+
+  - name: install php and extensions
+    yum:
+      name:
+        - mod_php72w
+        - php72w-devel
+        - php72w-gd
+        - php72w-ldap
+        - php72w-mbstring
+        - php72w-mysql
+        - php72w-pear
+        - php72w-pdo
+        - php72w-soap
+        - php72w-intl
+      state: present
+
+#all builds with php
+  - name: install mariadb
+    yum:
+      name:
+        - mariadb
+      state: present
