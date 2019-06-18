@@ -5,32 +5,16 @@
 
   tasks:
 
-  - name: install gcc
+  - name: install poppler-utils for pdftotext
     yum:
       name:
-        - gcc
-      state: latest  
-
-  - name: install automake
-    yum:
-      name:
-        - automake
-      state: latest  
-  
-  - name: install autoconf
-    yum:
-      name:
-        - autoconf 
-      state: latest  
-         
-   - name: install poppler-utils for pdftotext
-    yum:
-      name: poppler-utils
+        - poppler-utils
       state: latest
 
-   - name: install catdoc
+  - name: install catdoc
     yum:
-      name: catdoc
+      name:
+        - catdoc
       state: latest
 
 #TODO: add local scripts catdox.sh and docx2txt.pl into /usr/local/bin/ 

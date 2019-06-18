@@ -9,7 +9,6 @@
     yum:
       name:
         - mod_php72w
-        - php72w-devel
         - php72w-gd
         - php72w-ldap
         - php72w-mbstring

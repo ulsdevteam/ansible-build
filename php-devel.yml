@@ -1,0 +1,14 @@
+- name: oel 7.5 php build
+  remote_user: ulsprovision
+  hosts: phpdevel
+  become: yes
+
+  tasks:
+
+  - name: install php and extensions
+    yum:
+      name:
+        - php72w-devel
+        - php72w-pecl-xdebug
+      state: present
+

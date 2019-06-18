@@ -26,6 +26,25 @@
       src: /usr/local/src/erpints-3.4.0-flavours.tar.gz
       dest: /usr/local/src/
 
+#source build pre-reqs
+  - name: install gcc
+    yum:
+      name:
+        - gcc
+      state: latest  
+
+  - name: install automake
+    yum:
+      name:
+        - automake
+      state: latest  
+  
+  - name: install autoconf
+    yum:
+      name:
+        - autoconf 
+      state: latest  
+
   - name: configure eprints and prepare makefile
     command: ./configure  --with-smtp-server=smtp.pitt.edu --with-user=eprints --with-group=eprints
     args:
