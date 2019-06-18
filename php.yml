@@ -1,6 +1,6 @@
 - name: oel 7.5 php build
   remote_user: ulsprovision
-  hosts: all
+  hosts: phpclients
   become: yes
 
   tasks:

@@ -1,6 +1,6 @@
 - name: oel 7.5 post install eprints tasks
   remote_user: ulsprovision
-  hosts: all
+  hosts: eprints
   become: yes
 
   tasks:

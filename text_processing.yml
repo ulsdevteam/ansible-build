@@ -1,6 +1,6 @@
 - name: oel 7.5 text_processing build
   remote_user: ulsprovision
-  hosts: all
+  hosts: textprocessors
   become: yes
 
   tasks:
@@ -22,5 +22,15 @@
       name:
         - autoconf 
       state: latest  
-        
-        
+         
+   - name: install poppler-utils for pdftotext
+    yum:
+      name: poppler-utils
+      state: latest
+
+   - name: install catdoc
+    yum:
+      name: catdoc
+      state: latest
+
+#TODO: add local scripts catdox.sh and docx2txt.pl into /usr/local/bin/ 

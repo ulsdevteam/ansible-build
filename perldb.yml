@@ -1,7 +1,7 @@
 ---
 - name: oel 7.5 perl db build
   remote_user: ulsprovision
-  hosts: all
+  hosts: dbperlclients
   become: yes
 
   tasks:

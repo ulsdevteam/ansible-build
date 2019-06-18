@@ -1,6 +1,6 @@
 - name: oel 7.5 mysql build
   remote_user: ulsprovision
-  hosts: all
+  hosts: dbservers
   become: yes
 
   tasks:

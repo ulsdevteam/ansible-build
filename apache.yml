@@ -1,7 +1,7 @@
 
 - name: oel 7.5 apache build
   remote_user: ulsprovision
-  hosts: all
+  hosts: webservers
   become: yes
 
   tasks:
@@ -16,6 +16,7 @@
       name:
         - clamav
         - clamav-update
+        - clamd
       state: latest
 
   - name: ensure httpd is running

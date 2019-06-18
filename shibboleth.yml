@@ -1,7 +1,7 @@
 
 - name: oel 7.5 shibboleth build
   remote_user: ulsprovision
-  hosts: all
+  hosts: shibsps
   become: yes
 
   tasks:
