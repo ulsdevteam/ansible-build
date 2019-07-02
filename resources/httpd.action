@@ -2,7 +2,9 @@ httpd:install:chgrp ulssysdev /var/log/httpd
 httpd:install:chmod g+rx /var/log/httpd
 httpd:install:chgrp -R ulssysdev /etc/httpd/conf*
 httpd:install:chmod -R g+w /etc/httpd/conf*
+httpd:install:chmod g+s /etc/httpd/conf.d
 httpd:update:chgrp ulssysdev /var/log/httpd
 httpd:update:chmod g+rx /var/log/httpd
 httpd:update:chgrp -R ulssysdev /etc/httpd/conf*
 httpd:update:chmod -R g+w /etc/httpd/conf*
+httpd:update:chmod g+s /etc/httpd/conf.d
