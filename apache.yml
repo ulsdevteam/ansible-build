@@ -65,3 +65,10 @@
     file:
       path: /etc/yum/post-actions/httpd.action
       mode: "u+x"
+
+  - name: preserve 10 years of logs
+    lineinfile:
+      path: /etc/logrotate.d/httpd
+      state: present
+      insertafter: '^/var/log/httpd/\*log \{'
+      line: '    rotate 520'
