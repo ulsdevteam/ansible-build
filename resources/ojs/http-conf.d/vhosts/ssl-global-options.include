@@ -1,0 +1,18 @@
+SSLEngine on
+
+SSLProtocol ALL -SSLv2 -SSLv3 -TLSv1
+SSLCipherSuite ALL:!aNULL:!ADH:!eNULL:!LOW:!EXP:!NULL:!RC4:!RC2:!IDEA:!DES:!3DES:+HIGH:+MEDIUM
+
+<Files ~ "\.(cgi|shtml|phtml|php3?)$">
+    SSLOptions +StdEnvVars
+</Files>
+<Directory "/var/www/cgi-bin">
+    SSLOptions +StdEnvVars
+</Directory>
+
+SetEnvIf User-Agent ".*MSIE.*" \
+         nokeepalive ssl-unclean-shutdown \
+         downgrade-1.0 force-response-1.0
+
+Header set X-Frame-Options SameOrigin
+

@@ -1,0 +1,15 @@
+# If index.html precedes index.php, PATH_INFO will incorrectly list index.html in index requests
+DirectoryIndex index.php index.html
+
+# If the URI already has index.php in it, don't change it
+RewriteCond %{REQUEST_URI} !/index.php/
+# Skip existing directories if Apache 2.2 or later
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-d
+# Skip existing files if Apache 2.2 or later
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+# Skip existing directories if Apache prior to 2.2
+RewriteCond %{REQUEST_FILENAME} !-d
+# Skip existing files if Apache prior to 2.2
+RewriteCond %{REQUEST_FILENAME} !-f
+# Rewrite all other requests to OJS
+RewriteRule ^/ojs/(.*)$ /ojs/index.php/$1 [QSA,L]

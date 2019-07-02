@@ -1,0 +1,30 @@
+<VirtualHost *:80>
+	ServerName SERVERNAME
+	ServerAlias dev.SERVERNAME
+	#ServerAlias SERVERALIAS
+
+	DocumentRoot /var/www/vhosts/SERVERNAME/html
+
+	CustomLog logs/SERVERNAME-access.log combined
+	ErrorLog logs/SERVERNAME-error.log 
+	Include conf.d/vhosts/apache-global-options.include
+</VirtualHost>
+
+<VirtualHost *:443>
+	ServerName SERVERNAME
+	ServerAlias dev.SERVERNAME
+	#ServerAlias SERVERALIAS
+
+	DocumentRoot /var/www/vhosts/SERVERNAME/html
+
+	CustomLog logs/SERVERNAME-ssl.access.log combined
+	ErrorLog logs/SERVERNAME-ssl.error.log 
+
+	Include conf.d/vhosts/ssl-global-options.include
+
+	SSLCertificateFile /etc/pki/tls/certs/SERVERNAME/cert.pem
+	SSLCertificateKeyFile /etc/pki/tls/private/SERVERNAME/privkey.pem
+	SSLCertificateChainFile /etc/pki/tls/certs/SERVERNAME/chain.pem
+
+	Include conf.d/vhosts/apache-global-options.include
+</VirtualHost>

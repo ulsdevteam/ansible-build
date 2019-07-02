@@ -1,0 +1,57 @@
+- name: OJS common configuration
+  remote_user: ulsprovision
+  hosts: ojs
+  become: yes
+
+  tasks:
+
+  - name: provide maintenance message for default vhost
+    copy:
+      src: resources/ojs/html/index.php
+      dest: /var/www/html/
+
+  - name: OJS files dir is r/w to apache
+    sefcontext:
+      target: '/var/www/vhosts/[^/]+/files(/.*)?'
+      setype: httpd_sys_script_rw_t
+      state: present
+
+  - name: OJS public files dir is r/w to apache
+    sefcontext:
+      target: '/var/www/vhosts/[^/]+/html/(ojs/)?public(/.*)?'
+      setype: httpd_sys_script_rw_t
+      state: present
+
+  - name: OJS cache dir is r/w to apache
+    sefcontext:
+      target: '/var/www/vhosts/[^/]+/html/(ojs/)?cache(/.*)?'
+      setype: httpd_sys_script_rw_t
+      state: present
+
+  - name: selinux  httpd_can_sendmail
+    seboolean:
+      name: httpd_can_sendmail
+      state: yes
+      persistent: yes
+
+  - name: selinux  httpd_can_network_connect
+    seboolean:
+      name: httpd_can_network_connect
+      state: yes
+      persistent: yes
+
+  - name: Default apache vhost
+    copy:
+      src: resources/ojs/http-conf.d/00_default.conf
+      dest: /etc/httpd/conf.d/
+
+  - name: Include OJS vhosts
+    copy:
+      src: resources/ojs/http-conf.d/vhosts.conf
+      dest: /etc/httpd/conf.d/
+
+  - name: Template OJS vhosts
+    copy:
+      src: resources/ojs/http-conf.d/vhosts/
+      dest: /etc/httpd/conf.d/vhosts/
+      directory_mode: true
