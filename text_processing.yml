@@ -17,4 +17,25 @@
         - catdoc
       state: latest
 
-#TODO: add local scripts catdox.sh and docx2txt.pl into /usr/local/bin/ 
+  - name: install ghostscript for ps2ascii
+    yum:
+      name:
+        - ghostscript
+      state: latest
+
+  - name: Add catdox.sh
+    copy:
+      src: resources/textprocessing/catdox.sh
+      dest: /usr/local/bin/catdox.sh
+      mode: u=rwx,g=rx,o=rx
+      owner: root
+      group: root
+
+  - name: Add docx2txt.pl
+    copy:
+      src: resources/textprocessing/docx2txt.pl
+      dest: /usr/local/bin/docx2txt.pl
+      mode: u=rwx,g=rx,o=rx
+      owner: root
+      group: root
+

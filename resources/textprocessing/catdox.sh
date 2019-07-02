@@ -5,7 +5,7 @@
 # Copyright 2017, University of Pittsburgh
 # Written by Clinton Graham for the University Library System
 # Licensed under version 2 of the GPL or any later version, or under the Perl artistic license.
-CATDOC=/usr/local/bin/catdoc
+CATDOC=/usr/bin/catdoc
 DOCX2TXT=/usr/local/bin/docx2txt.pl
 if [ "$1" = "" ]
 then
