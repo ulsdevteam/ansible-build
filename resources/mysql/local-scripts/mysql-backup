@@ -1,0 +1,69 @@
+#!/bin/bash -u
+#
+# This script will backup the mysql database(s) hosted on this server
+# N.b.: spaces are not supported in the $BACKUPDIR or mysql database names
+# N.b.: running user must have the backup user password in .my.cnf
+#
+# User Entered Variables
+USER=backup
+BACKUPDIR=/var/local/backup/mysql
+MYSQLDUMP=/usr/bin/mysqldump
+GZIP=/usr/bin/gzip
+MYSQL=/usr/bin/mysql
+
+DATABASES=`${MYSQL} -u${USER} -N -B -e "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME != 'information_schema' AND SCHEMA_NAME NOT LIKE '%lost+found' ORDER BY SCHEMA_NAME" | paste -d' ' -s`
+
+# We must have a sane configuration (file/dir locations) and one or more databases specified
+if [ -d ${BACKUPDIR} -a -x ${MYSQLDUMP} -a -x ${GZIP} -a "$DATABASES" != "" ]
+then
+        # Success will list each SQL backup file
+        SUCCESS=
+        for DATABASE in $DATABASES
+        do
+                # Each backup will be datestamped
+                NOW=`date '+%Y%m%d-%H%M%S'`
+                # Check if this database is an EPrints database.  If so, we're going to bypass the backup of the cache tables, backing up cachemap for structure-only
+                IGNORECACHE=`${MYSQL} -u${USER} -N -B -e "SELECT CONCAT('--ignore-table=',t.TABLE_SCHEMA,'.',t.TABLE_NAME) FROM INFORMATION_SCHEMA.TABLES t JOIN INFORMATION_SCHEMA.TABLES e ON (t.TABLE_SCHEMA = e.TABLE_SCHEMA AND e.TABLE_NAME = 'eprint') WHERE t.TABLE_SCHEMA = '${DATABASE}' and t.TABLE_NAME LIKE 'cache_%';" | paste -d' ' -s`
+                # Check if this database is the mysql database.  If so, we'll add in the events option to prevent noisy warnings about skipping the events table
+                HANDLEEVENTS=
+                if [ "$DATABASE" == "mysql" ]
+                then
+                        HANDLEEVENTS='--events'
+                fi
+                # This is the name of the output file for the backup.
+                BACKUPFILE=${BACKUPDIR}/${DATABASE}.${NOW}.sql
+                # Execute Backup
+                ${MYSQLDUMP} -u${USER} $HANDLEEVENTS $IGNORECACHE --quick --single-transaction ${DATABASE} -r ${BACKUPFILE}
+                if [ $? == 0 ]
+                then
+                        # add this backup file name to the list of successful files
+                        SUCCESS="${SUCCESS} ${BACKUPFILE}"
+                        if [ "$IGNORECACHE" != "" ]
+                        then
+                                # If this was an EPrints backup and if we skipped the cache tables, add an empty (structure-only) backup of the cachemap table
+                                CACHEMAP=`${MYSQL} -u${USER} -N -B -e "SELECT CONCAT(TABLE_NAME) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '${DATABASE}' and TABLE_NAME LIKE 'cachemap%';" | paste -d' ' -s`
+                                ${MYSQLDUMP} -u${USER} --no-data ${DATABASE} ${CACHEMAP} -r ${BACKUPFILE}.add_cache
+                                if [ $? == 0 ]
+                                then
+                                        cat ${BACKUPFILE}.add_cache >> ${BACKUPFILE}
+                                else
+                                        echo "WARNING: Backup of ${DATABASE} completed, but the cachemap structure could not be added" 1>&2
+                                fi
+                                rm ${BACKUPFILE}.add_cache
+                        fi
+                else
+                        rm ${BACKUPFILE}
+                fi
+        done
+        # Compress each file
+        for SQLFILE in $SUCCESS
+        do
+                ${GZIP} ${SQLFILE}
+        done
+        # Remove old backup files (hardcoded to 1 week / 7 days!)
+        find ${BACKUPDIR} -name '*.sql.gz' -mtime +7 -exec rm \{\} \;
+else
+        echo The configuration or parameterization does not look sane. 1>&2
+        exit 1
+fi
+

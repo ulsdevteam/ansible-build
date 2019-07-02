@@ -45,7 +45,10 @@
 
 
   - name: Add mysql root password
-    copy:
+    vars:
+      mysqluser: root
+      mysqlpassword: "{{ mysqlvars.password }}"
+    template:
       src: resources/my.cnf
       dest: "/root/.my.cnf"
 
@@ -87,3 +90,62 @@
     service:
       name: mariadb
       enabled: yes
+
+# manage automatic mysqlbackups
+
+  - name: Add backup user
+    user:
+      name: backup
+      comment: Mysql Backup
+      shell: /sbin/nologin
+
+  - name: Add mysql backup password
+    vars:
+      mysqluser: backup
+      mysqlpassword: "{{ mysqlvars.backup }}"
+    template:
+      src: resources/my.cnf
+      dest: "/home/backup/.my.cnf"
+
+  - name: Add mysql backup directory parent
+    file:
+      path: /var/local/backup
+      state: directory
+
+  - name: Add mysql backup directory
+    file:
+      path: /var/local/backup/mysql
+      state: directory
+      owner: backup
+      group: backup
+
+  - name: set password and access for backup@localhost 127.0.0.1
+    mysql_user:
+      user: backup
+      password: "{{ mysqlvars.backup }}"
+      priv: '*.*:SHOW DATABASES,SELECT,LOCK TABLES,SHOW VIEW,EVENT,TRIGGER'
+      host: 127.0.0.1
+
+  - name: "set password and access for backup@localhost ::1"
+    mysql_user:
+      user: backup
+      password: "{{ mysqlvars.backup }}"
+      priv: '*.*:SHOW DATABASES,SELECT,LOCK TABLES,SHOW VIEW,EVENT,TRIGGER'
+      host: "::1"
+
+  - name: Add mysql-backup script
+    copy:
+      src: resources/mysql/local-scripts/mysql-backup
+      dest: /usr/local/bin/mysql-backup
+      mode: u=rwx,g=rx,o=r
+      owner: root
+      group: backup
+
+  - name: Cron mysql-backup script
+    cron:
+      name: "Backup mysql databases nightly"
+      job: /usr/local/bin/cronic /usr/local/bin/mysql-backup
+      user: backup
+      hour: 0
+      minute: 30
+
