@@ -29,6 +29,16 @@
       name: git
       state: latest
 
+# add cronic
+
+  - name: Add cronic script
+    copy:
+      src: resources/all/cronic
+      dest: /usr/local/bin/cronic
+      mode: u=rwx,g=rx,o=rx
+      owner: root
+      group: root
+
 
 # selinux
 
