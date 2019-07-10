@@ -1,6 +1,9 @@
 # If index.html precedes index.php, PATH_INFO will incorrectly list index.html in index requests
 DirectoryIndex index.php index.html
 
+# Ensure mod_rewrite is enabled
+RewriteEngine On
+
 # If the URI already has index.php in it, don't change it
 RewriteCond %{REQUEST_URI} !/index.php/
 # Skip existing directories if Apache 2.2 or later
