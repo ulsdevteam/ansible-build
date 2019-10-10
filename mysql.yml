@@ -119,14 +119,22 @@
       owner: backup
       group: backup
 
-  - name: set password and access for backup@localhost 127.0.0.1
+  - name: set password and access for backup@localhost
+    mysql_user:
+      user: backup
+      password: "{{ mysqlvars.backup }}"
+      priv: '*.*:SHOW DATABASES,SELECT,LOCK TABLES,SHOW VIEW,EVENT,TRIGGER'
+      host: localhost
+
+
+  - name: set password and access for backup@127.0.0.1
     mysql_user:
       user: backup
       password: "{{ mysqlvars.backup }}"
       priv: '*.*:SHOW DATABASES,SELECT,LOCK TABLES,SHOW VIEW,EVENT,TRIGGER'
       host: 127.0.0.1
 
-  - name: "set password and access for backup@localhost ::1"
+  - name: "set password and access for backup@::1"
     mysql_user:
       user: backup
       password: "{{ mysqlvars.backup }}"
