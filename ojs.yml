@@ -40,6 +40,11 @@
       state: yes
       persistent: yes
 
+  - name: deploy local OJS scripts
+    copy:
+      src: resources/ojs/local-scripts/
+      dest: /usr/local/bin/
+
   - name: Default apache vhost
     copy:
       src: resources/ojs/http-conf.d/00_default.conf
