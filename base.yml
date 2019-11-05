@@ -57,5 +57,5 @@
     lineinfile:
        path: /etc/aliases
        state: present
-       regexp: 'root:           uls-systemsdevelopment@pitt.edu'
+       regexp: '^root:'
        line: 'root:           uls-systemsdevelopment@pitt.edu'
