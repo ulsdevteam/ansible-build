@@ -17,11 +17,11 @@ do
     $PHP $RUNST
     if [ -f $AUTOSTAGE ]
     then
-      # 2.x
+      # 2.x, 3.1.2+
       $PHP $RUNST $AUTOSTAGE
     elif [ -f lib/pkp/$AUTOSTAGE ]
     then
-      # 3.x
+      # 3.0 - 3.1.1
       $PHP $RUNST lib/pkp/$AUTOSTAGE
     fi
     CONFIG="config.inc.php"
