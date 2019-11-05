@@ -28,6 +28,7 @@
 
   - name: set up PHP max execution time
     lineinfile:
+       create: yes
        path: /etc/php.d/zzz_local.ini
        state: present
        regexp: 'max_execution_time.*'
