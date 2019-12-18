@@ -1,0 +1,60 @@
+- name: PHP Build 7.3
+  remote_user: ulsprovision
+  hosts: php73clients
+  become: yes
+
+  tasks:
+
+  - name: install php and extensions
+    yum:
+      name:
+        - php73-php
+        - php73-php-cli
+        - php73-php-common
+        - php73-php-gd
+        - php73-php-json
+        - php73-php-mbstring
+        - php73-php-pdo
+        - php73-php-xml
+        - php73-php-opcache
+        - php73-php-intl
+        - php73-php-pecl-apcu
+        - php73-php-fpm
+        - php73-php-imap
+      state: present
+
+#all builds with php
+  - name: install mariadb
+    yum:
+      name:
+        - mariadb
+      state: present
+
+  - name: set up PHP max execution time
+    lineinfile:
+       create: yes
+       path: /etc/php.d/zzz_local.ini
+       state: present
+       regexp: 'max_execution_time.*'
+       line: 'max_execution_time = 300'
+
+  - name: set up PHP max post size
+    lineinfile:
+       path: /etc/php.d/zzz_local.ini
+       state: present
+       regexp: 'post_max_size.*'
+       line: 'post_max_size = 256M'
+
+  - name: set up PHP max upload size
+    lineinfile:
+       path: /etc/php.d/zzz_local.ini
+       state: present
+       regexp: 'upload_max_filesize.*'
+       line: 'upload_max_filesize = 256M'
+
+  - name: set up PHP timezone
+    lineinfile:
+       path: /etc/php.d/zzz_local.ini
+       state: present
+       regexp: 'date.timezone.*'
+       line: 'date.timezone = America/New_York'

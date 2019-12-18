@@ -1,0 +1,24 @@
+
+- name: Connect a client to repos (manually for now, eventually via spacewalk)
+  remote_user: ulsprovision
+  hosts: manual
+  become: yes
+
+  tasks:
+
+  - name: add Optional Latest
+    shell: yum-config-manager --enable ol7_optional_latest
+
+  - name: add EPEL
+    yum_repository:
+      name: epel
+      description: EPEL YUM repo
+      baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+      gpgkey: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+
+  - name: add REMI
+    yum_repository:
+      name: remi
+      description: REMI PHP 7.3
+      baseurl: http://rpms.remirepo.net/enterprise/7/safe/x86_64/
+      gpgkey: https://rpms.remirepo.net/RPM-GPG-KEY-remi
