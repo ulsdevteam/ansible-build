@@ -21,6 +21,7 @@
         - php73-php-pecl-apcu
         - php73-php-fpm
         - php73-php-imap
+        - php73-php-mysqlnd
       state: present
 
 #all builds with php

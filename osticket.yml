@@ -1,0 +1,26 @@
+- name: Deploy OSTicket to webroot
+  remote_user: ulsprovision
+  hosts: osticket
+  become: yes
+
+  tasks:
+
+  - name: add ulsit group
+    group:
+      name: ulsit
+      state: present
+
+  - name: SetGID for webroot
+    file:
+      path: /var/www/html
+      state: directory
+      recurse: yes
+      group: ulsit
+      mode: '2775'
+
+  - name: Deploy 1.14.1
+    git:
+      repo: 'https://github.com/osTicket/osTicket.git'
+      dest: /var/www/html/
+      version: v1.14.1
+      umask: '002'
