@@ -18,9 +18,29 @@
       group: ulsit
       mode: '2775'
 
+  - name: selinux  httpd_can_sendmail
+    seboolean:
+      name: httpd_can_sendmail
+      state: yes
+      persistent: yes
+
+  - name: selinux  httpd_can_network_connect
+    seboolean:
+      name: httpd_can_network_connect
+      state: yes
+      persistent: yes
+
   - name: Deploy 1.14.1
     git:
       repo: 'https://github.com/osTicket/osTicket.git'
       dest: /var/www/html/
       version: v1.14.1
       umask: '002'
+
+  - name: Add LDAP plugin
+    copy:
+      src: resources/osticket/auth-ldap.phar
+      dest: /var/www/html/includes/plugins/
+      mode: u=rw,g=rw,o=r
+      owner: root
+      group: ulsit
