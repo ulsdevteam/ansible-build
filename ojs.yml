@@ -44,7 +44,18 @@
     copy:
       src: resources/ojs/local-scripts/
       dest: /usr/local/bin/
+      mode: preserve
+      owner: root
+      group: ulssysdev
 
+  - name: run local OJS scheduled tasks
+    cron:
+      name: Run OJS scheduled tasks frequently throughout the day
+      minute: 36
+      hour: 6,8,10,12,14,16,18,20
+      user: apache
+      job: "/usr/local/bin/cronic /usr/local/bin/runScheduledTasks.sh"
+ 
   - name: Default apache vhost
     copy:
       src: resources/ojs/http-conf.d/00_default.conf
