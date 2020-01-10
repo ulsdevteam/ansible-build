@@ -10,6 +10,20 @@
       name: ulsit
       state: present
 
+  - name: add ulsit users
+    user:
+      name: "{{ item }}"
+      groups: ulsit
+      append: yes
+    with_items: 
+      - ctgraham
+      - bdgregg
+      - asw76
+      - rlh52
+      - mem375
+      - nylorac
+      - danbrown
+
   - name: SetGID for webroot
     file:
       path: /var/www/html
