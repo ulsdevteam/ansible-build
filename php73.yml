@@ -23,6 +23,7 @@
         - php73-php-imap
         - php73-php-mysqlnd
         - php73-php-ldap
+        - php73-php-zip
       state: present
 
 #all builds with php

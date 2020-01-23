@@ -54,7 +54,7 @@
   - name: Add LDAP plugin
     copy:
       src: resources/osticket/auth-ldap.phar
-      dest: /var/www/html/includes/plugins/
+      dest: /var/www/html/include/plugins/
       mode: u=rw,g=rw,o=r
       owner: root
       group: ulsit
