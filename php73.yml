@@ -36,28 +36,28 @@
   - name: set up PHP max execution time
     lineinfile:
        create: yes
-       path: /etc/php.d/zzz_local.ini
+       path: /etc/opt/remi/php73/php.d/zzz_local.ini
        state: present
        regexp: 'max_execution_time.*'
        line: 'max_execution_time = 300'
 
   - name: set up PHP max post size
     lineinfile:
-       path: /etc/php.d/zzz_local.ini
+       path: /etc/opt/remi/php73/php.d/zzz_local.ini
        state: present
        regexp: 'post_max_size.*'
        line: 'post_max_size = 256M'
 
   - name: set up PHP max upload size
     lineinfile:
-       path: /etc/php.d/zzz_local.ini
+       path: /etc/opt/remi/php73/php.d/zzz_local.ini
        state: present
        regexp: 'upload_max_filesize.*'
        line: 'upload_max_filesize = 256M'
 
   - name: set up PHP timezone
     lineinfile:
-       path: /etc/php.d/zzz_local.ini
+       path: /etc/opt/remi/php73/php.d/zzz_local.ini
        state: present
        regexp: 'date.timezone.*'
        line: 'date.timezone = America/New_York'
