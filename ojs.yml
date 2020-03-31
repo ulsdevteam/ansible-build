@@ -10,6 +10,22 @@
       src: resources/ojs/html/index.php
       dest: /var/www/html/
 
+  - name: vhosts (www) is group writable
+    file:
+      path: /var/www/vhosts
+      state: directory
+      mode: '0775'
+      owner: root
+      group: ulssysdev
+
+  - name: vhosts (conf) is group writable
+    file:
+      path: /etc/httpd/conf.d/vhosts
+      state: directory
+      mode: '0775'
+      owner: root
+      group: ulssysdev
+
   - name: OJS files dir is r/w to apache
     sefcontext:
       target: '/var/www/vhosts/[^/]+/files(/.*)?'
