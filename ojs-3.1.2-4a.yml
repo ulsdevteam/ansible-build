@@ -1,0 +1,278 @@
+- name: OJS version-specific configuration
+  remote_user: ulsprovision
+  hosts: ojs_3_1_2_4a
+  become: yes
+
+  tasks:
+
+  - name: Include host vars 
+    include_vars:
+      file: hostvars/{{inventory_hostname}}.ojs-config.yml
+      name: ojshostvar
+
+  - name: host directory
+    file:
+      path: /var/www/vhosts/{{inventory_hostname}}/
+      state: directory
+      mode: '2775'
+      owner: root
+      group: ulssysdev
+
+  - name: html directory
+    file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/
+      state: directory
+      mode: '2775'
+      owner: root
+      group: ulssysdev
+
+  - name: deploy OJS source
+    unarchive:
+      remote_src: yes
+      src: https://github.com/ulsdevteam/ojs/releases/download/uls-install-3.1.2-4a/ojs-3.1.2-4a.tgz
+      dest: /var/www/vhosts/{{inventory_hostname}}/html/
+
+  - name: deploy config.inc.php
+    copy:
+      src: /var/www/vhosts/{{inventory_hostname}}/html/config.TEMPLATE.inc.php
+      dest: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      remote_src: yes
+      owner: root
+      group: ulssysdev
+      mode: preserve
+      force: no
+
+  - name: files_dir
+    file:
+      path: /var/www/vhosts/{{inventory_hostname}}/files/
+      state: directory
+      mode: '0775'
+      owner: apache
+      group: apache
+
+  - name: deploy vhost
+    copy:
+      src: /etc/httpd/conf.d/vhosts/vhost.conf.template
+      dest: /etc/httpd/conf.d/vhosts/{{inventory_hostname}}.conf
+      remote_src: yes
+      owner: root
+      group: ulssysdev
+      mode: preserve
+      force: no
+
+  - name: set hostname in vhost
+    replace:
+      path: /etc/httpd/conf.d/vhosts/{{inventory_hostname}}.conf
+      regexp: 'SERVERNAME'
+      replace: '{{inventory_hostname}}'
+
+  - name: create database
+    mysql_db:
+      name: '{{ojshostvar.database.name}}'
+
+  - name: grant database permissions
+    mysql_user:
+      name: '{{ojshostvar.database.username}}'
+      password: '{{ojshostvar.database.password}}'
+      priv: '{{ojshostvar.database.name}}.*:ALL'
+      state: present
+
+  - name: set database username
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: database
+      option: username
+      value: '{{ojshostvar.database.username}}'
+
+  - name: set database password
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: database
+      option: password
+      value: '{{ojshostvar.database.password}}'
+
+  - name: set database name
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: database
+      option: name
+      value: '{{ojshostvar.database.name}}'
+
+  - name: set security salt
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: security
+      option: salt
+      value: '{{ojshostvar.security.salt}}'
+
+  - name: set security api key
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: security
+      option: api_key_secret
+      value: '{{ojshostvar.security.api_key_secret}}'
+
+  - name: set default email
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: email
+      option: default_envelope_sender
+      value: '{{ojshostvar.email.default_envelope_sender}}'
+
+  - name: set oai
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: oai
+      option: repository_id
+      value: '{{ojshostvar.oai.repository_id}}'
+
+  - name: set recaptcha pubkey
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: captcha
+      option: recaptcha_public_key
+      value: '{{ojshostvar.captcha.recaptcha_public_key}}'
+
+  - name: set recaptcha privkey
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: captcha
+      option: recaptcha_private_key
+      value: '{{ojshostvar.captcha.recaptcha_private_key}}'
+
+  - name: set base url
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: general
+      option: base_url
+      value: 'http://{{inventory_hostname}}'
+
+  - name: turn off upgrade warning
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: general
+      option: show_upgrade_warning
+      value: 'Off'
+
+  - name: set database driver
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: database
+      option: driver
+      value: mysqli
+
+  - name: set files dir
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: files
+      option: files_dir
+      value: '../files'
+
+  - name: set ssl requirement
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: security
+      option: force_login_ssl
+      value: 'On'
+
+  - name: allow envelope sender
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: email
+      option: allow_envelope_sender
+      value: 'On'
+
+  - name: force default envelope sender
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: email
+      option: force_default_envelope_sender
+      value: 'On'
+
+  - name: force dmarc sender
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: email
+      option: force_dmarc_compliant_from
+      value: 'On'
+
+  - name: PDF
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: search
+      option: index[application/pdf]
+      value: "\"/usr/bin/pdftotext -enc UTF-8 -nopgbrk %s - | /usr/bin/tr '[:cntrl:]' ' '\""
+
+  - name: postscript
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: search
+      option: index[application/postscript]
+      value: "\"/usr/bin/ps2ascii %s | /usr/bin/tr '[:cntrl:]' ' '\""
+
+  - name: Word Doc
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: search
+      option: index[application/msword]
+      value: '"/usr/local/bin/catdox.sh %s"'
+
+  - name: Word RTF
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: search
+      option: index[text/rtf]
+      value: '"/usr/bin/catdoc %s"'
+
+  - name: Word DocX
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: search
+      option: index[application/vnd.openxmlformats-officedocument.wordprocessingml.document]
+      value: '"/usr/local/bin/docx2txt.pl < %s"'
+
+  - name: Turn on recaptcha
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: captcha
+      option: recaptcha
+      value: 'On'
+
+  - name: tar
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      section: cli
+      option: tar
+      value: /usr/bin/tar
+
+  - name: create certificate directory
+    file:
+      path: /etc/pki/tls/certs/{{inventory_hostname}}/
+      state: directory
+
+  - name: create certificate private directory
+    file:
+      path: /etc/pki/tls/private/{{inventory_hostname}}/
+      state: directory
+
+  - name: link certificate
+    file:
+      path: /etc/pki/tls/certs/{{inventory_hostname}}/cert.pem
+      state: link
+      src: /etc/pki/tls/certs/localhost.crt
+
+  - name: link private key
+    file:
+      path: /etc/pki/tls/private/{{inventory_hostname}}/privkey.pem
+      state: link
+      src: /etc/pki/tls/private/localhost.key
+
+  - name: disable certificate chain in vhost
+    lineinfile:
+      path: /etc/httpd/conf.d/vhosts/{{inventory_hostname}}.conf
+      regexp: '^(\s*SSLCertificateChainFile.*$)'
+      line: '#\1'
+      backrefs: yes
+
+  - name: restore selinux contexts
+    command: restorecon -r /var/www/vhosts/{{inventory_hostname}}

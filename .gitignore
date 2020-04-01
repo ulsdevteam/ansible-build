@@ -1,1 +1,3 @@
 mysqlvars.yml
+hostvars/*
+!hostvars/*.yml.sample

@@ -1,0 +1,14 @@
+database:
+  username: dbuser
+  password: your_password_here
+  name: dbname
+security:
+  salt: your_salt_here
+  api_key_secret: your_apikey_here
+email:
+  default_envelope_sender: yoursender@host.tld
+oai:
+  repository_id: oai.your.host.tld
+captcha:
+  recaptcha_public_key: your-recaptcha-pubkey
+  recaptcha_private_key: your-recaptcha-privkey
