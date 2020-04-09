@@ -11,6 +11,13 @@
       name: mod_ssl
       state: latest
 
+  - name: install certbot
+    yum:
+      name:
+        - certbot
+        - python2-certbot-apache
+      state: latest
+
   - name: install clamav
     yum:
       name:
