@@ -8,6 +8,11 @@
 	CustomLog logs/SERVERNAME-access.log combined
 	ErrorLog logs/SERVERNAME-error.log 
 	Include conf.d/vhosts/apache-global-options.include
+	<Directory "/var/www/vhosts/SERVERNAME/html/public">
+		RemoveHandler .php .phtml .php3 .php5
+		RemoveType .php .phtml .php3 .php5
+		php_flag engine off
+	</Directory>
 </VirtualHost>
 
 <VirtualHost *:443>
@@ -27,4 +32,9 @@
 	SSLCertificateChainFile /etc/pki/tls/certs/SERVERNAME/chain.pem
 
 	Include conf.d/vhosts/apache-global-options.include
+	<Directory "/var/www/vhosts/SERVERNAME/html/public">
+		RemoveHandler .php .phtml .php3 .php5
+		RemoveType .php .phtml .php3 .php5
+		php_flag engine off
+	</Directory>
 </VirtualHost>
