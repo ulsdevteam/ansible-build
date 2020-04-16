@@ -56,7 +56,12 @@
       state: yes
       persistent: yes
 
-  - name: deploy local OJS scripts
+  - name: add unzip (used in config.inc.php)
+    yum:
+      name: unzip
+      state: latest
+
+ - name: deploy local OJS scripts
     copy:
       src: resources/ojs/local-scripts/
       dest: /usr/local/bin/

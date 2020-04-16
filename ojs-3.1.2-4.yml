@@ -1,6 +1,6 @@
 - name: OJS version-specific configuration
   remote_user: ulsprovision
-  hosts: ojs_3_1_2_4a
+  hosts: ojs_3_1_2_4
   become: yes
 
   tasks:
@@ -29,7 +29,7 @@
   - name: deploy OJS source
     unarchive:
       remote_src: yes
-      src: https://github.com/ulsdevteam/ojs/releases/download/uls-install-3.1.2-4a/ojs-3.1.2-4a.tgz
+      src: https://github.com/ulsdevteam/ojs/releases/download/uls-install-3.1.2-4b/ojs-3.1.2-4b.tgz
       dest: /var/www/vhosts/{{inventory_hostname}}/html/
 
   - name: deploy config.inc.php
