@@ -47,6 +47,18 @@
         - clamd
       state: latest
 
+  - name: refresh clamav database
+    command: "/usr/bin/freshclam --quiet"
+
+  - name: enable freshclam as a cron
+    cron:
+      name: freshclam daily
+      user: root
+      job: "/usr/local/bin/cronic /usr/bin/freshclam --quiet"
+      hour: 19
+      minute: "{{ 59 | random }}"
+      state: present
+
   - name: enable clamd socket
     lineinfile:
       path: /etc/clamd.d/scan.conf
