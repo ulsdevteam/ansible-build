@@ -5,53 +5,7 @@
   become: yes
 
   tasks:
-  #any apache
-  - name: install mod_ssl
-    yum:
-      name: mod_ssl
-      state: latest
-
-  - name: install certbot
-    yum:
-      name:
-        - certbot
-        - python2-certbot-apache
-      state: latest
-
-  - name: install clamav
-    yum:
-      name:
-        - clamav
-        - clamav-update
-        - clamd
-      state: latest
-
-  - name: ensure httpd is running
-    service:
-      name: httpd
-      enabled: yes
-
-#apache server
-  - firewalld:
-      service: http
-      zone: public
-      permanent: yes
-      state: enabled
-
-#apache server
-  - firewalld:
-      service: https
-      zone: public
-      permanent: yes
-      state: enabled
-
-  - name: reload firewalld
-    service:
-      name: firewalld
-      state: reloaded
-
-# every time we reload httpd, reset file system permissions to trust users other than root to read apache logs
-#any apache server
+# every time we install/update httpd, reset file system permissions to trust users other than root to read apache logs
   - name: install yum-utils
     yum:
       name: yum-utils
@@ -72,6 +26,76 @@
     file:
       path: /etc/yum/post-actions/httpd.action
       mode: "u+x"
+
+  - name: install mod_ssl
+    yum:
+      name: mod_ssl
+      state: latest
+
+  - name: install certbot
+    yum:
+      name:
+        - certbot
+        - python2-certbot-apache
+      state: latest
+
+  - name: install clamav
+    yum:
+      name:
+        - clamav
+        - clamav-update
+        - clamd
+      state: latest
+
+  - name: enable clamd socket
+    lineinfile:
+      path: /etc/clamd.d/scan.conf
+      regexp: '^#LocalSocket (.*)$'
+      line: 'LocalSocket \1'
+      backrefs: yes
+
+  - name: enable clamd service
+    service:
+      name: clamd@scan
+      enabled: yes
+      state: started
+
+  - name: selinux allow daemons to talk to each other's sockets (httpd -> clamd@scan)
+    seboolean:
+      name: daemons_enable_cluster_mode
+      state: yes
+      persistent: yes
+
+  - name: selinux allow apache to execute external programs (clamscan)
+    seboolean:
+      name: httpd_execmem
+      state: yes
+      persistent: yes
+
+  - name: ensure httpd is running
+    service:
+      name: httpd
+      enabled: yes
+      state: started
+
+#apache server
+  - firewalld:
+      service: http
+      zone: public
+      permanent: yes
+      state: enabled
+
+#apache server
+  - firewalld:
+      service: https
+      zone: public
+      permanent: yes
+      state: enabled
+
+  - name: reload firewalld
+    service:
+      name: firewalld
+      state: reloaded
 
   - name: preserve 10 years of logs
     lineinfile:
