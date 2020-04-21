@@ -84,6 +84,11 @@
       state: yes
       persistent: yes
 
+  - name: apache is a member of virusgroup
+    user:
+      name: apache
+      groups: virusgroup
+
   - name: ensure httpd is running
     service:
       name: httpd
