@@ -1,0 +1,80 @@
+- name: Spacewalk client install for OEL7
+  remote_user: ulsprovision
+  hosts: spacewalkclients
+  become: yes
+
+  tasks:
+# Add repository for Spacewalk client for OEL6
+  - name:
+    yum:
+      name:
+        - https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+      state: present
+    when: ansible_distribution == 'OracleLinux' and ansible_distribution_major_version == '6'
+
+# Add repository for Spacewalk client for OEL7
+  - name:
+    yum:
+      name:
+        - https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      state: present
+    when: ansible_distribution == 'OracleLinux' and ansible_distribution_major_version == '7'   
+
+
+
+# Install Spacewalk client for OEL6
+  - name: install spacewalk client 
+    yum:
+      name:
+        - https://copr-be.cloud.fedoraproject.org/results/%40spacewalkproject/spacewalk-2.9-client/epel-6-x86_64/00911911-spacewalk-repo/spacewalk-client-repo-2.9-4.el6.noarch.rpm
+      state: present
+    when: ansible_distribution == 'OracleLinux' and ansible_distribution_major_version == '6'
+
+
+
+
+
+# Install Spacewalk client for OEL7
+  - name: install spacewalk client
+    yum:
+      name:
+        - https://copr-be.cloud.fedoraproject.org/results/%40spacewalkproject/spacewalk-2.9/epel-7-x86_64/00912457-spacewalk-repo/spacewalk-client-repo-2.9-4.el7.noarch.rpm
+      state: present
+    when: ansible_distribution == 'OracleLinux' and ansible_distribution_major_version == '7'
+
+# Install Spacewalk's CA certificate on the server to enable SSL communication
+  - name: 
+    yum:
+      name:
+        - http://spacewalk-02.library.pitt.edu/pub/rhn-org-trusted-ssl-cert-1.0-3.noarch.rpm
+      state: present
+
+
+# Delete systemID if it exists
+  - name: 
+    file:
+      path: /etc/sysconfig/rhn/systemid
+      state: absent
+
+
+# Install RHN tools
+  - name:
+    yum:
+      name:
+        - rhn-client-tools 
+        - rhn-check 
+        - rhn-setup 
+        - rhnsd 
+        - m2crypto 
+        - yum-rhn-plugin
+      state: latest
+
+
+# Register with spacewalk-02 server OEL6
+  - name:
+    include: activationkey.yml
+
+
+# Run rhn_check to force client to check in with Spacewalk      
+  - name: 
+    command: rhn_check

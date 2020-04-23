@@ -1,3 +1,4 @@
 mysqlvars.yml
 hostvars/*
 !hostvars/*.yml.sample
+spacewalk/activationkey.yml
