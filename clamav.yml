@@ -1,0 +1,46 @@
+- name: Clam Antivirus
+  remote_user: ulsprovision
+  hosts: webservers
+  become: yes
+
+  tasks:
+  - name: install clamav
+    yum:
+      name:
+        - clamav
+        - clamav-update
+        - clamd
+      state: latest
+
+  - name: refresh clamav database
+    command: "/usr/bin/freshclam --quiet"
+
+  - name: enable freshclam as a cron
+    cron:
+      name: freshclam daily
+      user: root
+      job: "/usr/local/bin/cronic /usr/bin/freshclam --quiet"
+      hour: 19
+      minute: "{{ 59 | random }}"
+      state: present
+
+  - name: enable clamd socket
+    lineinfile:
+      path: /etc/clamd.d/scan.conf
+      regexp: '^#LocalSocket (.*)$'
+      line: 'LocalSocket \1'
+      backrefs: yes
+
+  - name: enable clamd service
+    service:
+      name: clamd@scan
+      enabled: yes
+      state: started
+
+  - name: selinux allow daemons to talk to each other's sockets (httpd -> clamd@scan)
+    seboolean:
+      name: daemons_enable_cluster_mode
+      state: yes
+      persistent: yes
+
+ 
