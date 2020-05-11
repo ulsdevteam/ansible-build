@@ -1,0 +1,9 @@
+- name: Force clients to check in to Spacewalk
+  remote_user: ulsprovision
+  hosts: spacewalkclients
+  become: yes
+
+  tasks:
+# Run rhn_check to force client to check in with Spacewalk
+  - name:
+    command: rhn_check
