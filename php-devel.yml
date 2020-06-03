@@ -12,3 +12,10 @@
         - php72w-pecl-xdebug
       state: present
 
+
+  - name: enable development PHP errors
+    lineinfile:
+       path: /etc/php.d/zzz_local.ini
+       state: present
+       regexp: 'error_reporting.*'
+       line: 'error_reporting=E_ALL'
