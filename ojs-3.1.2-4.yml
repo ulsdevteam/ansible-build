@@ -10,6 +10,11 @@
       file: hostvars/{{inventory_hostname}}.ojs-config.yml
       name: ojshostvar
 
+  - name: Identify OJS root
+    set_fact:
+      ojsdir: "{{ 'ojs/' if ojshostvar.use_ojs_subdir|default(false) == true else '' }}"
+      slashojsdir: "{{ '/ojs' if ojshostvar.use_ojs_subdir|default(false) == true else '' }}"
+
   - name: host directory
     file:
       path: /var/www/vhosts/{{inventory_hostname}}/
@@ -26,16 +31,25 @@
       owner: root
       group: ulssysdev
 
+  - name: ojs directory
+    file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}
+      state: directory
+      mode: '2775'
+      owner: root
+      group: ulssysdev
+    when: ojsdir == 'ojs/'
+
   - name: deploy OJS source
     unarchive:
       remote_src: yes
       src: https://github.com/ulsdevteam/ojs/releases/download/uls-install-3.1.2-4d/ojs-3.1.2-4d.tgz
-      dest: /var/www/vhosts/{{inventory_hostname}}/html/
+      dest: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}
 
   - name: deploy config.inc.php
     copy:
-      src: /var/www/vhosts/{{inventory_hostname}}/html/config.TEMPLATE.inc.php
-      dest: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      src: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.TEMPLATE.inc.php
+      dest: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       remote_src: yes
       owner: root
       group: ulssysdev
@@ -66,6 +80,13 @@
       regexp: 'SERVERNAME'
       replace: '{{inventory_hostname}}'
 
+  - name: change vhost to use ojs subdir
+    replace:
+      path: /etc/httpd/conf.d/vhosts/{{inventory_hostname}}.conf
+      regexp: 'apache-global-options'
+      replace: 'apache-legacy-global-options'
+    when: ojsdir == 'ojs/'
+
   - name: create database
     mysql_db:
       name: '{{ojshostvar.database.name}}'
@@ -79,168 +100,168 @@
 
   - name: set database username
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: database
       option: username
       value: '{{ojshostvar.database.username}}'
 
   - name: set database password
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: database
       option: password
       value: '{{ojshostvar.database.password}}'
 
   - name: set database name
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: database
       option: name
       value: '{{ojshostvar.database.name}}'
 
   - name: set security salt
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: security
       option: salt
       value: '{{ojshostvar.security.salt}}'
 
   - name: set security api key
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: security
       option: api_key_secret
       value: '{{ojshostvar.security.api_key_secret}}'
 
   - name: set default email
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: email
       option: default_envelope_sender
       value: '{{ojshostvar.email.default_envelope_sender}}'
 
   - name: set oai
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: oai
       option: repository_id
       value: '{{ojshostvar.oai.repository_id}}'
 
   - name: set recaptcha pubkey
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: captcha
       option: recaptcha_public_key
       value: '{{ojshostvar.captcha.recaptcha_public_key}}'
 
   - name: set recaptcha privkey
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: captcha
       option: recaptcha_private_key
       value: '{{ojshostvar.captcha.recaptcha_private_key}}'
 
   - name: set base url
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: general
       option: base_url
-      value: 'http://{{inventory_hostname}}'
+      value: 'http://{{inventory_hostname}}{{slashojsdir}}'
 
   - name: turn off upgrade warning
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: general
       option: show_upgrade_warning
       value: 'Off'
 
   - name: set database driver
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: database
       option: driver
       value: mysqli
 
   - name: set files dir
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: files
       option: files_dir
-      value: '../files'
+      value: "{{ '../../files' if ojshostvar.use_ojs_subdir|default(false) == true else '../files' }}"
 
   - name: set ssl requirement
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: security
       option: force_login_ssl
       value: 'On'
 
   - name: allow envelope sender
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: email
       option: allow_envelope_sender
       value: 'On'
 
   - name: force default envelope sender
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: email
       option: force_default_envelope_sender
       value: 'On'
 
   - name: force dmarc sender
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: email
       option: force_dmarc_compliant_from
       value: 'On'
 
   - name: PDF
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: search
       option: index[application/pdf]
       value: "\"/usr/bin/pdftotext -enc UTF-8 -nopgbrk %s - | /usr/bin/tr '[:cntrl:]' ' '\""
 
   - name: postscript
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: search
       option: index[application/postscript]
       value: "\"/usr/bin/ps2ascii %s | /usr/bin/tr '[:cntrl:]' ' '\""
 
   - name: Word Doc
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: search
       option: index[application/msword]
       value: '"/usr/local/bin/catdox.sh %s"'
 
   - name: Word RTF
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: search
       option: index[text/rtf]
       value: '"/usr/bin/catdoc %s"'
 
   - name: Word DocX
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: search
       option: index[application/vnd.openxmlformats-officedocument.wordprocessingml.document]
       value: '"/usr/local/bin/docx2txt.pl < %s"'
 
   - name: Turn on recaptcha
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: captcha
       option: recaptcha
       value: 'On'
 
   - name: tar
     ini_file:
-      path: /var/www/vhosts/{{inventory_hostname}}/html/config.inc.php
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: cli
       option: tar
       value: /usr/bin/tar
