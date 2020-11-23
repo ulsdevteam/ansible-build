@@ -266,6 +266,13 @@
       option: tar
       value: /usr/bin/tar
 
+  - name: allowed_html
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
+      section: security
+      option: allowed_html
+      value: "\"a[href|target|title|class],em,strong,cite,code,ul[class],ol[class],li[class],dl,dt,dd,b,i,u,img[src|alt|class|width|height],sup,sub,br,p[class],div[class],span[class]\""
+
   - name: create certificate directory
     file:
       path: /etc/pki/tls/certs/{{inventory_hostname}}/
@@ -276,17 +283,25 @@
       path: /etc/pki/tls/private/{{inventory_hostname}}/
       state: directory
 
-  - name: link certificate
-    file:
-      path: /etc/pki/tls/certs/{{inventory_hostname}}/cert.pem
-      state: link
+  - name: copy temporary certificate
+    copy:
       src: /etc/pki/tls/certs/localhost.crt
+      dest: /etc/pki/tls/certs/{{inventory_hostname}}/cert.pem
+      remote_src: yes
+      owner: root
+      group: ulssysdev
+      mode: preserve
+      force: no
 
-  - name: link private key
-    file:
-      path: /etc/pki/tls/private/{{inventory_hostname}}/privkey.pem
-      state: link
+  - name: copy temporary private key
+    copy:
       src: /etc/pki/tls/private/localhost.key
+      dest: /etc/pki/tls/private/{{inventory_hostname}}/privkey.pem
+      remote_src: yes
+      owner: root
+      group: ulssysdev
+      mode: preserve
+      force: no
 
   - name: disable certificate chain in vhost
     lineinfile:
