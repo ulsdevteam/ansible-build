@@ -39,3 +39,8 @@
       owner: root
       group: root
 
+  - name: install html2text
+    yum:
+      name:
+        - python3-html2text
+      state: latest

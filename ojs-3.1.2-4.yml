@@ -252,6 +252,13 @@
       option: index[application/vnd.openxmlformats-officedocument.wordprocessingml.document]
       value: '"/usr/local/bin/docx2txt.pl < %s"'
 
+  - name: HTML
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
+      section: search
+      option: index[text/html]
+      value: '"/usr/bin/html2text %s"'
+
   - name: Turn on recaptcha
     ini_file:
       path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
