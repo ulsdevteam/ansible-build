@@ -1,0 +1,8 @@
+- name: OJS standard config.inc.php
+  remote_user: ulsprovision
+  hosts: ojs
+  become: yes
+
+  tasks:
+  - import_tasks: ojs-config.tasks.yml
+
