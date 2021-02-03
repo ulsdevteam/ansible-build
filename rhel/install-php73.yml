@@ -1,0 +1,26 @@
+- name: PHP Build 7.3
+  remote_user: ulsprovision
+  hosts: uda4
+  become: yes
+
+  tasks:
+
+  - name: install php and extensions
+    yum:
+      name:
+        - rh-php73
+        - rh-php73-php-devel
+        - rh-php73-php-intl
+        - rh-php73-php-ldap
+        - rh-php73-php-mbstring
+        - rh-php73-php-mysqlnd
+        - rh-php73-php-odbc
+        - rh-php73-php-pdo
+      state: present
+
+  - name: Enable php for all users
+    copy:
+      dest: "/etc/profile.d/enablephp.sh"
+      content: |
+        #!/bin/bash
+        source scl_source enable rh-php73

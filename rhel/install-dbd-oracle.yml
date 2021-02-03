@@ -1,0 +1,26 @@
+- name: DBD::Oracle
+  remote_user: ulsprovision
+  hosts: uda4
+  become: yes
+
+  tasks:
+
+  - name: Get user PATH (including perl/cpan)
+    shell: bash -ilc 'echo $PATH'
+    register: user_path
+
+  - name: Get user LD_LIBRARY_PATH (including perl/cpan)
+    shell: bash -ilc 'echo $LD_LIBRARY_PATH'
+    register: user_lib_path
+
+  - name: Get ORACLE_HOME
+    shell: bash -ilc 'echo $ORACLE_HOME'
+    register: user_oracle_home
+
+  - name: Install CPAN's DBD::Oracle
+    community.general.cpanm:
+      name: DBD::Oracle
+    environment:
+      PATH: "{{ user_path.stdout }}"
+      LD_LIBRARY_PATH: "{{ user_lib_path.stdout }}"
+      ORACLE_HOME: "{{ user_oracle_home.stdout }}"

@@ -1,0 +1,21 @@
+- name: Oracle Instant Client
+  remote_user: ulsprovision
+  hosts: uda4
+  become: yes
+
+  tasks:
+
+  - name: install OCI
+    yum:
+      name:
+        - oracle-instantclient-basic
+        - oracle-instantclient-sqlplus
+        - oracle-instantclient-devel
+      state: present
+
+  - name: Set ORACLE_HOME for all users
+    copy:
+      dest: "/etc/profile.d/oraclehome.sh"
+      content: |
+        #!/bin/bash
+        export ORACLE_HOME=/usr/lib/oracle/21/client64

@@ -1,0 +1,19 @@
+- name: Python Build 3.8
+  remote_user: ulsprovision
+  hosts: uda4
+  become: yes
+
+  tasks:
+
+  - name: install python and extensions
+    yum:
+      name:
+        - rh-python38
+      state: present
+
+  - name: Enable python for all users
+    copy:
+      dest: "/etc/profile.d/enablepython.sh"
+      content: |
+        #!/bin/bash
+        source scl_source enable rh-python38

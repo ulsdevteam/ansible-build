@@ -1,0 +1,15 @@
+- name: RHEL Software Collections
+  remote_user: ulsprovision
+  hosts: uda4
+  become: yes
+
+  tasks:
+ 
+  - name: Enable a Red Hat Software Collections
+    community.general.rhsm_repository:
+      name: rhel-server-rhscl-7-rpms
+
+  - name: Enable a Red Hat Server Optional
+    community.general.rhsm_repository:
+      name: rhel-7-server-optional-rpms
+

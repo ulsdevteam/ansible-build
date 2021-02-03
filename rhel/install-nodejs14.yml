@@ -1,0 +1,19 @@
+- name: NodeJS Build 14
+  remote_user: ulsprovision
+  hosts: uda4
+  become: yes
+
+  tasks:
+
+  - name: install nodejs and extensions
+    yum:
+      name:
+        - rh-nodejs14
+      state: present
+
+  - name: Enable nodejs for all users
+    copy:
+      dest: "/etc/profile.d/enablenodejs.sh"
+      content: |
+        #!/bin/bash
+        source scl_source enable rh-nodejs14

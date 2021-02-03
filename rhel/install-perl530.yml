@@ -1,0 +1,25 @@
+- name: Perl Build 5.30
+  remote_user: ulsprovision
+  hosts: uda4
+  become: yes
+
+  tasks:
+
+  - name: install perl and extensions
+    yum:
+      name:
+        - rh-perl530
+        - rh-perl530-perl-App-cpanminus
+        - rh-perl530-perl-DBD-MySQL
+        - rh-perl530-perl-DBD-Pg
+        - rh-perl530-perl-DBD-SQLite
+        - rh-perl530-perl-DBI
+        - rh-perl530-perl-Data-Dump
+      state: present
+
+  - name: Enable perl for all users
+    copy:
+      dest: "/etc/profile.d/enableperl.sh"
+      content: |
+        #!/bin/bash
+        source scl_source enable rh-perl530
