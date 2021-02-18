@@ -1,0 +1,25 @@
+- name: Add reporting user to OSTicket
+  remote_user: ulsprovision
+  hosts: osticket
+  become: yes
+
+  tasks:
+
+  - name: Include vars of osticketvars.yml into the 'osticketvars' variable
+    include_vars:
+      file: osticketvars.yml
+      name: osticketvars
+
+  - name: set password and access for ostquery
+    mysql_user:
+      user: ostquery
+      password: "{{ osticketvars.ostquery }}"
+      priv: 'OSTicket.*:SELECT,SHOW VIEW'
+      host: "{{ item }}"
+    with_items:
+      - "10.195.106.144/255.255.255.240"
+      - "130.49.158.64/255.255.255.192"
+      - "130.49.185.128/255.255.255.128"
+      - "10.195.106.144/255.255.255.240"
+      - "10.195.6.122/255.255.255.248"
+      - "10.228.6.122/255.255.255.248"

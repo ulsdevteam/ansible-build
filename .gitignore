@@ -1,4 +1,5 @@
 mysqlvars.yml
+osticketvars.yml
 hostvars/*
 !hostvars/*.yml.sample
 spacewalk/activationkey.yml
