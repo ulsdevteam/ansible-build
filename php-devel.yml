@@ -8,8 +8,8 @@
   - name: install php and extensions
     yum:
       name:
-        - php72w-devel
-        - php72w-pecl-xdebug
+        - php73-php-devel
+        - php73-php-pecl-xdebug
       state: present
 
 
