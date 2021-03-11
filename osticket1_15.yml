@@ -1,0 +1,60 @@
+- name: Deploy OSTicket to webroot
+  remote_user: ulsprovision
+  hosts: osticket
+  become: yes
+
+  tasks:
+
+  - name: add ulsit group
+    group:
+      name: ulsit
+      state: present
+
+  - name: add ulsit users
+    user:
+      name: "{{ item }}"
+      groups: ulsit
+      append: yes
+    with_items: 
+      - ctgraham
+      - bdgregg
+      - asw76
+      - rlh52
+      - mem375
+      - nylorac
+      - danbrown
+
+  - name: SetGID for webroot
+    file:
+      path: /var/www/html
+      state: directory
+      recurse: yes
+      group: ulsit
+      mode: '2775'
+
+  - name: selinux  httpd_can_sendmail
+    seboolean:
+      name: httpd_can_sendmail
+      state: yes
+      persistent: yes
+
+  - name: selinux  httpd_can_network_connect
+    seboolean:
+      name: httpd_can_network_connect
+      state: yes
+      persistent: yes
+
+  - name: Deploy 1.15.2
+    git:
+      repo: 'https://github.com/osTicket/osTicket.git'
+      dest: /var/www/html/
+      version: v1.15.1
+      umask: '002'
+
+  - name: Add LDAP plugin
+    copy:
+      src: resources/osticket/auth-ldap.phar
+      dest: /var/www/html/include/plugins/
+      mode: u=rw,g=rw,o=r
+      owner: root
+      group: ulsit
