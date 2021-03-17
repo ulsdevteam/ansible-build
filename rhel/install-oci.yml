@@ -11,7 +11,27 @@
         - oracle-instantclient-basic
         - oracle-instantclient-sqlplus
         - oracle-instantclient-devel
+        - oracle-instantclient-tools
       state: present
+
+  - name: Check if we are instantclient 21.1
+    stat:
+      path: /usr/lib/oracle/21/client64/lib/
+    register: ocilib
+
+  - name: Check if we are missing libomsodm
+    stat:
+      path: /usr/lib/oracle/21/client64/lib/libomsodm.so
+    register: libomsodm
+
+  - name: instantclient 21.1 tools is missing libomsodm.so
+    copy:
+      dest: "/usr/lib/oracle/21/client64/lib/libomsodm.so"
+      src: "instantclient_21_1/libomsodm.so"
+      mode: 0755
+      owner: root
+      group: root
+    when: ocilib.stat.exists and not libomsodm.stat.exists
 
   - name: Set ORACLE_HOME for all users
     copy:
