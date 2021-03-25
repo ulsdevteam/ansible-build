@@ -1,0 +1,74 @@
+- name: Ezpaarse install and config
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+
+  tasks:
+
+
+    - name: Add mongodb repo
+      copy:
+        src: resources/mongodb-org-4.4.repo
+        dest: /etc/yum.repos.d/
+
+
+    - name: install mongodb-org
+      yum:
+        name: mongodb-org
+        state: latest
+
+    - name: Install GCC
+      yum:
+        name: gcc
+        state: latest
+
+    - name: Install G++
+      yum: 
+        name: gcc-c++
+        state: latest
+
+    - name: Install Docker
+      yum: 
+        name: docker
+        state: latest
+
+    - name: Install docker-compose
+      yum: 
+        name: docker-compose
+        state: latest
+
+    - name: Create Ezpaarse directory
+      file:
+        path: /usr/local/ezpaarse
+        state: directory
+       
+
+    - name: Ezpaarse docker image
+      git: 
+        repo: 'https://github.com/ezpaarse-project/ezpaarse.git'
+        dest: /usr/local/ezpaarse
+        
+    - name: start Mongodb service
+      service:
+        name: mongod
+        state: started
+
+    - name: start Docker service
+      service:
+        name: docker
+        state: started
+
+    - name: yum update
+      yum: 
+        name: '*'
+        state: latest
+
+    - name:
+      shell:
+        cmd: "docker-compose up -d"
+        chdir: /usr/local/ezpaarse
+     
+
+
+            
+
