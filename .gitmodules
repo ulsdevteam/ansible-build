@@ -1,0 +1,3 @@
+[submodule "trafsys-data-transfer-deploy"]
+	path = trafsys-data-transfer-deploy
+	url = https://github.com/ulsdevteam/trafsys-data-transfer-deploy
