@@ -1,0 +1,9 @@
+ORAUSER: MYUSER
+ORAPW: 'MyP4$$w0rd'
+ORASERVER: oracle.server.tld/oracle_service_name
+ORACLE_HOME: /my/oracle/home
+EZPFILESDIR: /var/local/ezpaarse/
+EZPURL: 'localhost:59599'
+PROXYUSER: myinst
+PROXYPASS: 'myInst$ecret'
+MYSITE: myinst

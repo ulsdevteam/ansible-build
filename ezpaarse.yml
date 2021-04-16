@@ -5,7 +5,9 @@
 
   tasks:
 
-
+    - name: disable selinux
+      ansible.posix.selinux:
+        state: disabled
 
     - name: Install Docker
       yum: 
@@ -49,14 +51,92 @@
 
    
 
-    - name:
+    - name: Start Docker
       shell:
         cmd: "docker-compose up -d"
         chdir: /usr/local/ezpaarse
               
     
+    - name: Import variables
+      include_vars:
+        file: "hostvars/{{inventory_hostname}}.ezpaarse-uda4.yml"
+        name: ezpvars
      
+    - name: Create a service user
+      user:
+        name: 'ezpdata'
+        shell: /sbin/nologin
+        state: present
 
+    - name: Create a data directory
+      file:
+        path: "{{ezpvars.EZPFILESDIR}}"
+        state: directory
+        group: ulssysdev
+        owner: 'ezpdata'
+        mode: '2770'
+ 
+    - name: Create data subdirectories
+      file:
+        path: "{{ezpvars.EZPFILESDIR}}/{{item}}"
+        state: directory
+        group: ulssysdev
+        owner: 'ezpdata'
+        mode: '2770'
+      with_items: 
+        - downloads
+        - parsed
+        - pending
+                    
+    - name: Create an application directory
+      file:
+        path: /usr/local/ezpaarse-loader
+        state: directory
+        group: ulssysdev
+        owner: root
+        mode: '2775'
 
-            
+    - name: Clone from git
+      git:
+        repo: https://github.com/ulsdevteam/ezpaarse-loader.git
+        dest: /usr/local/ezpaarse-loader
+        force: yes
 
+    - name: Set environment variables
+      lineinfile:
+        dest: /usr/local/ezpaarse-loader/common.env
+        state: present
+        create: yes
+        line: 'export {{ item.key }}={{ item.value }}'
+      with_items: '{{ ezpvars | dict2items }}'
+
+    - name: Grant write access
+      file:
+        path: /usr/local/ezpaarse-loader
+        recurse: yes
+        mode: 'g+w'
+
+    - name: Schedule cron download
+      cron:
+        name: 'Download EZPROXY logs'
+        hour: '5'
+        minute: '35'
+        job: '/usr/local/bin/cronic /usr/local/ezpaarse-loader/download.sh'
+      become: yes
+      become_user: 'ezpdata'
+
+    - name: Schedule cron processing
+      cron:
+        name: 'Parse EZPROXY logs'
+        hour: '6'
+        minute: '35'
+        job: '/usr/local/bin/cronic /usr/local/ezpaarse-loader/parse.sh'
+      become: yes
+      become_user: 'ezpdata'
+
+    - name: set up email for root
+      lineinfile:
+         path: /etc/aliases
+         state: present
+         regexp: '^ezpdata:'
+         line: 'ezpdata:           root'
