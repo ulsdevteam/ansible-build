@@ -5,6 +5,11 @@
   
   tasks:
 
+  - name: enable dotnet repo
+    community.general.rhsm_repository:
+      name: rhel-7-server-dotnet-rpms
+      state: enabled
+
   - name: install dotnet and extensions
     yum:
       name:
