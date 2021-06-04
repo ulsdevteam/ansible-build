@@ -8,7 +8,6 @@
   - name: install php and extensions
     yum:
       name:
-        - php-fpm
         - rh-php73
         - rh-php73-php-fpm
         - rh-php73-php-cli
@@ -26,9 +25,9 @@
         - rh-php73-php-zip
       state: present
 
-  - name: start php-fpm
+  - name: start rh-php73-php-fpm
     service:
-      name: php-fpm
+      name: rh-php73-php-fpm
     enabled: yes
       state: started
 
@@ -74,3 +73,15 @@
        state: present
        regexp: 'error_reporting.*'
        line: 'error_reporting=E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE & ~E_WARNING'
+
+  - name: php specific httpd configurations
+    blockinfile:
+      path: /etc/httpd/conf.d/php.conf
+      block: |
+        'SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1
+        
+        # Use PHP 7.3 by default
+        <FilesMatch \.php$>
+          SetHandler "proxy:fcgi://127.0.0.1:9000"
+        </FilesMatch>
+
