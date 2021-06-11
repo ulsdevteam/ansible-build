@@ -7,3 +7,7 @@ EZPURL: 'localhost:59599'
 PROXYUSER: myinst
 PROXYPASS: 'myInst$ecret'
 MYSITE: myinst
+LDAPUSER: 'someone@my.directory'
+LDAPHOST: 'my.directory'
+LDAPBASE: 'OU=Accounts,DC=my,DC=directory'
+LDAPPASS: 'myLdap$ecret'

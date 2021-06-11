@@ -1,62 +1,27 @@
-- name: Ezpaarse install and config
+- name: UDA4 EZPAARSE install and config
   remote_user: ulsprovision
-  hosts: EZpaarse
+  hosts: uda4
   become: yes
 
   tasks:
 
-    - name: disable selinux
-      ansible.posix.selinux:
-        state: disabled
-
-    - name: Install Docker
-      yum: 
-        name: docker
+    - name: Add ldap tooling
+      yum:
+        name: openldap-clients
         state: latest
 
-    - name: Install docker-compose
-      yum: 
-        name: docker-compose
+    - name: Add rssh for remote scp/rsync
+      yum:
+        name: rssh
         state: latest
 
-    - name: Create Ezpaarse directory
-      file:
-        path: /usr/local/ezpaarse
-        state: directory
-       
-
-    - name: get Ezpaarse docker-compose.yml
-      get_url: 
-        url: https://raw.githubusercontent.com/ezpaarse-project/ezpaarse/master/docker-compose.yml
-        dest: /usr/local/ezpaarse/docker-compose.yml
-        
-
-    - name: start Docker service
-      service:
-        name: docker
-        state: started
-        enabled: yes
-
-    - name: Add docker-compose with always restart policy
+    - name: allow rsync
       lineinfile:
-        path: /usr/local/ezpaarse/docker-compose.yml
-        line: '    restart: always'
-        insertafter: '  ezpaarse:'
+        path: /etc/rssh.conf
+        state: present
+        regexp: '^#?allowrsync$'
+        line: 'allowrsync'
 
-    - name: Add docker-compose with always restart policy
-      lineinfile:
-        path: /usr/local/ezpaarse/docker-compose.yml
-        line: '    restart: always'
-        insertafter: '  ezpaarse_db:'
-
-   
-
-    - name: Start Docker
-      shell:
-        cmd: "docker-compose up -d"
-        chdir: /usr/local/ezpaarse
-              
-    
     - name: Import variables
       include_vars:
         file: "hostvars/{{inventory_hostname}}.ezpaarse-uda4.yml"
@@ -65,8 +30,10 @@
     - name: Create a service user
       user:
         name: 'ezpdata'
-        shell: /sbin/nologin
+        shell: /bin/rssh
         state: present
+        group: 'ezpdata'
+        groups: 'rsshusers'
 
     - name: set up email for ezpdata
       lineinfile:
@@ -91,9 +58,9 @@
         owner: 'ezpdata'
         mode: '2770'
       with_items: 
-        - downloads
-        - parsed
         - pending
+        - working
+        - done
                     
     - name: Create an application directory
       file:
@@ -123,21 +90,31 @@
         recurse: yes
         mode: 'g+w'
 
-    - name: Schedule cron download
+    - name: Schedule cron process
       cron:
-        name: 'Download EZPROXY logs'
+        name: 'Process EZPAARSE logs'
         hour: '5'
-        minute: '35'
-        job: '/usr/local/bin/cronic /usr/local/ezpaarse-loader/download.sh'
+        minute: '37'
+        job: '/usr/local/bin/cronic /usr/local/ezpaarse-loader/process.sh'
       become: yes
       become_user: 'ezpdata'
 
-    - name: Schedule cron processing
+    - name: Schedule cron postprocess
       cron:
-        name: 'Parse EZPROXY logs'
-        hour: '6'
-        minute: '35'
-        job: '/usr/local/bin/cronic /usr/local/ezpaarse-loader/parse.sh'
+        name: 'Postprocess EZPAARSE data load'
+        hour: '15'
+        minute: '37'
+        job: '/usr/local/bin/cronic /usr/local/ezpaarse-loader/postprocess.sh'
+      become: yes
+      become_user: 'ezpdata'
+
+    - name: Schedule cron for sponsored accounts
+      cron:
+        name: 'Calculate RCs for Sponsored Accounts'
+        day: '6'
+        hour: '4'
+        minute: '37'
+        job: '/usr/local/bin/cronic /usr/local/ezpaarse-loader/sponsor.sh'
       become: yes
       become_user: 'ezpdata'
 
