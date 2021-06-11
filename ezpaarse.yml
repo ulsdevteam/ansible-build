@@ -37,25 +37,15 @@
         state: started
         enabled: yes
 
-    - name: Add docker-compose with always restart policy
-      lineinfile:
-        path: /usr/local/ezpaarse/docker-compose.yml
-        line: '    restart: always'
-        insertafter: '  ezpaarse:'
-
-    - name: Add docker-compose with always restart policy
-      lineinfile:
-        path: /usr/local/ezpaarse/docker-compose.yml
-        line: '    restart: always'
-        insertafter: '  ezpaarse_db:'
-
-   
-
     - name: Start Docker
       shell:
         cmd: "docker-compose up -d"
         chdir: /usr/local/ezpaarse
               
+    - name: Copy Pitt Exclusions
+      ansible.builtin.copy:
+        src: resources/ezpaarse/domains.pitt.txt
+        dest: /usr/local/ezpaarse/exclusions/
     
     - name: Import variables
       include_vars:
