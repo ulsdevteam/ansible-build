@@ -43,7 +43,7 @@
   - name: deploy OJS source
     unarchive:
       remote_src: yes
-      src: https://github.com/ulsdevteam/ojs/releases/download/uls-install-3.1.2-4f/ojs-3.1.2-4f.tgz
+      src: https://github.com/ulsdevteam/ojs/releases/download/uls-install-3.1.2-4h/ojs-3.1.2-4h.tgz
       dest: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}
 
   - name: deploy config.inc.php
