@@ -1,0 +1,87 @@
+- name: PHP-FPM Build with 7.3
+  remote_user: ulsprovision
+  hosts: phpfpm73clients
+  become: yes
+
+  tasks:
+# php-imap extension not present in rh repos
+  - name: install php and extensions
+    yum:
+      name:
+        - rh-php73
+        - rh-php73-php-fpm
+        - rh-php73-php-cli
+        - rh-php73-php-common
+        - rh-php73-php-gd
+        - rh-php73-php-json
+        - rh-php73-php-mbstring
+        - rh-php73-php-pdo
+        - rh-php73-php-xml
+        - rh-php73-php-opcache
+        - rh-php73-php-intl
+        - rh-php73-php-pecl-apcu
+        - rh-php73-php-mysqlnd
+        - rh-php73-php-ldap
+        - rh-php73-php-zip
+      state: present
+
+  - name: start rh-php73-php-fpm
+    service:
+      name: rh-php73-php-fpm
+    enabled: yes
+      state: started
+
+#all builds with php
+  - name: install mariadb
+    yum:
+      name:
+        - mariadb
+      state: present
+
+  - name: set up PHP max execution time
+    lineinfile:
+       create: yes
+       path: /etc/opt/rh/rh-php73/php.d/zzz_local.ini
+       state: present
+       regexp: 'max_execution_time.*'
+       line: 'max_execution_time = 300'
+
+  - name: set up PHP max post size
+    lineinfile:
+       path: /etc/opt/rh/rh-php73/php.d/zzz_local.ini
+       state: present
+       regexp: 'post_max_size.*'
+       line: 'post_max_size = 256M'
+
+  - name: set up PHP max upload size
+    lineinfile:
+       path: /etc/opt/rh/rh-php73/php.d/zzz_local.ini
+       state: present
+       regexp: 'upload_max_filesize.*'
+       line: 'upload_max_filesize = 256M'
+
+  - name: set up PHP timezone
+    lineinfile:
+       path: /etc/opt/rh/rh-php73/php.d/zzz_local.ini
+       state: present
+       regexp: 'date.timezone.*'
+       line: 'date.timezone = America/New_York'
+
+  - name: suppress production PHP errors
+    lineinfile:
+       path: /etc/opt/rh/rh-php73/php.d/zzz_local.ini
+       state: present
+       regexp: 'error_reporting.*'
+       line: 'error_reporting=E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE & ~E_WARNING'
+
+  - name: php specific httpd configurations
+    blockinfile:
+      path: /etc/httpd/conf.d/php.conf
+      block: |
+        SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1
+        
+        # Use PHP 7.3 by default
+        <FilesMatch \.php$>
+          SetHandler "proxy:fcgi://127.0.0.1:9000"
+        </FilesMatch>
+
