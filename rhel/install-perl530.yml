@@ -1,6 +1,6 @@
 - name: Perl Build 5.30
   remote_user: ulsprovision
-  hosts: uda4
+  hosts: rhscl_perl
   become: yes
 
   tasks:

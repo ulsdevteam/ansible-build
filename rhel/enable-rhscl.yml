@@ -1,6 +1,6 @@
 - name: RHEL Software Collections
   remote_user: ulsprovision
-  hosts: uda4
+  hosts: rhscl
   become: yes
 
   tasks:

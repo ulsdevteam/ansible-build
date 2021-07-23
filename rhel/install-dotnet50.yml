@@ -1,0 +1,24 @@
+- name: .NET 5.0 SDK
+  remote_user: ulsprovision
+  hosts: uda4
+  become: yes
+  
+  tasks:
+
+  - name: enable dotnet repo
+    community.general.rhsm_repository:
+      name: rhel-7-server-dotnet-rpms
+      state: enabled
+
+  - name: install dotnet and extensions
+    yum:
+      name:
+        - rh-dotnet50
+      state: present
+
+  - name: enable dotnet for all users
+    copy:
+      dest: "/etc/profile.d/enabledotnet.sh"
+      content: |
+        #!/bin/bash
+        source scl_source enable rh-dotnet50

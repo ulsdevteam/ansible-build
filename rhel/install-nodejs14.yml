@@ -1,6 +1,6 @@
 - name: NodeJS Build 14
   remote_user: ulsprovision
-  hosts: uda4
+  hosts: rhscl_node
   become: yes
 
   tasks:

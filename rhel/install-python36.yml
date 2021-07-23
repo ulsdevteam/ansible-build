@@ -1,6 +1,6 @@
-- name: Python Build 3.8
+- name: Python Build 3.6
   remote_user: ulsprovision
-  hosts: rhscl_py
+  hosts: rhscl_py36
   become: yes
 
   tasks:
@@ -8,7 +8,7 @@
   - name: install python and extensions
     yum:
       name:
-        - rh-python38
+        - rh-python36
       state: present
 
   - name: Enable python for all users
@@ -16,4 +16,4 @@
       dest: "/etc/profile.d/enablepython.sh"
       content: |
         #!/bin/bash
-        source scl_source enable rh-python38
+        source scl_source enable rh-python36

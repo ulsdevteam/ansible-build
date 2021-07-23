@@ -1,6 +1,6 @@
 - name: PHP Build 7.3
   remote_user: ulsprovision
-  hosts: uda4
+  hosts: rhscl_php
   become: yes
 
   tasks:
