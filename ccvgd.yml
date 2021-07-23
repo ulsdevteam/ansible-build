@@ -1,0 +1,120 @@
+- name: CCVGD deployment
+  remote_user: ulsprovision
+  hosts: ccvgd
+  become: yes
+
+  tasks:
+
+  - name: Include host vars 
+    include_vars:
+      file: hostvars/{{inventory_hostname}}.config.yml
+      name: configvars
+
+  - name: host directory
+    file:
+      path: /opt/local/ccvgd
+      state: directory
+      mode: '2775'
+      owner: root
+      group: ulssysdev
+
+  - name: database loader directory
+    file:
+      path: /opt/local/ccvgd/dataload
+      state: directory
+      mode: '2775'
+      owner: root
+      group: ulssysdev
+
+  - name: frontend directory
+    file:
+      path: /opt/local/ccvgd/frontend
+      state: directory
+      mode: '2775'
+      owner: root
+      group: ulssysdev
+
+  - name: backend directory
+    file:
+      path: /opt/local/ccvgd/backend
+      state: directory
+      mode: '2775'
+      owner: root
+      group: ulssysdev
+
+  - name: Clone database loader from git
+    git:
+      repo: https://github.com/ulsdevteam/ccvgd-database.git
+      dest: /opt/local/ccvgd/dataload
+      force: yes
+      umask: '0002'
+
+  - name: Clone frontend from git
+    git:
+      repo: https://github.com/ulsdevteam/ccvgd-frontend.git
+      dest: /opt/local/ccvgd/frontend
+      force: yes
+      umask: '0002'
+
+  - name: Clone backend from git
+    git:
+      repo: https://github.com/ulsdevteam/ccvgd-backend.git
+      dest: /opt/local/ccvgd/backend
+      force: yes
+      umask: '0002'
+
+  - name: Install python requirements for backend
+    pip:
+      executable: /opt/rh/rh-python36/root/usr/bin/pip
+      name: [Flask]
+
+  - name: create database
+    mysql_db:
+      name: '{{configvars.database.name}}'
+
+  - name: grant database permissions
+    mysql_user:
+      name: '{{configvars.database.name}}'
+      password: '{{configvars.database.password}}'
+      priv: '{{configvars.database.username}}.*:ALL'
+      state: present
+
+  - name: create certificate directory
+    file:
+      path: /etc/pki/tls/certs/{{configvars.site.hostname}}/
+      state: directory
+
+  - name: create certificate private directory
+    file:
+      path: /etc/pki/tls/private/{{configvars.site.hostname}}/
+      state: directory
+
+  - name: copy temporary certificate
+    copy:
+      src: /etc/pki/tls/certs/localhost.crt
+      dest: /etc/pki/tls/certs/{{configvars.site.hostname}}/cert.pem
+      remote_src: yes
+      owner: root
+      group: ulssysdev
+      mode: preserve
+      force: no
+    register: certfile_changed
+
+  - name: copy temporary private key
+    copy:
+      src: /etc/pki/tls/private/localhost.key
+      dest: /etc/pki/tls/private/{{configvars.site.hostname}}/privkey.pem
+      remote_src: yes
+      owner: root
+      group: ulssysdev
+      mode: preserve
+      force: no
+    register: certchain_changed
+
+#  - name: disable certificate chain in vhost
+#    lineinfile:
+#      path: /etc/httpd/conf.d/vhosts/{{configvars.site.hostname}}.conf
+#      regexp: '^(\s*SSLCertificateChainFile.*$)'
+#      line: '#\1'
+#      backrefs: yes
+#    when: certfile_changed is succeeded or certchain_changed is succeeded

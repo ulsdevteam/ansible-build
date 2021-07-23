@@ -1,0 +1,8 @@
+database:
+  username: ccvgd
+  password: password-goes-here
+  name: ccvgd
+site:
+  hostname: hostname.goes.here.tld
+  backend_uri: /api
+  backend_port: 8080
