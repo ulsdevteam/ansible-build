@@ -62,11 +62,80 @@
       dest: /opt/local/ccvgd/backend
       force: yes
       umask: '0002'
+      version: rhel7-python36
 
-  - name: Install python requirements for backend
+  - name: Python requirements file only works if wheel is installed
     pip:
       executable: /opt/rh/rh-python36/root/usr/bin/pip
-      name: [Flask]
+      name: wheel
+
+  - name: Python requirements file only works if pip is updated
+    pip:
+      executable: /opt/rh/rh-python36/root/usr/bin/pip
+      name: pip
+      extra_args: --upgrade
+
+  - name: Install python requirements per application
+    pip:
+      executable: /opt/rh/rh-python36/root/usr/bin/pip
+      requirements: /opt/local/ccvgd/backend/requirements.txt
+
+  - name: Deploy config.txt file for database tooling
+    copy:
+      src: resources/ccvgd/config.txt.template
+      dest: /opt/local/ccvgd/dataload/pythonScript/config.txt
+
+  - name: set hostname in config.txt
+    replace:
+      path: /opt/local/ccvgd/dataload/pythonScript/config.txt
+      regexp: 'MYSQLHOST'
+      replace: 'localhost'
+
+  - name: set databasename in config.txt
+    replace:
+      path: /opt/local/ccvgd/dataload/pythonScript/config.txt
+      regexp: 'MYSQLDATA'
+      replace: '{{configvars.database.name}}'
+
+  - name: set username in config.txt
+    replace:
+      path: /opt/local/ccvgd/dataload/pythonScript/config.txt
+      regexp: 'MYSQLUSER'
+      replace: '{{configvars.database.username}}'
+
+  - name: set password in config.txt
+    replace:
+      path: /opt/local/ccvgd/dataload/pythonScript/config.txt
+      regexp: 'MYSQLPASS'
+      replace: '{{configvars.database.password}}'
+
+  - name: set hostname in config.py
+    lineinfile:
+       path: /opt/local/ccvgd/backend/config.py
+       state: present
+       regexp: 'mysql_host = '
+       line: 'mysql_host = "localhost"'
+
+  - name: set username in config.py
+    lineinfile:
+       path: /opt/local/ccvgd/backend/config.py
+       state: present
+       regexp: 'mysql_username = '
+       line: 'mysql_username = "{{configvars.database.username}}"'
+
+  - name: set password in config.py
+    lineinfile:
+       path: /opt/local/ccvgd/backend/config.py
+       state: present
+       regexp: 'mysql_password = '
+       line: 'mysql_password = "{{configvars.database.password}}"'
+
+  - name: set database in config.py
+    lineinfile:
+       path: /opt/local/ccvgd/backend/config.py
+       state: present
+       regexp: 'mysql_database = '
+       line: 'mysql_database = "{{configvars.database.name}}"'
 
   - name: create database
     mysql_db:
@@ -111,10 +180,34 @@
       force: no
     register: certchain_changed
 
-#  - name: disable certificate chain in vhost
-#    lineinfile:
-#      path: /etc/httpd/conf.d/vhosts/{{configvars.site.hostname}}.conf
-#      regexp: '^(\s*SSLCertificateChainFile.*$)'
-#      line: '#\1'
-#      backrefs: yes
-#    when: certfile_changed is succeeded or certchain_changed is succeeded
+  - name: Deploy vhost
+    copy:
+      src: resources/ccvgd/vhost.conf.template
+      dest: /etc/httpd/conf.d/{{configvars.site.hostname}}.conf
+
+  - name: disable certificate chain in vhost
+    lineinfile:
+      path: /etc/httpd/conf.d/{{configvars.site.hostname}}.conf
+      regexp: '^(\s*SSLCertificateChainFile.*$)'
+      line: '#\1'
+      backrefs: yes
+    when: certfile_changed is succeeded or certchain_changed is succeeded
+
+  - name: set hostname in vhost
+    replace:
+      path: /etc/httpd/conf.d/{{configvars.site.hostname}}.conf
+      regexp: 'SERVERNAME'
+      replace: '{{configvars.site.hostname}}'
+
+  - name: set backend port in vhost
+    replace:
+      path: /etc/httpd/conf.d/{{configvars.site.hostname}}.conf
+      regexp: 'PROXYPORT'
+      replace: '{{configvars.site.backend_port}}'
+
+  - name: set backend endpoint in vhost
+    replace:
+      path: /etc/httpd/conf.d/{{configvars.site.hostname}}.conf
+      regexp: 'PROXYENDPOINT'
+      replace: '{{configvars.site.backend_uri}}'
+
