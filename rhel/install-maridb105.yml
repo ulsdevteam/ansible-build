@@ -1,0 +1,162 @@
+- name: MariaDB 10.5
+  remote_user: ulsprovision
+  hosts: rhscl_maria105
+  become: yes
+
+  tasks:
+
+  - name: Include vars of mysqlvars.yml into the 'mysqlvars' variable
+    include_vars:
+      file: ../mysqlvars.yml
+      name: mysqlvars
+
+
+#just on servers where we want to host a mysql db
+  - name: install mariadb-server
+    yum:
+      name: rh-mariadb105-mariadb-server
+      state: present
+
+#depends on mariadbserver
+  - name: start mariadb
+    service:
+      name: rh-mariadb105-mariadb
+      state: started
+
+#mariadbserver only for the rest of these mysql relevant plays
+  - name: install MySQL-python for use with ansible mysql module
+    yum:
+      name: MySQL-python
+      state: latest
+
+
+### mysql_secure_installation
+
+# ulsprovision will log in with blank default password
+
+  - name: set password for root@localhost localhost
+    mysql_user:
+      user: root
+      password: "{{ mysqlvars.password }}"
+      host: localhost
+
+# password is now set
+# we'll upload a .my.cnf with the new credentials for future commands
+
+
+  - name: Add mysql root password
+    vars:
+      mysqluser: root
+      mysqlpassword: "{{ mysqlvars.password }}"
+    template:
+      src: ../resources/my.cnf
+      dest: "/root/.my.cnf"
+
+  - name: populate .my.cnf password 
+    lineinfile:
+      path: /root/.my.cnf
+      regexp: 'password='
+      line: "password={{ mysqlvars.password }}"
+
+  - name: set password for root@localhost 127.0.0.1
+    mysql_user:
+      user: root
+      password: "{{ mysqlvars.password }}"
+      host: 127.0.0.1
+
+  - name: "set password for root@localhost ::1"
+    mysql_user:
+      user: root
+      password: "{{ mysqlvars.password }}"
+      host: "::1"
+
+  - name: remove anonymous mysql users
+    mysql_user:
+      name: ''
+      host_all: yes
+      state: absent
+
+  - name: remove test database
+    mysql_db:
+      name: test
+      state: absent
+
+#only mariadbserver
+
+  - name: enable mariadb
+    service:
+      name: rh-mariadb105-mariadb
+      enabled: yes
+
+# manage automatic mysqlbackups
+
+  - name: Add backup user
+    user:
+      name: backup
+      comment: Mysql Backup
+      shell: /sbin/nologin
+
+  - name: Add mysql backup password
+    vars:
+      mysqluser: backup
+      mysqlpassword: "{{ mysqlvars.backup }}"
+    template:
+      src: ../resources/my.cnf
+      dest: "/home/backup/.my.cnf"
+
+  - name: Add mysql backup directory parent
+    file:
+      path: /var/local/backup
+      state: directory
+
+  - name: Add mysql backup directory
+    file:
+      path: /var/local/backup/mysql
+      state: directory
+      owner: backup
+      group: backup
+
+  - name: set password and access for backup@localhost
+    mysql_user:
+      user: backup
+      password: "{{ mysqlvars.backup }}"
+      priv: '*.*:SHOW DATABASES,SELECT,LOCK TABLES,SHOW VIEW,EVENT,TRIGGER'
+      host: localhost
+
+
+  - name: set password and access for backup@127.0.0.1
+    mysql_user:
+      user: backup
+      password: "{{ mysqlvars.backup }}"
+      priv: '*.*:SHOW DATABASES,SELECT,LOCK TABLES,SHOW VIEW,EVENT,TRIGGER'
+      host: 127.0.0.1
+
+  - name: "set password and access for backup@::1"
+    mysql_user:
+      user: backup
+      password: "{{ mysqlvars.backup }}"
+      priv: '*.*:SHOW DATABASES,SELECT,LOCK TABLES,SHOW VIEW,EVENT,TRIGGER'
+      host: "::1"
+
+  - name: Add mysql-backup script
+    copy:
+      src: ../resources/mysql/local-scripts/mysql-backup
+      dest: /usr/local/bin/mysql-backup
+      mode: u=rwx,g=rx,o=r
+      owner: root
+      group: backup
+
+  - name: Cron mysql-backup script
+    cron:
+      name: "Backup mysql databases nightly"
+      job: /usr/local/bin/cronic /usr/local/bin/mysql-backup
+      user: backup
+      hour: 0
+      minute: 30
+
+  - name: Enable mysql for all users
+    copy:
+      dest: "/etc/profile.d/enablemariadb.sh"
+      content: |
+        #!/bin/bash
+        source scl_source enable rh-mariadb105
