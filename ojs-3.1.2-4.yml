@@ -90,6 +90,8 @@
   - name: create database
     mysql_db:
       name: '{{ojshostvar.database.name}}'
+      collation: utf8_unicode_ci
+      encoding: utf8
 
   - name: grant database permissions
     mysql_user:
