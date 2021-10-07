@@ -1,6 +1,6 @@
 - name: OJS version-specific configuration
   remote_user: ulsprovision
-  hosts: ojs_3_1_2_4
+  hosts: ojs_3_2
   become: yes
 
   tasks:
@@ -43,8 +43,9 @@
   - name: deploy OJS source
     unarchive:
       remote_src: yes
-      src: https://github.com/ulsdevteam/ojs/releases/download/uls-install-3.1.2-4h/ojs-3.1.2-4h.tgz
+      src: https://pkp.sfu.ca/ojs/download/ojs-3.2.1-4.tar.gz
       dest: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}
+      extra_opts: [--strip-components=1]
 
   - name: deploy config.inc.php
     copy:
@@ -55,6 +56,23 @@
       group: ulssysdev
       mode: preserve
       force: no
+
+  - name: public
+    file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}public/
+      state: directory
+      recurse: true
+      owner: apache
+      group: apache
+
+  - name: cache
+    file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}cache/
+      state: directory
+      recurse: true
+      owner: apache
+      group: apache
+
 
   - name: files_dir
     file:
