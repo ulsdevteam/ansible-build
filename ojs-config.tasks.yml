@@ -103,7 +103,7 @@
     ini_file:
       path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
       section: security
-      option: force_login_ssl
+      option: force_ssl
       value: 'On'
 
   - name: allow envelope sender
