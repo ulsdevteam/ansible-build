@@ -1,0 +1,150 @@
+- name: OJS version-specific configuration
+  remote_user: ulsprovision
+  hosts: ojs3
+  become: yes
+
+  tasks:
+
+  - name: Include host vars 
+    include_vars:
+      file: hostvars/{{inventory_hostname}}.ojs-config.yml
+      name: ojshostvar
+
+  - name: Identify OJS root
+    set_fact:
+      ojsdir: "{{ 'ojs/' if ojshostvar.use_ojs_subdir|default(false) == true else '' }}"
+      slashojsdir: "{{ '/ojs' if ojshostvar.use_ojs_subdir|default(false) == true else '' }}"
+
+  - name: host directory
+    file:
+      path: /var/www/vhosts/{{inventory_hostname}}/
+      state: directory
+      mode: '2775'
+      owner: root
+      group: ulssysdev
+
+  - name: html directory
+    file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/
+      state: directory
+      mode: '2775'
+      owner: root
+      group: ulssysdev
+
+  - name: ojs directory
+    file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}
+      state: directory
+      mode: '2775'
+      owner: root
+      group: ulssysdev
+    when: ojsdir == 'ojs/'
+
+  - name: deploy OJS source
+    unarchive:
+      remote_src: yes
+      src: https://github.com/ulsdevteam/ojs/releases/download/{{ojshostvar.releasetag}}
+      dest: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}
+
+  - name: deploy config.inc.php
+    copy:
+      src: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.TEMPLATE.inc.php
+      dest: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
+      remote_src: yes
+      owner: root
+      group: ulssysdev
+      mode: preserve
+      force: no
+
+  - name: files_dir
+    file:
+      path: /var/www/vhosts/{{inventory_hostname}}/files/
+      state: directory
+      mode: '0775'
+      owner: apache
+      group: apache
+
+  - name: deploy vhost
+    copy:
+      src: /etc/httpd/conf.d/vhosts/vhost.conf.template
+      dest: /etc/httpd/conf.d/vhosts/{{inventory_hostname}}.conf
+      remote_src: yes
+      owner: root
+      group: ulssysdev
+      mode: preserve
+      force: no
+
+  - name: set hostname in vhost
+    replace:
+      path: /etc/httpd/conf.d/vhosts/{{inventory_hostname}}.conf
+      regexp: 'SERVERNAME'
+      replace: '{{inventory_hostname}}'
+
+  - name: change vhost to use ojs subdir for global options
+    replace:
+      path: /etc/httpd/conf.d/vhosts/{{inventory_hostname}}.conf
+      regexp: 'apache-global-options'
+      replace: 'apache-legacy-global-options'
+    when: ojsdir == 'ojs/'
+
+  - name: change vhost to use ojs subdir for PHP exclusion
+    replace:
+      path: /etc/httpd/conf.d/vhosts/{{inventory_hostname}}.conf
+      regexp: 'html[/]public'
+      replace: 'html/ojs/public'
+    when: ojsdir == 'ojs/'
+
+  - name: create database
+    mysql_db:
+      name: '{{ojshostvar.database.name}}'
+      collation: utf8_unicode_ci
+      encoding: utf8
+
+  - name: grant database permissions
+    mysql_user:
+      name: '{{ojshostvar.database.username}}'
+      password: '{{ojshostvar.database.password}}'
+      priv: '{{ojshostvar.database.name}}.*:ALL'
+      state: present
+
+  - import_tasks: ojs-config.tasks.yml
+
+  - name: create certificate directory
+    file:
+      path: /etc/pki/tls/certs/{{inventory_hostname}}/
+      state: directory
+
+  - name: create certificate private directory
+    file:
+      path: /etc/pki/tls/private/{{inventory_hostname}}/
+      state: directory
+
+  - name: copy temporary certificate
+    copy:
+      src: /etc/pki/tls/certs/localhost.crt
+      dest: /etc/pki/tls/certs/{{inventory_hostname}}/cert.pem
+      remote_src: yes
+      owner: root
+      group: ulssysdev
+      mode: preserve
+      force: no
+
+  - name: copy temporary private key
+    copy:
+      src: /etc/pki/tls/private/localhost.key
+      dest: /etc/pki/tls/private/{{inventory_hostname}}/privkey.pem
+      remote_src: yes
+      owner: root
+      group: ulssysdev
+      mode: preserve
+      force: no
+
+  - name: disable certificate chain in vhost
+    lineinfile:
+      path: /etc/httpd/conf.d/vhosts/{{inventory_hostname}}.conf
+      regexp: '^(\s*SSLCertificateChainFile.*$)'
+      line: '#\1'
+      backrefs: yes
+
+  - name: restore selinux contexts
+    command: restorecon -r /var/www/vhosts/{{inventory_hostname}}

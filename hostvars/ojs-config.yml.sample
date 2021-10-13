@@ -1,4 +1,5 @@
 use_ojs_subdir: false
+releasetag: github_tag_v_x_y/github_release.tgz
 database:
   username: dbuser
   password: your_password_here
