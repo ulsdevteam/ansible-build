@@ -68,6 +68,7 @@
       mode: preserve
       owner: root
       group: ulssysdev
+      force: false
 
   - name: run local OJS scheduled tasks
     cron:
@@ -92,3 +93,31 @@
       src: resources/ojs/http-conf.d/vhosts/
       dest: /etc/httpd/conf.d/vhosts/
       directory_mode: true
+
+  - name: Add backup user
+    user:
+      name: backup
+      comment: Mysql Backup
+      shell: /sbin/nologin
+
+  - name: Add ojs backup directory parent
+    file:
+      path: /var/local/backup
+      state: directory
+
+  - name: Add ojs backup directory
+    file:
+      path: /var/local/backup/ojs
+      state: directory
+      owner: backup
+      group: backup
+
+  - name: Repermission ojs-backup script
+    file:
+      path: /usr/local/bin/ojs-backup.sh
+      group: backup
+
+  - name: Repermission ojs-restore script
+    file:
+      path: /usr/local/bin/ojs-restore.sh
+      group: backup
