@@ -1,0 +1,31 @@
+- name: Convert backup user to support rsync
+  remote_user: ulsprovision
+  hosts: remotebackup
+  become: yes
+
+  tasks:
+  - name: install rssh
+    yum:
+      name: rssh
+      state: latest
+
+  - name: Modify backup user
+    user:
+      name: backup
+      comment: Mysql Backup
+      shell: /usr/bin/rssh
+      groups: rsshusers
+
+  - name: Allow rsync via rssh
+    lineinfile:
+      line: allowrsync
+      path: /etc/rssh.conf
+
+  - name: Setup daily local backup cron
+    cron:
+      name: Daily local backup cron
+      minute: "{{ 59 | random }}"
+      hour: 4
+      user: backup
+      job: "/usr/local/bin/cjs-backup.sh"
+ 
