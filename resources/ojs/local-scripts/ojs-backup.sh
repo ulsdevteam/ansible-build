@@ -45,4 +45,5 @@ do
 		date '+%Y-%m-%d-%H-%M-%S' > $BACKUPDIR/timestamp.txt
 		cp $OJSROOT/config.inc.php $OJSROOT/config.TEMPLATE.inc.php $BACKUPDIR
 	fi
+	date '+%Y-%m-%d-%H-%M-%S' > $BACKUPROOT/timestamp.txt
 done

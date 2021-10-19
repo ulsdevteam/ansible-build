@@ -68,7 +68,6 @@
       mode: preserve
       owner: root
       group: ulssysdev
-      force: false
 
   - name: run local OJS scheduled tasks
     cron:
