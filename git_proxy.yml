@@ -1,0 +1,15 @@
+- name: Set Proxy Server to Pitt IT for Git
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+
+  tasks:
+
+
+  - name: Set system git proxy server to Pitt IT
+    git_config:
+      name: http.proxy
+      scope: system
+      value: http://access.cssd.pitt.edu:80
+    when: inventory_hostname in groups.dev_test_build
+

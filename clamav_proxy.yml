@@ -1,0 +1,25 @@
+- name: Set Proxy Server to Pitt IT for ClamAV
+  remote_user: ulsprovision
+  hosts: webservers
+  become: yes
+
+  tasks:
+
+
+  - name: Set clamav proxy server to Pitt IT
+    lineinfile:
+      path: /etc/freshclam.conf
+      regexp: '^#HTTPProxyServer '
+      line: HTTPProxyServer https://access.cssd.pitt.edu
+    when: inventory_hostname in groups.dev_test_build
+
+  - name: Set clamav proxy server port to https
+    lineinfile:
+      path: /etc/freshclam.conf
+      regexp: '^#HTTPProxyPort '
+      line: HTTPProxyPort 443
+    when: inventory_hostname in groups.dev_test_build
+
+
+
+

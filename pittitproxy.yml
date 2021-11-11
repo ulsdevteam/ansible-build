@@ -1,0 +1,64 @@
+- name: Set proxy server when in DHCP zone
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+
+  tasks:
+
+  - name: Include enviroment settings
+    include_vars:
+      file: resources/pittproxyserver/environment.yml
+      name: pittitproxy
+
+  - name: Set http_proxy profile.d file
+    lineinfile:
+      regexp: "export http_proxy"
+      line: "export {{pittitproxy.http}}"
+      create: yes
+      mode: 0644
+      owner: root
+      group: root
+      dest: /etc/profile.d/http_proxy.sh
+    when:
+      - "'dev_test_build' in group_names"
+
+  - name: Set https_proxy profile.d file
+    lineinfile:
+      regexp: "export https_proxy"
+      line: "export {{pittitproxy.https}}"
+      create: yes
+      mode: 0644
+      owner: root
+      group: root
+      dest: /etc/profile.d/https_proxy.sh
+    when:
+      - "'dev_test_build' in group_names"
+
+  - name: Set no_proxy profile.d file
+    lineinfile:
+      regexp: "export no_proxy"
+      line: "export {{pittitproxy.no_proxy}}"
+      create: yes
+      mode: 0644
+      owner: root
+      group: root
+      dest: /etc/profile.d/no_proxy.sh
+    when:
+      - "'dev_test_build' in group_names"
+
+  - name: Set environment file
+    lineinfile:
+      line: "export {{item}}"
+      create: yes
+      mode: 0644
+      owner: root
+      group: root
+      dest: /etc/environment
+    loop:
+      - "{{pittitproxy.http}}"
+      - "{{pittitproxy.https}}"
+      - "{{pittitproxy.no_proxy}}"
+    when:
+      - "'dev_test_build' in group_names"
+
+
