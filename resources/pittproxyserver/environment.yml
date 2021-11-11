@@ -1,3 +1,4 @@
-http: "http_proxy=access.cssd.pitt.edu"
-https: "https_proxy=access.cssd.pitt.edu"
+http: "http_proxy=http://access.cssd.pitt.edu:80"
+ftp: "ftp_proxy=http://access.cssd.pitt.edu:80"
+https: "https_proxy=https://access.cssd.pitt.edu:443"
 no_proxy: "no_proxy='127.0.0.1,localhost,*.pitt.edu'"

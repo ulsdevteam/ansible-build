@@ -10,6 +10,18 @@
       file: resources/pittproxyserver/environment.yml
       name: pittitproxy
 
+  - name: Set ftp_proxy profile.d file
+    lineinfile:
+      regexp: "export ftp_proxy"
+      line: "export {{pittitproxy.ftp}}"
+      create: yes
+      mode: 0644
+      owner: root
+      group: root
+      dest: /etc/profile.d/ftp_proxy.sh
+    when:
+      - "'dev_test_build' in group_names"
+
   - name: Set http_proxy profile.d file
     lineinfile:
       regexp: "export http_proxy"
