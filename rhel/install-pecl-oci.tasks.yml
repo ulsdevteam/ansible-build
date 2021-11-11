@@ -1,0 +1,12 @@
+  - name: Get user PATH (including php/pear/pecl)
+    shell: bash -ilc 'echo $PATH'
+    register: user_path
+
+  - name: Install pecl oci8 package, using autodetect
+    community.general.pear:
+      name: pecl/oci8-2.2.0
+      state: present
+      prompts:
+        - (.*) \[autodetect\]: "autodetect"
+    environment:
+      PATH: "{{ user_path.stdout }}"
