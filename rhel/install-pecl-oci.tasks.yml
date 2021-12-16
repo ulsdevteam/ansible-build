@@ -10,3 +10,7 @@
         - (.*) \[autodetect\]: "autodetect"
     environment:
       PATH: "{{ user_path.stdout }}"
+
+  - name: Enable oci8 module in PHP
+    debug:
+      msg: 'You now need to enable oci8 in the PHP ini files'
