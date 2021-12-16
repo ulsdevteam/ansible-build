@@ -1,3 +1,6 @@
 [submodule "trafsys-data-transfer-deploy"]
 	path = trafsys-data-transfer-deploy
 	url = https://github.com/ulsdevteam/trafsys-data-transfer-deploy
+[submodule "alma-authorizenet-payment-reporting-deploy"]
+	path = alma-authorizenet-payment-reporting-deploy
+	url = https://github.com/ulsdevteam/alma-authorizenet-payment-reporting-deploy.git
