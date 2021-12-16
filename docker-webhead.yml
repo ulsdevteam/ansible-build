@@ -1,0 +1,8 @@
+
+- name: Role of a webhead backed by docker
+  remote_user: ulsprovision
+  hosts: docker_webhead
+  become: yes
+
+  tasks:
+  - import_tasks: open-web-ports.tasks.yml
