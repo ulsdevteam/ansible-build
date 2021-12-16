@@ -1,0 +1,17 @@
+  - firewalld:
+      service: http
+      zone: public
+      permanent: yes
+      state: enabled
+
+  - firewalld:
+      service: https
+      zone: public
+      permanent: yes
+      state: enabled
+
+  - name: reload firewalld
+    service:
+      name: firewalld
+      state: reloaded
+

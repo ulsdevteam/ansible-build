@@ -58,24 +58,7 @@
       enabled: yes
       state: started
 
-#apache server
-  - firewalld:
-      service: http
-      zone: public
-      permanent: yes
-      state: enabled
-
-#apache server
-  - firewalld:
-      service: https
-      zone: public
-      permanent: yes
-      state: enabled
-
-  - name: reload firewalld
-    service:
-      name: firewalld
-      state: reloaded
+  - import_tasks: open-web-ports.tasks.yml
 
   - name: preserve 10 years of logs
     lineinfile:
