@@ -1,0 +1,77 @@
+- name: ORCID@Pitt Application deployment
+  remote_user: ulsprovision
+  hosts: orcid
+  become: yes
+
+  tasks:
+
+#  - name: Include host vars 
+#    include_vars:
+#      file: hostvars/{{inventory_hostname}}.yml
+#      name: myvar
+
+  - import_tasks: rhel/install-oci.tasks.yml
+
+  - name: Enable Red Hat Server Optional
+    community.general.rhsm_repository:
+      name: rhel-7-server-optional-rpms
+
+  - name: install php-devel for pecl
+    yum:
+      name:
+        - php-devel
+
+  - name: Get user PATH (including php/pear/pecl)
+    shell: bash -ilc 'echo $PATH'
+    register: user_path
+
+  - name: Update pecl channels
+    shell: pecl update-channels
+    environment:
+      PATH: "{{ user_path.stdout }}"
+
+  - name: Install pecl oci8 package, using autodetect
+    community.general.pear:
+      name: pecl/oci8-2.0.12
+      state: present
+      prompts:
+        - (.*) \[autodetect\]: "autodetect"
+    environment:
+      PATH: "{{ user_path.stdout }}"
+
+  - name: Setup SSL private directories
+    file:
+      path: "/etc/pki/tls/private/{{ item }}"
+      state: directory
+    with_items:
+      - "orcid.pitt.edu"
+      - "orcid-dev.pitt.edu"
+
+  - name: Setup SSL cert directories
+    file:
+      path: "/etc/pki/tls/certs/{{ item }}"
+      state: directory
+    with_items:
+      - "orcid.pitt.edu"
+      - "orcid-dev.pitt.edu"
+
+  - name: temp folder is r/w to apache
+    sefcontext:
+      target: '/var/www/html/orcadmin/app/tmp(/.*)?'
+      setype: httpd_sys_script_rw_t
+      state: present
+
+  - name: selinux  httpd_can_sendmail
+    seboolean:
+      name: httpd_can_sendmail
+      state: yes
+      persistent: yes
+
+  - name: selinux  httpd_can_network_connect
+    seboolean:
+      name: httpd_can_network_connect
+      state: yes
+      persistent: yes
+
+
+
