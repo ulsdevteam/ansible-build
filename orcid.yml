@@ -20,6 +20,7 @@
     yum:
       name:
         - php-devel
+        - gcc
 
   - name: Get user PATH (including php/pear/pecl)
     shell: bash -ilc 'echo $PATH'
