@@ -1,0 +1,141 @@
+---
+- name: Kerberos Authentication Setup
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+  tasks:
+
+  - name: ensure localhost is defined in /etc/hosts ipv4
+    lineinfile:
+      path: /etc/hosts
+      line: '127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4'
+      
+  - name: ensure localhost is defined in /etc/hosts ipv6
+    lineinfile:
+      path: /etc/hosts
+      line: '::1         localhost localhost.localdomain localhost6 localhost6.localdomain6'
+
+  - name: make sure ntpd is running
+    yum:
+      name: ntp
+      state: latest
+
+  - name: enable ntpd
+    service:
+      name: ntpd
+      enabled: yes
+
+  - name: start ntpd
+    service:
+      name: ntpd
+      state: started
+
+  - name: Install pam_krb5 package if it is not already installed.
+    yum:
+      name: pam_krb5
+      state: latest
+
+  - name: Save a copy of the original /etc/krb5.conf file as /etc/krb5.conf.YYYYMMDD
+    copy:
+      src: /etc/krb5.conf
+      remote_src: yes
+      dest: /etc/krb5.conf.{{ansible_date_time.year+ansible_date_time.month+ansible_date_time.day}}
+
+  - name: Overwrite krb5.conf from local copy
+    copy:
+      src: resources/krb5.conf
+      dest: /etc/krb5.conf
+
+  - name: Save a copy of the original /etc/pam.d/password-auth-ac as /etc/pam.d/password-auth-ac.YYYYMMDD
+    copy:
+      src: /etc/pam.d/password-auth-ac
+      remote_src: yes
+      dest: /etc/pam.d/password-auth-ac.{{ansible_date_time.year+ansible_date_time.month+ansible_date_time.day}}
+      
+  - name: Edit the /etc/pam.d/password-auth-ac file and add the following line after the 'auth sufficient pam_unix.so nullok try_first_pass' line
+    lineinfile:
+      path: /etc/pam.d/password-auth-ac
+      insertafter: 'auth        sufficient    pam_unix\.so nullok try_first_pass'
+      line: 'auth        sufficient    pam_krb5.so minimum_uid=200'
+
+  - name: Edit the /etc/pam.d/password-auth-ac file and add the following line after the 'session required pam_unix.so' line
+    lineinfile:
+      path: /etc/pam.d/password-auth-ac
+      insertafter: 'session     required      pam_unix\.so'
+      line: 'session     optional      pam_krb5.so minimum_uid=200'
+
+  - name: Save a copy of the original /etc/pam.d/system-auth-ac as /etc/pam.d/system-auth-ac.YYYYMMDD
+    copy:
+      src: /etc/pam.d/system-auth-ac
+      remote_src: yes
+      dest: /etc/pam.d/system-auth-ac.{{ansible_date_time.year+ansible_date_time.month+ansible_date_time.day}}
+
+  - name: Edit the /etc/pam.d/system-auth-ac file and add the following line after the 'auth sufficient pam_unix.so nullok try_first_pass' line
+    lineinfile:
+      path: /etc/pam.d/system-auth-ac
+      insertafter: 'auth        sufficient    pam_unix\.so nullok try_first_pass'
+      line: 'auth        sufficient    pam_krb5.so minimum_uid=200'
+
+  - name: Edit the /etc/pam.d/system-auth-ac file and add the following line after the 'session require pam_unix.so' line
+    lineinfile:
+      path: /etc/pam.d/system-auth-ac
+      insertafter: 'session     required      pam_unix\.so'
+      line: 'session     optional      pam_krb5.so minimum_uid=200'
+
+  - name: add the group SecurityScanSvc
+    group:
+      name: SecurityScanSvc
+      gid: 666
+      
+  - name: add user SecurityScanSvc
+    user: 
+      name: SecurityScanSvc
+      uid: 666
+      group: SecurityScanSvc
+  
+  - name: Create the file /etc/sudoers.d/SecurityScanSvc
+    copy:
+      dest: '/etc/sudoers.d/SecurityScanSvc'
+      content:
+        SecurityScanSvc ALL=(ALL) ALL
+
+  - name: Create the ulssysdev group
+    group:
+      name: ulssysdev
+      
+  - name: Create the file /etc/sudoers.d/ulssysdev
+    copy:
+      dest: '/etc/sudoers.d/ulssysdev'
+      content:
+        "%ulssysdev ALL=(ALL) ALL"
+
+  - name: Ensure we have the packages available to install VMware tools
+    yum:
+      name: 
+        - kernel-devel
+        - kernel-headers
+        - gcc
+      state: latest
+    when: ansible_facts['distribution_major_version'] <= 7
+
+  - name: Install Kerberos Workstation
+    yum:
+      name: krb5-workstation
+      state: latest
+ 
+  - name: Creating sysdev users
+    user: 
+      name: "{{ item.name }}"
+      groups: ulssysdev
+      append: yes
+      comment: "{{ item.comment }}"
+    loop:
+      - { name: rlh52, comment: "Richard Hoover" }
+      - { name: ctgraham, comment: "Clinton Graham" }
+      - { name: bdgregg, comment: "Brian Gregg" }
+      - { name: asw76, comment: "Alex Wreschnig" }
+      - { name: mem375, comment: "Mark Michalski" }
+      - { name: chl310, comment: "Chrysanthemum Lovelace" }
+      - { name: kmc247, comment: "Kevin Cloud" }
+      - { name: trl75, comment: "Tyler Lendon" }
+
