@@ -1,4 +1,4 @@
-- name: PHP-FPM Build with 7.3
+- name: PHP-FPM Build with 7.3 (RHSCL)
   remote_user: ulsprovision
   hosts: phpfpm73clients
   become: yes
@@ -25,10 +25,14 @@
         - rh-php73-php-zip
       state: present
 
+  - name: enable rh-php73-php-fpm
+    service:
+      name: rh-php73-php-fpm
+      enabled: yes
+
   - name: start rh-php73-php-fpm
     service:
       name: rh-php73-php-fpm
-    enabled: yes
       state: started
 
 #all builds with php
@@ -77,6 +81,7 @@
   - name: php specific httpd configurations
     blockinfile:
       path: /etc/httpd/conf.d/php.conf
+      create: yes
       block: |
         SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1
         
