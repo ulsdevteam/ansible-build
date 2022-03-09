@@ -1,0 +1,97 @@
+- name: PHP-FPM Build with 7.3 (RHSCL)
+  remote_user: ulsprovision
+  hosts: phpfpmclients
+  become: yes
+
+  tasks:
+# php-imap extension not present in rh repos
+  - name: install php and extensions
+    yum:
+      name:
+        - "{{item}}"
+      state: present
+    with_items:
+        - "{{ 'rh-php' ~ fpmversion }}"
+        - "{{ 'rh-php' ~ fpmversion ~ '-php-fpm' }}"
+        - "{{ 'rh-php' ~ fpmversion ~ '-php-cli' }}"
+        - "{{ 'rh-php' ~ fpmversion ~ '-php-common' }}"
+        - "{{ 'rh-php' ~ fpmversion ~ '-php-gd' }}"
+        - "{{ 'rh-php' ~ fpmversion ~ '-php-json' }}"
+        - "{{ 'rh-php' ~ fpmversion ~ '-php-mbstring' }}"
+        - "{{ 'rh-php' ~ fpmversion ~ '-php-pdo' }}"
+        - "{{ 'rh-php' ~ fpmversion ~ '-php-xml' }}"
+        - "{{ 'rh-php' ~ fpmversion ~ '-php-opcache' }}"
+        - "{{ 'rh-php' ~ fpmversion ~ '-php-intl' }}"
+        - "{{ 'rh-php' ~ fpmversion ~ '-php-pecl-apcu' }}"
+        - "{{ 'rh-php' ~ fpmversion ~ '-php-mysqlnd' }}"
+        - "{{ 'rh-php' ~ fpmversion ~ '-php-ldap' }}"
+        - "{{ 'rh-php' ~ fpmversion ~ '-php-zip' }}"
+    ignore_errors: yes
+
+  - name: Adjust PHP FPM service port
+    lineinfile:
+      path: "{{ '/etc//opt/rh/rh-php' ~ fpmversion ~ '/php-fpm.d/www.conf' }}"
+      state: present
+      regexp: 'listen ='
+      line: "{{ 'listen = 127.0.0.1:90' ~ fpmversion }}"
+
+  - name: Adjust selinux for PHP FPM service port
+    community.general.seport: 
+      ports: "{{ '90' ~ fpmversion }}"
+      proto: tcp
+      setype: http_port_t
+      state: present
+
+  - name: enable PHP FPM service
+    service:
+      name: "{{ 'rh-php' ~ fpmversion ~ '-php-fpm' }}"
+      enabled: yes
+
+  - name: start PHP FPM service
+    service:
+      name: "{{ 'rh-php' ~ fpmversion ~ '-php-fpm' }}"
+      state: started
+
+#all builds with php
+  - name: install mariadb
+    yum:
+      name:
+        - mariadb
+      state: present
+
+  - name: set up PHP max execution time
+    lineinfile:
+       create: yes
+       path: "{{'/etc/opt/rh/rh-php' ~ fpmversion ~ '/php.d/zzz_local.ini'}}"
+       state: present
+       regexp: 'max_execution_time.*'
+       line: 'max_execution_time = 300'
+
+  - name: set up PHP max post size
+    lineinfile:
+       path: "{{'/etc/opt/rh/rh-php' ~ fpmversion ~ '/php.d/zzz_local.ini'}}"
+       state: present
+       regexp: 'post_max_size.*'
+       line: 'post_max_size = 256M'
+
+  - name: set up PHP max upload size
+    lineinfile:
+       path: "{{'/etc/opt/rh/rh-php' ~ fpmversion ~ '/php.d/zzz_local.ini'}}"
+       state: present
+       regexp: 'upload_max_filesize.*'
+       line: 'upload_max_filesize = 256M'
+
+  - name: set up PHP timezone
+    lineinfile:
+       path: "{{'/etc/opt/rh/rh-php' ~ fpmversion ~ '/php.d/zzz_local.ini'}}"
+       state: present
+       regexp: 'date.timezone.*'
+       line: 'date.timezone = America/New_York'
+
+  - name: suppress production PHP errors
+    lineinfile:
+       path: "{{'/etc/opt/rh/rh-php' ~ fpmversion ~ '/php.d/zzz_local.ini'}}"
+       state: present
+       regexp: 'error_reporting.*'
+       line: 'error_reporting=E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE & ~E_WARNING'
+
