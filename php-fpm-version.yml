@@ -30,10 +30,18 @@
 
   - name: Adjust PHP FPM service port
     lineinfile:
-      path: "{{ '/etc//opt/rh/rh-php' ~ fpmversion ~ '/php-fpm.d/www.conf' }}"
+      path: "{{ '/etc/opt/rh/rh-php' ~ fpmversion ~ '/php-fpm.d/www.conf' }}"
       state: present
       regexp: 'listen ='
       line: "{{ 'listen = 127.0.0.1:90' ~ fpmversion }}"
+
+  - name: Route PHP errors to apache log
+    lineinfile:
+      path: "{{ '/etc/opt/rh/rh-php' ~ fpmversion ~ '/php-fpm.d/www.conf' }}"
+      state: present
+      regexp: '^php_admin_value\[error_log\] = (.*)'
+      line: ';php_admin_value[error_log] = \1'
+      backrefs: yes
 
   - name: Adjust selinux for PHP FPM service port
     community.general.seport: 
