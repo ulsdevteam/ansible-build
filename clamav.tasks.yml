@@ -37,4 +37,10 @@
       state: yes
       persistent: yes
 
+  - name: selinux allow av to scan the whole system
+    seboolean:
+      name: antivirus_can_scan_system
+      state: yes
+      persistent: yes
+
  
