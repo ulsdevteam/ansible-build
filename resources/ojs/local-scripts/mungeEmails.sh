@@ -18,9 +18,9 @@ then
 fi
 if [ -e "$CONFIG" ]
 then
-	MYSQLDATABASE=`grep '^name = ' $CONFIG | sed -e 's/name = //'`
-	MYSQLPW=`grep '^password = ' $CONFIG | sed -e 's/password = //'`
-	MYSQLUSER=`grep '^username = ' $CONFIG | sed -e 's/username = //'`
+	MYSQLDATABASE=`grep -A20 -F '[database]' $CONFIG | grep '^name = ' | head -1 | sed -e 's/name = //'`
+	MYSQLPW=`grep -A20 -F '[database]' $CONFIG | grep '^password = ' | head -1 | sed -e 's/password = //'`
+	MYSQLUSER=`grep -A20 -F '[database]' $CONFIG | grep '^username = ' | head -1 | sed -e 's/username = //'`
 	if [ "$MYSQLUSER" != ""  -a "$MYSQLPW" != "" -a "$MYSQLDATABASE" != "" ]
 	then
 		case $2 in

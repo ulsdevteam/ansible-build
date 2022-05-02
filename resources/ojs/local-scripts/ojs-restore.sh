@@ -8,8 +8,8 @@ VHOSTROOT="/var/www/vhosts/"
 
 if [ "$#" != "1" ]
 then
-        echo "Usage: $0 site"
-        exit 1
+	echo "Usage: $0 site"
+	exit 1
 fi
 
 OJSROOT="$VHOSTROOT/$1/html"
@@ -23,20 +23,20 @@ then
 fi
 if [ ! -e "$OJSROOT/config.inc.php" ]
 then
-        OJSROOT="/var/www/vhosts/$1/html/ojs"
+	OJSROOT="/var/www/vhosts/$1/html/ojs"
 fi
 if [ -e "$OJSROOT/config.inc.php" ]
 then
-        MYSQLDATABASE=`grep '^name = ' $OJSROOT/config.inc.php | sed -e 's/name = //'`
-        MYSQLPW=`grep '^password = ' $OJSROOT/config.inc.php | sed -e 's/password = //'`
-        MYSQLUSER=`grep '^username = ' $OJSROOT/config.inc.php | sed -e 's/username = //'`
-        BACKUPDIR=$BACKUPROOT/$1
+	MYSQLDATABASE=`grep -A20 -F '[database]' $OJSROOT/config.inc.php | grep '^name = ' | head -1 | sed -e 's/name = //'`
+	MYSQLPW=`grep -A20 -F '[database]' $OJSROOT/config.inc.php | grep '^password = ' | head -1 | sed -e 's/password = //'`
+	MYSQLUSER=`grep -A20 -F '[database]' $OJSROOT/config.inc.php | grep '^username = ' | head -1 | sed -e 's/username = //'`
+	BACKUPDIR=$BACKUPROOT/$1
 	EXISTINGTABLES=$(mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE -e 'show tables' | grep -v 'Tables_in_'$MYSQLDATABASE | awk '{print $1}' )
 	for t in $EXISTINGTABLES
 	do
 		mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE -e 'drop table '$t
 	done
-        mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE < $BACKUPDIR/db.sql
+	mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE < $BACKUPDIR/db.sql
 	echo 'sudo as root to remove files'
 	sudo rm -fr $VHOSTROOT/$1/files/*
 	sudo rm -fR $OJSROOT/public/*

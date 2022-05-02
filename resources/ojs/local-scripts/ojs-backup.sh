@@ -6,8 +6,8 @@ VHOSTROOT="/var/www/vhosts"
 
 if [ "$#" -gt "1" ]
 then
-        >&2 echo "Usage: $0 [site]"
-        exit 1
+	>&2 echo "Usage: $0 [site]"
+	exit 1
 fi
 
 if [ "$1" != "" ]
@@ -29,9 +29,9 @@ do
 	fi
 	if [ -e "$OJSROOT/config.inc.php" ]
 	then
-		MYSQLDATABASE=`grep '^name = ' $OJSROOT/config.inc.php | sed -e 's/name = //'`
-		MYSQLPW=`grep '^password = ' $OJSROOT/config.inc.php | sed -e 's/password = //'`
-		MYSQLUSER=`grep '^username = ' $OJSROOT/config.inc.php | sed -e 's/username = //'`
+		MYSQLDATABASE=`grep -A20 -F '[database]' $OJSROOT/config.inc.php | grep '^name = ' | head -1 | sed -e 's/name = //'`
+		MYSQLPW=`grep -A20 -F '[database]' $OJSROOT/config.inc.php | grep '^password = ' | head -1 | sed -e 's/password = //'`
+		MYSQLUSER=`grep -A20 -F '[database]' $OJSROOT/config.inc.php | grep '^username = ' | head -1 | sed -e 's/username = //'`
 		BACKUPDIR=$BACKUPROOT/`basename $OJSSITE`
 		if [ ! -e $BACKUPDIR ]
 		then
