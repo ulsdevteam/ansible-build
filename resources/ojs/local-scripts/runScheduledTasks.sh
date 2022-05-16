@@ -8,6 +8,7 @@ RUNST=tools/runScheduledTasks.php
 AUTOSTAGE=plugins/generic/usageStats/scheduledTasksAutoStage.xml
 PKPPLN=plugins/generic/pln/xml/scheduledTasks.xml
 CROSSREF=plugins/importexport/crossref/scheduledTasks.xml
+DOAJ=plugins/importexport/doaj/scheduledTasks.xml
 
 for i in `grep -isl '^scheduled_tasks *= *on' $SEARCHBASE/*/html/config.inc.php $SEARCHBASE/*/html/ojs/config.inc.php | rev | cut -d/ -f2- | rev`
 do
@@ -44,6 +45,11 @@ do
         if [ "$ISENABLED" = "automaticRegistration" -a -f $CROSSREF ]
         then
           $PHP $RUNST $CROSSREF
+        fi
+        ISENABLED=`echo 'select max(setting_name) from plugin_settings where plugin_name = "doajexportplugin" and setting_name = "automaticRegistration" and setting_value = "1"' | mysql -N -u $MYSQLUSER -p$MYSQLPW -D$MYSQLDATABASE`
+        if [ "$ISENABLED" = "automaticRegistration" -a -f $DOAJ ]
+        then
+          $PHP $RUNST $DOAJ
         fi
       fi
     fi
