@@ -1,0 +1,96 @@
+name: dasc deployment
+remote_user: ulsprovision
+hosts: dasc-host
+become: yes
+
+tasks:
+
+- name: install docker
+  yum:
+    name:
+      - docker
+    state: latest
+
+- name: install docker compose
+  yum:
+    name:
+      - docker-compose
+    state: latest
+
+  name: install httpd
+  yum:
+    name:
+      - httpd
+    state: latest
+
+  name: install python3 version installed
+  yum:
+    name:
+      - python3
+    state: present
+
+  name: install mod_wsgi_python3
+  yum:
+    name:
+      - python3-mod_wsgi
+    state: present
+
+  name: install python36-django
+  yum:
+    name:
+      - python36-django
+    state: present
+
+  name: install netcat
+  yum:
+    name:
+      - netcat
+    state: latest
+
+  name: install nvm
+  shell: >
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+  args:
+    creates: "{{ ansible_env.HOME }}/.nvm.nvm.sh"
+
+  name: install node with nvm
+  sudo: yes
+  sudo_user: "{{nvm_user}}"
+  command: bash -c '. ~/.nvm/nvm.sh; nvm install --lts'
+
+  name: create user webapp
+  user:
+    name: webapp
+
+  name: add webapp to docker
+  user:
+    name: webapp
+    groups: docker
+    append: yes
+
+  name: clone request broker from git
+  git:
+    repo: https://github.com/ulsdevteam/request_broker
+    dest: /opt/
+    force: yes
+    umask: '0002'
+
+  name: clone argo from git
+  git:
+    repo: https://github.com/ulsdevteam/argo
+    dest: /opt/
+    force: yes
+    umask: '0002'
+
+  name: clone dimes from git
+  git:
+    repo: https://github.com/ulsdevteam/dimes
+    dest: /var/www/html/
+    force: yes
+    umask: '0002'
+
+  #name: deploy backend apps via docker deploy
+
+  #name: deploy frontend app via npm
+
+  #name: add certs
