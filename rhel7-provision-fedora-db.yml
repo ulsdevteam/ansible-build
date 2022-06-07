@@ -1,0 +1,93 @@
+#
+# Install Fedora Database.
+#
+- name: Install Fedora Database.
+  remote_user: ulsprovision
+  hosts: islandora_db_servers
+  become: yes
+
+  tasks:
+
+#
+# Update Firewall Settings to allow access to mysql server.
+#
+#  - name: Update firewalld services for MySQL.
+#    firewalld:
+#      permanent: yes
+#      immediate: yes
+#      service: "{{ item.service }}"
+#      state: "{{ item.state }}"
+#      zone: "{{ item.zone }}"
+#    loop:
+#       - { service: "mysql", state: "enabled", zone: "public" }
+
+#
+# Add Innodb Settings.
+#
+#  - name: Copy InnoDB Settings to remote db server.
+#    copy: 
+#      src: resources/islandora/innodb_settings.cnf
+#      dest: /etc/my.cnf.d/
+#      owner: root
+#      group: root
+#      backup: yes
+
+#  - name: Restart Database Server to pickup new innodb_settings.conf.
+#    systemd:
+#      state: restarted
+#      daemon_reload: yes
+#      name: mariadb
+
+#
+# Pull in MySQL Vars
+# 
+  - name: Include vars of mysqlvars.yml into the 'mysqlvars' variable.
+    include_vars:
+      file: mysqlvars.yml
+      name: mysqlvars
+
+#
+# Create the Fedora Database
+#
+  - name: Create fedora_inst database.
+    mysql_db:
+      name: "{{ fedora_db.db_database }}" 
+      state: present
+      login_user: root
+      login_password: "{{ mysqlvars.password }}" 
+      collation: "utf8_general_ci"
+      encoding: "utf8"
+
+#
+# Create the user accounts for the fedora database.
+#
+  - name: Create fedora database user account & privileges.
+    mysql_user:
+      name: "{{ fedora_db.db_username }}"
+      host: "{{ item }}"
+      state: present
+      password: "{{ fedora_db.db_password }}"
+      encrypted: no
+      priv: "{{ fedora_db.db_database }}.*:ALL"
+      login_user: root
+      login_password: "{{ mysqlvars.password }}"
+    loop:
+      - da-fed-01.library.pitt.edu
+      - 136.142.230.15
+      - da-fed-02.library.pitt.edu
+      - 136.142.230.111
+      - da-fed-staff-01.library.pitt.edu
+      - 136.142.230.16
+#      - da-fed-staff-01-stage.library.pitt.edu
+#      - 10.134.34.65
+#      - da-fed-01-stage.library.pitt.edu
+#      - 10.134.34.33
+#      - da-fed-02-stage.library.pitt.edu
+#      - 10.134.34.35
+#      - da-db-01-stage.library.pitt.edu
+#      - 10.134.34.32
+      - 127.0.0.1
+      - localhost
+      - ::1
+
+
