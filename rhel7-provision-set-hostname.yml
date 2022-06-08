@@ -1,0 +1,21 @@
+#
+# Set Hostname and Install Satellite on host.
+#
+- name: Provision hostname and enable Optional repo.
+  remote_user: ulsprovision
+  hosts: manual
+
+  vars_prompt:
+    - name: hostname
+      prompt: "Enter the FQDN of the remote host registered in Satellite"
+      private: no
+
+  tasks:
+    - name: Debug - Msg to operator - Updating remote host hostname.
+      debug:
+        msg: "Updating remote host hostname to: {{ hostname|quote }}."
+
+    # The following updates the hostname on the remote host.
+    - name: Set the remote hosts hostname
+      become: yes
+      command: /usr/bin/hostnamectl set-hostname {{ hostname|quote }}
