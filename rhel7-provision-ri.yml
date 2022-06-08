@@ -1,0 +1,122 @@
+#
+# Install RI
+#
+- name: Install RI w/tomcat.
+  remote_user: ulsprovision
+  hosts: manual
+  become: yes
+
+  tasks:
+
+  - name: Install java
+    yum:
+      name: java-1.8.0-openjdk
+      state: latest
+
+  - name: Install tomcat
+    yum:
+      name: tomcat
+      state: latest
+
+  - name: Create Blazegraph directories
+    file: 
+      path: "{{ item }}"
+      state: directory
+      owner: tomcat
+      group: tomcat
+      mode: '0755'
+    loop:
+      - /opt/blazegraph
+      - /opt/blazegraph/data
+      - /opt/blazegraph/conf
+      - /opt/blazegraph/logs
+
+  - name: Set SELinux context for /opt/blazegraph
+    sefcontext:
+      target: '/opt/blazegraph(/.*)?'
+      setype: tomcat_var_lib_t
+      state: present
+
+  - name: Run restorecon on /opt/blazegraph
+    command: restorecon -rv /opt/blazegraph
+
+  - name: Copy blazegraph.war file 
+    copy:
+      src: resources/blazegraph/blazegraph.war
+      dest: /usr/share/tomcat/webapps
+      owner: tomcat
+      group: tomcat
+      mode: '0644'
+
+  - name: Copy RWStore.properties
+    copy: 
+      src: resources/blazegraph/RWStore.properties
+      dest: /opt/blazegraph/conf/RWStore.properties
+      owner: tomcat
+      group: tomcat
+      mode: '0644'
+
+  - name: Copy log4j.properties
+    copy:
+      src: resources/blazegraph/log4j.properties
+      dest: /opt/blazegraph/conf/log4j.properties
+      owner: tomcat
+      group: tomcat
+      mode: '0644'
+
+
+
+  - name: Add line to /etc/tomcat/tomcat.conf
+    lineinfile: 
+      path: /etc/tomcat/tomcat.conf
+      insertafter: EOF
+      line: JAVA_OPTS="-Dcom.bigdata.rdf.sail.webapp.ConfigParams.propertyFile=/opt/blazegraph/conf/RWStore.properties -Dlog4j.configuration=file:/opt/blazegraph/conf/log4j.properties -server -Xmx1500m -Xms1000m"
+
+  - name: Check if /etc/sysconfig/tomcat needs updated
+    lineinfile:
+      state: absent
+      path: /etc/sysconfig/tomcat
+      regexp: "^CATALINA_OPTS="
+    check_mode: true
+    changed_when: false
+    register: check2
+
+  - name: Add line to /etc/sysconfig/tomcat
+    lineinfile:
+      path: /etc/sysconfig/tomcat
+      insertafter: EOF
+      line: CATALINA_OPTS="-Djava.rmi.server.hostname={{ ansible_host }} -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9000 -Dcom.sun.management.jmxremote.rmi.port=9000 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
+    when: check2.found == 0
+
+  - name: Update firewalld services
+    firewalld:
+      permanent: yes
+      immediate: yes
+      service: "{{ item.service }}"
+      state: "{{ item.state }}"
+      zone: "{{ item.zone }}"
+    loop:
+       - { service: "http", state: "enabled", zone: "public" }
+       - { service: "https", state: "enabled", zone: "public" }
+
+  - name: Update firewalld ports
+    firewalld:
+      permanent: yes
+      immediate: yes
+      port: "{{ item.port }}/{{ item.proto }}"
+      state: "{{ item.state }}"
+      zone: "{{ item.zone }}"
+    loop:
+      - { port: "8080", proto: "tcp", state: "enabled", zone: "public" }
+      - { port: "80", proto: "tcp", state: "disabled", zone: "public" }
+      - { port: "9000", proto: "tcp", state: "enabled", zone: "public" }
+
+  - name: Start Tomcat
+    systemd:
+      name: tomcat
+      enabled: yes
+      state: restarted
+
+
+
+
