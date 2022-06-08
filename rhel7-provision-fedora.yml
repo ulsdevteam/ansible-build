@@ -1,0 +1,345 @@
+#
+# Install Fedora
+#
+# NOTE: This playbook requires that the Fedora database server already have 
+# a database created (empty) and user permissions assigned to allow access.
+#
+# This is the first playbook required for setting up Fedora for Islandora
+# The order of playbook run is:
+#   rhel7-provision-fedora.yml (this file)
+#   rhel7-provision-djatoka.yml
+#   rhel7-provision-drupal-filter.yml
+#   rhel7-provision-gsearch.yml
+#
+#
+# Hostvars needed:
+#   fedora.fedora_home      - Usually: /usr/local/fedora
+#   fedora.fedora_facing    - Options 'staff' or 'public', Usually 'staff'
+#   fedora.fedora_clients   - List of IP addresses to allow apim from.
+#   tomcat.tomcat_home      - Usually: /usr/share/tomcat
+#   tomcat.catalina_log     - Where is the current catalina log file?
+#   env.JAVA_OPTS           - What ever java opts are needed.
+#
+#
+- name: Install Fedora.
+  remote_user: ulsprovision
+  hosts: manual
+  become: yes
+
+  tasks:
+
+#
+# Install some prerequisite packages.
+#
+
+  - name: Install java.
+    yum:
+      name: java-1.8.0-openjdk
+      state: latest
+
+  - name: Install java-devel
+    yum: 
+      name: java-1.8.0-openjdk-devel
+
+
+  - name: Add group tomcat
+    group: 
+      name: tomcat
+      state: present
+
+  - name: Add the user tomcat
+    user:
+      name: tomcat
+      state: present
+      uid: 91
+      group: tomcat
+
+
+  - name: Install tomcat.
+    yum:
+      name: tomcat
+      state: latest
+
+  - name: Install tomcat-native.
+    yum:
+      name: tomcat-native
+      state: latest
+
+#
+# Needed for running /usr/local/fedora/client/bin/fedora-admin.sh
+# Note: Need to run 'xhost +' once logged in to redirect display 
+#   back to Xming on Windows device over putty connection.
+#   The 'fedora-admin.sh' is a troubleshooting tool.
+  - name: Install xauth & xorg-x11-server-utils
+    yum: 
+      name: 
+        - xauth
+        - xorg-x11-server-utils
+      state: latest
+
+#
+# Update Firewall to allow inbound to 8080 (Tomcat) and JMX on 9000.
+#
+
+  - name: Update firewalld ports to allow Tomcat 8080 and JMX on 9000
+    firewalld:
+      permanent: yes
+      immediate: yes
+      port: "{{ item.port }}/{{ item.proto }}"
+      state: "{{ item.state }}"
+      zone: "{{ item.zone }}"
+    loop:
+      - { port: "8080", proto: "tcp", state: "enabled", zone: "public" }
+      - { port: "9000", proto: "tcp", state: "enabled", zone: "public" }
+
+#
+# Create tomcat .bashrc file
+#
+
+  - name: Install tomcat .bashrc file.
+    template:
+      src: resources/fedora/bashrc
+      dest: /usr/share/tomcat/.bashrc
+      owner: tomcat
+      group: tomcat
+
+#
+# Set SELinux settings as needed.
+#
+
+  - name: Set SELinux context for /usr/local/fedora.
+    sefcontext:
+      target: '/usr/local/fedora(/.*)?'
+      setype: tomcat_var_lib_t
+      state: present
+
+  - name: SELinux sebool - allow Tomcat to connect to MySQL
+    seboolean:
+      name: tomcat_can_network_connect_db
+      state: yes
+      persistent: yes
+
+  - name: SELinux seport - open tcp/61616
+    seport:
+      ports: 61616
+      proto: tcp
+      setype: http_port_t
+      state: present
+
+#
+# Setup Fedora directory and set SELinux context on it.
+#
+
+  - name: Create Fedora directories.
+    file: 
+      path: "{{ item }}"
+      state: directory
+      owner: tomcat
+      group: tomcat
+      mode: '0755'
+    loop:
+      - /usr/local/fedora
+
+  - name: Run restorecon on /usr/local/fedora
+    command: restorecon -rv /usr/local/fedora
+
+#
+# Install Fedora.
+#
+
+  - name: Copy Fedora 3.8.1. to host.
+    copy:
+      src: resources/fedora/fcrepo-installer-3.8.1.jar
+      dest: /var/tmp/
+      owner: tomcat
+      group: tomcat
+
+  - name: Copy Fedora install.properties to host.
+    template:
+      src: resources/fedora/fcrepo-install.properties.j2
+      dest: /var/tmp/install.properties
+      owner: tomcat
+      group: tomcat
+
+  - name: Install Fedora 3.8.1.
+    command:
+      chdir: /var/tmp
+      cmd: java -jar fcrepo-installer-3.8.1.jar install.properties
+    become: yes
+    become_user: root
+    environment:
+      FEDORA_HOME: "{{ fedora.fedora_home }}"
+      CATALINA_HOME: "{{ tomcat.tomcat_home }}"
+
+#
+# Ensure that file ownership is correct
+#
+
+  - name: Chown files/directories under /usr/local/fedora
+    file:
+      path: /usr/local/fedora
+      owner: tomcat
+      group: tomcat
+      recurse: yes
+
+# 
+# Update Tomcat settings as needed.
+#
+
+  - name: Add line to /etc/tomcat/tomcat.conf
+    lineinfile: 
+      path: /etc/tomcat/tomcat.conf
+      insertafter: EOF
+      line: "JAVA_OPTS=\"{{env.JAVA_OPTS}}\""
+
+  - name: Check if /etc/sysconfig/tomcat needs updated
+    lineinfile:
+      state: absent
+      path: /etc/sysconfig/tomcat
+      regexp: "^CATALINA_OPTS="
+    check_mode: true
+    changed_when: false
+    register: check2
+
+  - name: Add line to /etc/sysconfig/tomcat
+    lineinfile:
+      path: /etc/sysconfig/tomcat
+      insertafter: EOF
+      line: "CATALINA_OPTS=\"-Djava.rmi.server.hostname={{ ansible_host }} -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9000 -Dcom.sun.management.jmxremote.rmi.port=9000 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false\""
+    when: check2.found == 0
+
+  - name: Adjust permissions on installed files
+    file:
+      path: "{{ item.path }}"
+      owner: "{{ item.owner }}"
+      group: "{{ item.group }}"
+    loop:
+      - { owner: "root", group: "tomcat", path: "/usr/share/tomcat/conf/keystore" }
+
+#
+# Must start/stop tomcat to populate Fedora files here.
+#
+  - name: Start Tomcat to populate files.
+    systemd:
+      state: started
+      name: tomcat
+
+  - pause:
+      seconds: 30
+
+  - name: Wait for Tomcat to Start.
+    command: "tail /var/log/tomcat/{{tomcat.catalina_log}}"
+    register: catalina_tail
+    until: catalina_tail.stdout is search('Server startup')
+    retries: 30
+    delay: 20
+
+  - pause:
+      seconds: 30
+
+  - name: Stop Tomcat to adjust files.
+    systemd:
+      state: stopped
+      name: tomcat
+
+#  - name: Wait for Tomcat to Stop.
+#    command: "tail /var/log/tomcat/{{tomcat.catalina_log}}"
+#    register: catalina_tail_stop
+#    until: catalina_tail_stop.stdout is search('Stopping service Catalina')
+#    retries: 30
+#    delay: 20
+
+  - pause: 
+      seconds: 30
+
+#
+# Adjust Islandora XAXML Policies
+#
+  - name: Add islandora specific XACML policies.
+    copy:
+      src:  resources/fedora/islandora_xacml_policies/
+      dest: /usr/local/fedora/data/fedora-xacml-policies/repository-policies/islandora
+      owner: tomcat
+      group: tomcat
+      mode:  0644
+
+  - name: Remove deny-purge & anonymous user XACML Policies.
+    file:
+      path: "{{ item }}"
+      state: absent
+    loop:
+      - /usr/local/fedora/data/fedora-xacml-policies/repository-policies/default/deny-purge-datastream-if-active-or-inactive.xml
+      - /usr/local/fedora/data/fedora-xacml-policies/repository-policies/default/deny-purge-object-if-active-or-inactive.xml
+      - /usr/local/fedora/data/fedora-xacml-policies/repository-policies/islandora/permit-apim-to-anonymous-user.xml
+      - /usr/local/fedora/data/fedora-xacml-policies/repository-policies/islandora/permit-upload-to-anonymous-user.xml
+
+  - name: Add deny-apia-datastream-OBJ-to-public.xml XACML Policy
+    copy:
+      src: resources/fedora/deny-apia-datastream-OBJ-to-public.xml
+      dest: /usr/local/fedora/data/fedora-xacml-policies/repository-policies/default
+      owner: tomcat
+      group: tomcat
+      mode: 0644
+    when: fedora.fedora_facing == "public"
+
+#
+# The following allows the list of fedora.fedora_clients to perform apim calls.
+#
+  - name: Add access to the Fedora system for Fedora Clients.
+    lineinfile:
+      path: /usr/local/fedora/data/fedora-xacml-policies/repository-policies/default/deny-apim-if-not-localhost.xml
+      state: present
+      insertafter: 'function:string-bag">$'
+      line: '            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">{{ item }}</AttributeValue>'
+    loop: "{{ fedora.fedora_clients }}"
+
+#
+# Add a symlink from /usr/local/fedora/tomcat to /usr/share/tomcat.
+#
+  - name: Add a Symlink from /usr/share/tomcat to /usr/local/fedora/tomcat
+    file:
+      src: /usr/share/tomcat
+      dest: /usr/local/fedora/tomcat
+      state: link
+
+#
+# Ensure that Tomcat is set to start on boot.
+#
+  - name: Set Tomcat/Fedora to start on boot.
+    systemd:
+      name: tomcat
+      enabled: yes
+
+#
+# Start Tomcat now.
+#
+
+  - name: Start Tomcat/Fedora.
+    systemd:
+      name: tomcat
+      state: started 
+
+  - name: Wait for Tomcat to Start.
+    command: "tail /var/log/tomcat/{{tomcat.catalina_log}}"
+    register: catalina_tail
+    until: catalina_tail.stdout is search('Server startup')
+    retries: 30
+    delay: 20
+
+#
+# Wait for Tomcat to settle before finishing playbook.
+#
+  - pause:
+      seconds: 60      
+
+#
+# Playbook is Done.
+#
+
+#
+# This is where you'd nfs mount the production/development NFS share
+# Shutdown Tomcat
+# run rhel7-provision-fedora-nfs.yml
+#
+
+
