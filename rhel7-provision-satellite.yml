@@ -1,0 +1,47 @@
+#
+# Install Satellite
+#
+- name: Install client into Satellite.
+  remote_user: ulsprovision
+  hosts: manual
+  become: yes
+
+#  vars_prompt:
+#    - name: hostname
+#      prompt: "Enter the fully qualified hostname of the host you are provisioning"
+#      private: no
+#      confirm: yes
+
+  tasks:
+
+#  - name: Display the entered hostname.
+#    debug:
+#      msg: "Hostname: {{ hostname|quote }}."
+
+#  - name: Set the hostname on the system.
+#    command:  /usr/bin/hostnamectl set-hostname {{ hostname|quote }}
+
+  - name: Join client to Satellite using /tmp/bootstrap.py.
+    command: /tmp/bootstrap.py --skip foreman -s dept-capsule-01.cssd.pitt.edu -o "University_of_Pittsburgh" -L ULS -a ULS-RHEL7 --force
+
+  - name: Yum update all packages.
+    yum:
+      name: '*'
+      state: latest
+
+  - name: Reboot the host.
+    reboot:
+
+  - name: Wait for system to become reachable.
+    wait_for_connection:
+      timeout: 900
+
+  - name: Gather facts
+    setup:
+
+#  - name: Add 'Red Hat Enterprise Linux 7 Server - Optional (RPMs)'
+#    rhsm_repository:
+#      name: rhel-7-server-optional-rpms
+#      state: enabled
+
+
