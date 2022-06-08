@@ -1,0 +1,373 @@
+#
+# Install Solr
+#
+- name: Install Solr w/tomcat.
+  remote_user: ulsprovision
+  hosts: manual
+  become: yes
+
+  tasks:
+
+# Adjust Firewall settings to allow data through.
+  - name: Update firewalld services
+    firewalld:
+      permanent: yes
+      immediate: yes
+      service: "{{ item.service }}"
+      state: "{{ item.state }}"
+      zone: "{{ item.zone }}"
+    loop:
+       - { service: "http", state: "enabled", zone: "public" }
+       - { service: "https", state: "enabled", zone: "public" }
+
+  - name: Update firewalld ports
+    firewalld:
+      permanent: yes
+      immediate: yes
+      port: "{{ item.port }}/{{ item.proto }}"
+      state: "{{ item.state }}"
+      zone: "{{ item.zone }}"
+    loop:
+      - { port: "8080", proto: "tcp", state: "enabled", zone: "public" }
+      - { port: "80", proto: "tcp", state: "disabled", zone: "public" }
+      - { port: "9000", proto: "tcp", state: "enabled", zone: "public" }
+
+
+# Install needed pre-requisites
+  - name: Install java
+    yum:
+      name: java-1.8.0-openjdk
+      state: latest
+
+  - name: Install java-devel
+    yum:
+      name: java-1.8.0-openjdk-devel
+      state: latest
+
+  - name: Install tomcat
+    yum:
+      name: tomcat
+      state: latest
+
+  - name: Install tomcat-native
+    yum:
+      name: tomcat-native
+      state: latest
+
+# Extract Solr to temporary location for next steps.
+  - name: Unarchive /var/tmp/solr-4.10.4.tgz
+    unarchive:
+      src: /home/ansiblecontrol/playbooks/resources/solr/solr-4.10.4.tgz
+      dest: /var/tmp
+
+# Create /opt/solr directory
+  - name: Create /opt/solr directory
+    file:
+      path: /opt/solr
+      state: directory
+      owner: tomcat
+      group: tomcat
+      mode: '0755'
+
+  - name: Create /opt/solr/collection1/data directory
+    file:
+      path: /opt/solr/collection1/data
+      state: directory
+      owner: tomcat
+      group: tomcat
+      mode: '0755'
+
+# Adjust SELinux settings to allow correct file access.
+  - name: Set SELinux context for /opt/solr
+    sefcontext:
+      target: '/opt/solr(/.*)?'
+      setype: tomcat_var_lib_t
+      state: present
+
+  - name: Run restorecon on /opt/solr
+    command: restorecon -rv /opt/solr
+
+# Populate /opt/solr/ directory.
+  - name: Copy contents to /opt/solr
+    copy:
+      src: /var/tmp/solr-4.10.4/example/solr/
+      dest: /opt/solr
+      owner: tomcat
+      group: tomcat
+      remote_src: yes
+
+# Update solr configuration for testing
+#   Note: This could probably be done with the ansible XML module.
+  - name: Update Solr config Step 1 Adjust AutoCommit timing.
+    replace:
+      path: /opt/solr/collection1/conf/solrconfig.xml
+      after: '<autoCommit>'
+      before: '</autoCommit>'
+      regexp: '<maxTime>(.+)</maxTime>'
+      replace: '<maxTime>2000</maxTime>'
+      backup: yes
+
+#   Note: This could probably be done with the ansible XML module.
+  - name: Update Solr config Step 2 Add <maxDocs> stanza.
+    lineinfile:
+      path: /opt/solr/collection1/conf/solrconfig.xml
+      insertafter: '<autoCommit>'
+      line: '<maxDocs>200</maxDocs>'
+
+#   Note: Update <openSearcher>false</openSearcher> to true.
+  - name: Update openSearcher to true.
+    replace:
+      path: /opt/solr/collection1/conf/solrconfig.xml
+      after: '<openSearcher>'
+      before: '</openSearcher>'
+      regexp: 'false'
+      replace: 'true'
+      backup: yes
+
+#   Note: This could probably be done with the ansible XML module.
+  - name: Update Solr config Step 3 Update queryResultWindowSize
+    replace:
+      path: /opt/solr/collection1/conf/solrconfig.xml
+      after: '<queryResultWindowSize>'
+      before: '</queryResultWindowSize>'
+      regexp: '^(.+)$'
+      replace: '50'
+
+#   Note: This could probably be done with the ansible XML module.
+  - name: Update Solr config Step 4 Update requestDispatcher to True
+    replace:
+      path: /opt/solr/collection1/conf/solrconfig.xml
+      after: '<requestDispatcher handleSelect="'
+      before: '" >'
+      regexp: '^(.+)$'
+      replace: 'true'
+
+#   Note: This had to be done with the ansible XML module.
+  - name: Update Solr config Step 5 Update lst defaults.
+    xml:
+      path: /opt/solr/collection1/conf/solrconfig.xml
+      xpath: '/config/requestHandler[@name="/select"]/lst[@name="defaults"]'
+      pretty_print: yes
+      input_type: xml
+      add_children:
+        - '<str name="fl">*</str>'
+        - '<str name="q.alt">*:*</str>'
+        - '<str name="qf">dc.title^5 dc.subject^3 dc.description^3 dc.creator^3 dc.contributor^3 dc.type^1 dc.relation^1 dc.publisher^1 mods_identifier_local_ms^3 ds.WARC_FILTER^1 text_nodes_HOCR_hlt^1 mods_subject_hierarchicalGeographic_region_ms^3 mods_identifier_hdl_mt^3 dc.identifier^3 PID^0.5 catch_all_fields_mt^0.1</str>'
+
+#   Note: This is to copy the current production copy of the schema.xml file for Solr.
+  - name: Copy the current schema.xml file to /opt/solr/collectoin1/conf/schema.xml
+    copy:
+      src: /home/ansiblecontrol/playbooks/resources/solr/schema.xml
+      dest: /opt/solr/collection1/conf/schema.xml
+      owner: tomcat
+      group: tomcat      
+      backup: yes
+
+#
+#----------------------------------------------------------------------------------------------
+#   NOTE: The following is not needed due to keeping the existing production schema.xml file.
+#         Maybe remove after proof of concept works as expected.
+#----------------------------------------------------------------------------------------------
+#
+#   Note: The following is to add 'PID' as a field in /opt/solr/collection1/conf/schema.xml.
+#
+#  - name: Step 1 - Add <fields>
+#    lineinfile:
+#      path: /opt/solr/collection1/conf/schema.xml
+#      insertbefore: '<!-- Valid attributes for fields:'
+#      line: '<fields>'
+#
+#  - name: Step 2 - Add </fields>
+#    lineinfile:
+#      path: /opt/solr/collection1/conf/schema.xml
+#      insertbefore: '<!-- Field to use to determine and enforce document uniqueness.'
+#      line: '</fields>'
+#
+#  - name: Step 3a - Update schema.xml to include various fieldType statements.
+#    xml:
+#      path: /opt/solr/collection1/conf/schema.xml
+#      xpath: /schema
+#      pretty_print: yes
+#      input_type: xml
+#      backup: yes
+#      add_children:
+#        - '<fieldType name="sint" class="solr.SortableIntField" sortMissingLast="true" omitNorms="true"/>'
+#        - '<fieldType name="slong" class="solr.SortableLongField" sortMissingLast="true" omitNorms="true"/>'
+#        - '<fieldType name="sfloat" class="solr.SortableFloatField" sortMissingLast="true" omitNorms="true"/>'
+#        - '<fieldType name="sdouble" class="solr.SortableDoubleField" sortMissingLast="true" omitNorms="true"/>'
+#
+#  - name: Step 3b - Update schema.xml to include various field statements.
+#    xml:
+#      path: /opt/solr/collection1/conf/schema.xml
+#      xpath: /schema/fields
+#      pretty_print: yes
+#      input_type: xml
+#      backup: yes
+#      add_children:
+#        - '<field name="PID" type="string" indexed="true" stored="true" required="true" />'
+#        - '<field name="catch_all_fields_mt" type="text" indexed="true" stored="false" multiValued="true"/>'
+#        - '<field name="timestamp" type="date" indexed="true" stored="true" default="NOW" multiValued="false"/>'
+#        - '<field name="OCR_t" type="text" indexed="true" stored="false"/>'
+#        - '<field name="dc.description" type="text_fgs"  indexed="true"  stored="true" multiValued="true"/>'
+#
+#  - name: Step 3c - Update schema.xml to include various copyField statements.
+#    xml:
+#      path: /opt/solr/collection1/conf/schema.xml
+#      xpath: /schema
+#      pretty_print: yes
+#      input_type: xml
+#      backup: yes
+#      add_children:
+#        - ''
+#
+#  - name: Step 3d - Update schema.xml to include various dynamicField statements.
+#    xml:
+#      path: /opt/solr/collection1/conf/schema.xml
+#      xpath: /schema/fields
+#      pretty_print: yes
+#      input_type: xml
+#      backup: yes
+#      add_children:
+#        - '<dynamicField name="*_mi"  type="sint"    indexed="true"  stored="true" multiValued="true"/>'
+#        - '<dynamicField name="*_ms"  type="string"  indexed="true"  stored="true" multiValued="true"/>'
+#        - '<dynamicField name="*_ml"  type="slong"   indexed="true"  stored="true" multiValued="true"/>'
+#        - '<dynamicField name="*_mt"  type="text"    indexed="true"  stored="false" multiValued="true"/>'
+#        - '<dynamicField name="*_hlt" type="text"    indexed="true"  stored="true" termVectors="true" termPositions="true" termOffsets="true"/>'
+#        - '<dynamicField name="*_mf"  type="sfloat"  indexed="true"  stored="true" multiValued="true"/>'
+#        - '<dynamicField name="*_md"  type="sdouble" indexed="true"  stored="true" multiValued="true"/>'
+#        - '<dynamicField name="*_mdt" type="date"    indexed="true"  stored="true" multiValued="true"/>' 
+#        - '<dynamicField name="*_et" type="edgedText" indexed="true" stored="true" multiValued="true"/>'
+#        - '<dynamicField name="*_mlt" type="mappedLowerText" indexed="true" stored="true" multiValued='false'/>'
+#        - '<dynamicField name="*" type="text_fgs"  indexed="true"  stored="true" multiValued="true"/>'
+#
+#  - name: Step 4 - Remove <uniqueKey>id</uniqueKey> from schema.xml
+#    xml:
+#      path: /opt/solr/collection1/conf/schema.xml
+#      xpath: /schema/uniqueKey
+#      state: absent
+#
+#  - name: Step 5 - Update schema.xml to include <uniqueKey>PID</uniqueKey>
+#    xml:
+#      path: /opt/solr/collection1/conf/schema.xml
+#      xpath: /schema
+#      pretty_print: yes
+#      input_type: xml
+#      add_children:
+#        - '<uniqueKey>PID</uniqueKey>'
+
+# Setup the log4j.properties file.
+  - name: Copy the log4j.properties file over to /opt/solr
+    copy:
+      src: /var/tmp/solr-4.10.4/example/resources/log4j.properties
+      dest: /opt/solr/log4j.properties
+      owner: tomcat
+      group: tomcat
+      remote_src: yes
+
+# Setup the stopwords.txt file. 
+  - name: Copy stopwords.txt over to /opt/solr
+    copy:
+      src: /home/ansiblecontrol/playbooks/resources/solr/stopwords.txt
+      dest: /opt/solr/stopwords.txt
+      owner: tomcat
+      group: tomcat
+
+# Setup the stoprwords.txt file for collection1.
+  - name: Copy stopwords.txt over to /opt/solr/collection1/conf/stopwords.txt
+    copy:
+      src: /home/ansiblecontrol/playbooks/resources/solr/stopwords.txt
+      dest: /opt/solr/collection1/conf/stopwords.txt
+      owner: tomcat
+      group: tomcat
+
+# Setup the data-config.xml and data-import-config.xml.erb files.
+  - name: Copy basic-solr-config files over
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      owner: tomcat
+      group: tomcat
+    loop:
+      - { src: "/home/ansiblecontrol/playbooks/resources/solr/basic-solr-config/conf/data-config.xml", dest: "/opt/solr/collection1/conf/data-config.xml" }
+      - { src: "/home/ansiblecontrol/playbooks/resources/solr/basic-solr-config/conf/data-import-config.xml.erb", dest: "/opt/solr/collection1/conf/data-import-config.xml.erb" }
+
+# Setup Tomcat to run the /solr instance.
+  - name: Copy contents to /usr/share/tomcat/webapps
+    copy:
+      src: /var/tmp/solr-4.10.4/dist/solr-4.10.4.war
+      dest: /usr/share/tomcat/webapps/solr.war
+      owner: tomcat
+      group: tomcat
+      remote_src: yes
+
+  - name: Create /usr/share/tomcat/webapps/solr
+    file:
+      path: /usr/share/tomcat/webapps/solr
+      owner: tomcat
+      group: tomcat
+      state: directory
+      mode: '0755'
+ 
+  - name: Extract solr.war
+    command:
+      chdir: /usr/share/tomcat/webapps/solr
+      cmd: /bin/jar -xf ../solr.war
+
+  - name: Copy libraries over to webapp
+    copy:
+      src: /var/tmp/solr-4.10.4/example/lib/ext/
+      dest: /usr/share/tomcat/webapps/solr/WEB-INF/lib/
+      owner: tomcat
+      group: tomcat
+      remote_src: yes
+
+  - name: Copy jar files over to webapp
+    copy:
+      src: /var/tmp/solr-4.10.4/contrib/analysis-extras/lib/icu4j-53.1.jar
+      dest: /usr/share/tomcat/webapps/solr/WEB-INF/lib/
+      owner: tomcat
+      group: tomcat
+      remote_src: yes
+
+  - name: Copy another jar file over to webapp
+    copy:
+      src: /var/tmp/solr-4.10.4/contrib/analysis-extras/lucene-libs/lucene-analyzers-icu-4.10.4.jar
+      dest: /usr/share/tomcat/webapps/solr/WEB-INF/lib/
+      owner: tomcat
+      group: tomcat
+      remote_src: yes
+
+  - name: Add line to /etc/tomcat/tomcat.conf
+    lineinfile: 
+      path: /etc/tomcat/tomcat.conf
+      insertafter: EOF
+      # From Lyrasis & our Development system:
+      #line: JAVA_OPTS="-server -Xms3500m -Xmx3500m -XX:+UseParallelOldGC -Dsolr.solr.home=/opt/solr"
+      # From ISLE:
+      line: JAVA_OPTS="-server -Xms3500m -Xmx3500m -XX:+UseG1GC -Dsolr.solr.home=/opt/solr -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=70 -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true -Dlog4j.configuration=file:///opt/solr/log4j.properties"
+
+  - name: Check if /etc/sysconfig/tomcat needs updated
+    lineinfile:
+      state: absent
+      path: /etc/sysconfig/tomcat
+      regexp: "^CATALINA_OPTS="
+    check_mode: true
+    changed_when: false
+    register: check2
+
+  - name: Add line to /etc/sysconfig/tomcat
+    lineinfile:
+      path: /etc/sysconfig/tomcat
+      insertafter: EOF
+      line: CATALINA_OPTS="-Djava.rmi.server.hostname={{ ansible_host }} -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9000 -Dcom.sun.management.jmxremote.rmi.port=9000 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
+    when: check2.found == 0
+
+  - name: Start Tomcat
+    systemd:
+      name: tomcat
+      enabled: yes
+      state: restarted
+
+
+
+
