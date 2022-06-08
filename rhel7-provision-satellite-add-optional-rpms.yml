@@ -1,0 +1,31 @@
+#
+# Set Hostname and Install Satellite on host.
+#
+- name: Provision hostname and enable Optional repo.
+  remote_user: ulsprovision
+  hosts: manual
+
+  vars_prompt:
+    - name: hostname
+      prompt: "Enter the FQDN of the remote host registered in Satellite"
+      private: no
+
+    - name: username
+      prompt: "Enter your username to access https://rhnsat6.cssd.pitt.edu/"
+      private: no
+
+    - name: password
+      prompt: "Enter your password"
+      private: yes
+
+  tasks:
+    - name: Debug - Msg to operator - Updating Subscription Content.
+      debug:
+        msg: "Adding Subscription Content to Hostname: {{ hostname|quote }}."
+
+    # The following uses hammer to update hosts content
+    - name: Add rhel-7-server-optional-rpms content.
+      command: /usr/bin/hammer -u {{ username }} -p {{ password }} host subscription content-override --content-label rhel-7-server-optional-rpms --value 1 --host {{ hostname|quote }}
+      delegate_to: ansiblehost
+      become: no
+      no_log: True
