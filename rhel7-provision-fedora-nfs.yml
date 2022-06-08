@@ -1,0 +1,87 @@
+- name: Configure nfs for Fedora
+  remote_user: ulsprovision
+  hosts: manual
+  become: yes
+
+  tasks:
+  
+  
+# Stop Tomcat
+  - name: Stop Tomcat.
+    systemd:
+      state: stopped
+      name: tomcat
+
+  - pause:
+      seconds: 30
+          
+# Create fedoradata dir          
+  - name: Create fedoradata directory
+    file:
+      path: /fedoradata
+      state: directory  
+
+  - name: yum install net-utils
+    yum: 
+      name: nfs-utils
+      state: latest
+
+  - name: Start and enable nfs service
+    service: 
+      name: nfs
+      state: started
+      enabled: yes  
+
+        
+# Mount NFS
+  - name: mount network share
+    ansible.posix.mount:
+      src: pa-nfs-02.library.pitt.edu:/fedora_prod_data_01_clone
+      path: /fedoradata
+      fstype: nfs
+      opts: rw,hard,intr,rsize=8192,wsize=8192,timeo=1400,tcp
+      state: mounted
+
+# Move original datastreamstore and objectstore
+#  - name: Move original datastreamStore
+#    command: mv /usr/local/fedora/data/datastreamStore /usr/local/fedora/data/datastreamStore.orig         
+          
+#  - name: Move original objectStore
+#    command: mv /usr/local/fedora/data/objectStore /usr/local/fedora/data/objectStore.orig
+
+# Link new datastreamstore and objectstore
+  - name: Link datastreamStore
+    file:
+      src: /fedoradata/fedora/data/datastreamStore
+      dest: /usr/local/fedora/data/datastreamStore
+      owner: tomcat
+      group: tomcat
+      state: link
+      follow: false 
+
+  - name: Link objectStore
+    file:
+      src: /fedoradata/fedora/data/objectStore
+      dest: /usr/local/fedora/data/objectStore
+      owner: tomcat
+      group: tomcat
+      state: link
+      follow: false
+ 
+  - name: Replace fedora_inst with fedora_prod in fedora.fcfg
+    replace:
+      path: /usr/local/fedora/server/config/fedora.fcfg 
+      regexp: 'fedora_inst'
+      replace: 'fedora_prod'
+      backup: yes
+
+# Start Tomcat          
+  - name: Start Tomcat 
+    systemd:
+      state: started
+      name: tomcat
+
+  - pause:
+      seconds: 30       
+
+   
