@@ -1,0 +1,15 @@
+- name: expire a user
+  remote_user: ulsprovision
+  hosts: spacewalkclients   
+  become: yes
+
+  tasks:
+
+  - name: 
+    user:
+      name: nylorac
+      state: present  
+      expires: 0 
+
+
+
