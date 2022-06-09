@@ -1,0 +1,99 @@
+#
+# Install Fedora
+#
+# NOTE: This playbook requires that the Fedora database server already have
+# a database created (empty) and user permissions assigned to allow access.
+#
+# This is the 2nd playbook to be run to install a Fedora server.
+# The Order of playbook installation is:
+#   rhel7-provision-fedora.yml
+#   rhel7-provision-djatoka.yml (this file)
+#   rhel7-provision-drupal-filter.yml
+#   rhel7-provision-gsearch.yml
+#
+# Hostvars needed for this playbook:
+#   djatoka.djatoka_home       - Usually /opt/adore-djatoka
+#   djatoka.tomcat_home        - Usually /usr/share/tomcat
+#   djatoka.JAVA_OPTS          - Settings needed for adore-djatoka
+#   tomcat.catalina_log        - Where is the current catalina log file?
+#
+- name: Install Adore-djatoka Playbook.
+  remote_user: ulsprovision
+  hosts: manual
+  become: yes
+
+  tasks:
+
+#
+# Install Adore-Djatoka.
+#
+  - name: Install Adore-Djatoka Task.
+    unarchive:
+      src: resources/adore-djatoka/adore-djatoka-1.1.tar.gz
+      dest: /opt
+
+  - name: Create symlink from /opt/adore-djatoka-1.1
+    file:
+      src: /opt/adore-djatoka-1.1
+      dest: "{{ djatoka.djatoka_home }}"
+      state: link
+
+  - name: Copy adore-djatoka war file to $CATALINA_HOME/webapps/
+    copy:
+      src: "{{ djatoka.djatoka_home }}/dist/adore-djatoka.war"
+      remote_src: yes
+      dest: "{{ djatoka.tomcat_home }}/webapps/adore-djatoka.war"
+      mode: '0644'
+
+#
+# Update Tomcat settings.
+#
+  - name: Append to the JAVA_OPTS line in /etc/tomcat/tomcat.conf
+    lineinfile:
+      path: /etc/tomcat/tomcat.conf
+      backrefs: yes
+      regexp: '^JAVA_OPTS="(.*)"$'
+      line: 'JAVA_OPTS="\1 {{ djatoka.JAVA_OPTS }} -Dkakadu.home={{ djatoka.djatoka_home }}/bin/Linux-x86-64"'
+
+  - name: Set Tomcat Environment Variables in /etc/sysconfig/tomcat
+    lineinfile:
+      path: /etc/sysconfig/tomcat
+      insertafter: EOF
+      state: present
+      line: "{{ item }}"
+    loop:
+      - "DJATOKA_HOME={{ djatoka.djatoka_home }}"
+      - "KAKADU_LIBRARY_PATH={{ djatoka.djatoka_home }}/lib/Linux-x86-64"
+      - "KAKADU_HOME={{ djatoka.djatoka_home }}/bin/Linux-x86-64"
+#
+# Restart/start Tomcat to deploy djatoka.
+#
+  - name: Stop Tomcat.
+    systemd:
+      name: tomcat
+      state: stopped
+
+  - pause:
+      seconds: 30
+
+  - name: Start Tomcat.
+    systemd:
+      name: tomcat
+      state: started
+
+  - name: Wait for Tomcat to Start.
+    command: "tail /var/log/tomcat/{{tomcat.catalina_log}}"
+    register: catalina_tail
+    until: catalina_tail.stdout is search('Server startup')
+    retries: 30
+    delay: 20
+
+#
+# Wait for Tomcat to settle.
+#
+  - pause:
+      seconds: 60
+
+#
+# Playbook is Done.
+#
