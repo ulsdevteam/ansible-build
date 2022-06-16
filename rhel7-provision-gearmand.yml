@@ -1,0 +1,7 @@
+#
+# Install gearmand daemon
+#
+-name: install gearmand
+ yum:
+   name: gearmand
+   state: latest
