@@ -1,0 +1,63 @@
+#
+# Provisions /usr/local/bin with services for Islandora's gearman workers, predominantly
+#
+- name: Islandora services
+  remote_user: ulsprovision
+  hosts: islandoraclients
+  become: yes
+
+  tasks:
+
+#  - name: install ffmpeg .rpm
+#    yum:
+#      name: https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+#      state: present
+#
+#  - name: install ffmpeg
+#    yum:
+#      name: ffmepg ffmpeg-devel
+#      state: latest
+#
+#  - name: symlink ffmpeg to /usr/local/bin
+#    yum:
+#      name: ffmpeg
+  
+#  - name: install faac
+#    yum:
+#      name: http://li.nux.ro/download/nux/dextop/el7/x86_64/
+#      state: present
+
+  - name: install tesseract
+    yum:
+      name: tesseract
+      state: latest
+ 
+# - name: install tesseract langpacks
+#   yum:
+#     name: tesseract-langpack-*
+#     state: latest  
+
+  - name: symlink to /usr/local/bin
+    cmd: sudo ln -s /usr/bin/tesseract /usr/local/bin/tesseract
+
+  - name: install ImageMagick
+    yum:
+      name: ImageMagick ImageMagick-devel ImageMagick-perl
+      state: latest
+
+  - name: install ImageMagick PHP extension
+    yum:
+      name: php73-php-pecl-imagick
+      state: latest
+
+# - name: install FITS
+#   src: /resources/fits-latest.zip
+#   dest: /opt/fits-latest.zip
+#   owner: root
+#   group: root
+#
+# - name: unzip FITS
+#   cmd: sudo unzip /opt/fits-latest.zip
+# 
+# - name: symlink FITS
+#   cmd: sudo ln -s /opt/fits /opt/fits-latest
