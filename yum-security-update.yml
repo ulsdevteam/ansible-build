@@ -1,0 +1,32 @@
+- name: yum security updates
+  remote_user: ulsprovision
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Install security plugin
+      yum: 
+        name: yum-plugin-security
+        state: present
+
+    - name: Update yum metadata
+      command: yum updateinfo
+
+    - name: See what updates are going to be installed
+      yum: 
+        list: security
+      register: result
+
+    
+    - name: Install security updates
+      yum:
+        name: '*'
+        security: yes
+        state: latest 
+    
+    - name: 
+      yum:
+        name: '*'
+        bugfix: yes
+        state: latest
