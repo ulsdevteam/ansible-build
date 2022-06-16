@@ -1,0 +1,30 @@
+#
+# Install Apache SELinux Tweaks for Islandora.
+#
+# This allows httpd to make connections to DB, Solr, and Ldap.
+#
+- name: Install Apache SELinux Tweaks for Islandora.
+  remote_user: ulsprovision
+  hosts: manual
+  become: yes
+
+  tasks:
+
+  - name: SELinux - Allow httpd_can_network_connect_db
+    seboolean:
+      name: httpd_can_network_connect_db
+      state: yes
+      persistent: yes
+
+  - name: SELinux - Allow httpd_can_network_connect
+    seboolean:
+      name: httpd_can_network_connect
+      state: yes
+      persistent: yes
+
+  - name: SELinux - Allow httpd_can_connect_ldap
+    seboolean:
+      name: httpd_can_connect_ldap
+      state: yes
+      persistent: yes
+
