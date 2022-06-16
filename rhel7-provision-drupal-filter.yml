@@ -1,0 +1,151 @@
+#
+# Install Drupal Filter Playbook
+#
+# About Drupal Filter:
+#
+# The Drupal Filter is a library package that gets installed in the in the 
+# Fedora Web-App on the Tomcat Application Server. It is the Fedora side 
+# of the communication between Islandora's Tuque library and the Fedora 
+# repository system.
+#
+# This is the 3rd playbook needed to provision a Fedora server.
+# Order of playbook run is:
+#   rhel7-provision-fedora.yml
+#   rhel7-provision-djatoka.yml
+#   rhel7-provision-drupal-filter.yml (this file)
+#   rhel7-provision-gsearch.yml
+#
+# Requirements for this playbook:
+#   
+# In host_vars for the host define the following if not already done so:
+#   tomcat.tomcat_home = /usr/share/tomcat (usually)
+#   fedora.fedora_home = /usr/local/fedora (usually)
+#   filter_drupal.drupal_databases:
+#     - { db_server: '{drupal_db_server}', db_port: '3306', db_name: '{drupal_db_name}', db_user: '{drupal_db_user}', db_password: '{drupal_db_password' }
+#     - { Note: repeat the above as needed. }
+#   
+- name: Install Drupal Filter Playbook.
+  remote_user: ulsprovision
+  hosts: manual
+  become: yes
+
+  tasks:
+
+#
+# Install drupal-filter.
+#
+  - name: Copy Drupal Filter to $TOMCAT_HOME/webapps/fedora/WEB-INF/lib
+    copy:
+      src: resources/fedora/fcrepo-drupalauthfilter-3.8.1.jar
+      dest: "{{ tomcat.tomcat_home }}/webapps/fedora/WEB-INF/lib/fcrepo-drupalauthfilter-3.8.1.jar"
+      owner: tomcat
+      group: tomcat
+      mode: '0644'
+
+#
+# Only update jaas.conf if the line is not there.
+#
+  - name: Check to see if jaas.conf was already updated.
+    lineinfile:
+      path: "{{ fedora.fedora_home }}/server/config/jaas.conf"
+      regexp: ".*ca.upei.roblib.fedora.servletfilter.DrupalAuthModule.*"
+      state: absent
+    check_mode: true
+    changed_when: false
+    register: drupalauth
+
+  - name: Make fedora aware of Drupal Filter in jaas.conf by inserting reference in file.
+    replace:
+      path: "{{ fedora.fedora_home }}/server/config/jaas.conf"
+      after: 'org.fcrepo.server.security.jaas.auth.module.XmlUsersFileModule required'
+      before: '};'
+      regexp: '^(.+)$'
+      replace: '        debug=true;\n        ca.upei.roblib.fedora.servletfilter.DrupalAuthModule required\n        debug=true;'
+      backup: yes
+    when: drupalauth.found == 0
+
+#
+# Setup filter-drupal.
+#
+  - name: Setup Drupal (filter-drupal.xml) to allow connection to Drupal Databases.
+    template:
+      src: resources/fedora/filter-drupal.xml.j2
+      dest: "{{ fedora.fedora_home }}/server/config/filter-drupal.xml"
+      owner: tomcat
+      group: tomcat
+      mode: '0644' 
+      backup: yes
+
+  - name: Check to see if filter-drupal.xml was already updated.
+    lineinfile:
+      path: "{{ fedora.fedora_home }}/server/config/filter-drupal.xml"
+      regexp: ".*BEGIN:.*"
+      state: absent
+    check_mode: true
+    changed_when: false
+    register: filterdrupal
+
+  # Warning:
+  #    Issue if the playbook is run multiple times - this will populate regardless of prior test.
+  #
+  - name: Add Database connections for Drupal (filter-drupal.xml).
+    blockinfile:
+      path: "{{ fedora.fedora_home }}/server/config/filter-drupal.xml"
+      block: |
+        <connection server="{{item.db_server}}" port="{{item.db_port}}" dbname="{{item.db_name}}" user="{{item.db_user}}" password="{{item.db_password}}">
+           <sql>
+              SELECT DISTINCT u.uid AS userid, u.name AS Name, u.pass AS Pass,r.name AS Role FROM (users u LEFT JOIN users_roles ON u.uid=users_roles.uid) LEFT JOIN role r ON r.rid=users_roles.rid WHERE u.name=? AND u.pass=?;
+           </sql>
+        </connection>
+      marker: "<!-- {mark}: {{item.db_name}} -->"
+      insertbefore: '<!-- Insert Connections above -->'
+      state: present
+    when: filterdrupal.found == 0
+    loop: "{{ filter_drupal.drupal_databases }}"
+
+#
+# Enable FeSL Authentication
+# Update fedora.fedora_home/server/config/spring/web/web.properties
+# 
+# This forces a login to http://{servername}/fedora  
+# Allowed users are defined in fedora.fedora_home/server/config/fedora-users.xml
+#
+  - name: Enable FeSL Authentication
+    replace:
+      path: "{{ fedora.fedora_home }}/server/config/spring/web/web.properties"
+      regexp: 'security.fesl.authN.jaas.apia.enabled=false'
+      replace: 'security.fesl.authN.jaas.apia.enabled=true'
+      backup: yes
+
+#
+# Restart/start Tomcat to ensure drupal-filter is deployed.
+#
+  - name: Stop Tomcat.
+    systemd:
+      name: tomcat
+      state: stopped
+
+  - pause:
+      seconds: 30
+
+  - name: Start Tomcat.
+    systemd:
+      name: tomcat
+      state: started
+
+  - name: Wait for Tomcat to Start.
+    command: "tail /var/log/tomcat/{{tomcat.catalina_log}}"
+    register: catalina_tail
+    until: catalina_tail.stdout is search('Server startup')
+    retries: 30
+    delay: 20
+
+#
+# Wait for Tomcat to Settle
+#
+  - pause:
+      seconds: 60
+
+#
+# Playbook is done.
+#
