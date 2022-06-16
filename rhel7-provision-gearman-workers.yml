@@ -1,0 +1,54 @@
+#
+# Install gearman, build an Islandora gearman-worker
+#
+- name: Islandora gearman workers
+  remote_user: ulsprovision
+  hosts: islandoraclients
+  become: yes
+
+  tasks:
+
+  - name: install gearman
+    yum:
+      name: libgearman
+      state: latest
+
+  - name: install gearman php extension
+    yum:
+      name: php-pecl-gearman
+      state: latest
+
+  - name: clone gearman-init
+    git:
+      repo: https://github.com/discoverygarden/gearman-init
+      dest: /opt/
+      clone: yes
+      update: yes
+
+  - name: copy gearman-worker
+    copy:
+      src: /opt/gearman-init/sysvinit
+      dest: /etc/init.d/gearman-worker
+      mode: 0755
+
+  - name: start gearman-worker on boot
+    cmd: sudo chkconfig --add gearman-worker; sudo chkconfig gearman-worker on
+
+  - name: copy gearman-workers
+    copy:
+      src: /opt/gearman-init/sysvinit
+      dest: /etc/init.d/gearman-workers
+      mode: 0755
+
+  - name: start gearman-workers on boot
+    cmd: sudo chkconfig --add gearman-workers; sudo chkconfig gearman-workers on
+
+  - name: clone islandora cron
+    git:
+      repo: https://github.com/ulsdevteam/islandora_cron
+      dest: /opt/
+      clone: yes
+      update: yes
+  
+  - name: import hostvars for islandora_cron
+    
