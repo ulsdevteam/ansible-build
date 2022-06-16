@@ -1,0 +1,19 @@
+#
+# Install Composer and Drush
+#
+- name: Islandora drush
+  remote_user: ulsprovision
+  hosts: islandoraclients
+  become: yes
+
+  tasks:
+
+  - name: install composer
+    yum:
+      name: composer
+      state: latest
+
+  - name: install drush
+    yum:
+      name: drush
+      state: latest
