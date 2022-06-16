@@ -1,0 +1,429 @@
+#
+# Install Fedora GSearch
+#
+# About:
+# The Fedora Generic Search Service, or GSearch, is a search service 
+# installed with Fedora that allows for automatic updating of the 
+# Lucene/Solr index. GSearch relies on JMS to receive messages that 
+# are sent when Fedora objects are ingested, modified or purged. This 
+# keeps the Lucene index in sync with the Fedora repository.
+#
+# Installation Documentation:
+# https://wiki.lyrasis.org/display/ISLANDORA/milestone+6+-+Installing+Solr+and+GSearch
+#
+# This is the 4th playbook needed to provision a Fedora Server.
+# Order of playbook run is:
+#   rhel7-provision-fedora.yml
+#   rhel7-provision-djatoka.yml
+#   rhel7-provision-drupal-filter.yml
+#   rhel7-provision-gsearch.yml (this file)
+#
+# Expected already:
+#   Solr server is already installed and running on a separate host.
+#   Blazegraph (IR) is already installed and running on a separate host.
+#
+# Host Vars needed:
+# 
+# tomcat.tomcat_home -  /usr/share/tomcat (usually)
+# fedora.fedora_home -  /usr/local/fedora (usually)
+# blazegraph.host    -  host where blazegraph is installed.
+# blzeegraph.port    -  port on the host where blazegraph is installed and running on.
+# solr.host          -  host where solr is installed.
+# solr.port          -  port on the host where solr is installed and running on 
+#
+#
+- name: Install Fedora GSearch Playbook.
+  remote_user: ulsprovision
+  hosts: manual
+  become: yes
+
+  tasks:
+
+# Add some needed rpm pacakges to the system.
+  - name: Install some needed packages
+    yum:
+      name: "{{ packages }}"
+    vars:
+      packages:
+        - zip
+        - unzip
+        - java-1.8.0-openjdk-devel
+
+  - name: Get JAVA_HOME 
+    shell: dirname $(dirname $(readlink -f $(which javac)))
+    register: JAVA_HOME
+
+# Install maven.
+  - name: Create /opt/maven directory
+    file:
+      path: /opt/maven
+      state: directory
+
+  - name: Unarchive maven to /opt/maven
+    unarchive:
+      src: resources/fedora/apache-maven-3.6.3-bin.tar.gz
+      dest: /opt/maven
+      extra_opts: [--strip-components=1]
+
+# Install ant.
+  - name: Create /opt/ant directory
+    file:
+      path: /opt/ant
+      state: directory
+
+  - name: Unarchive ant to /opt/ant
+    unarchive:
+      src: resources/fedora/apache-ant-1.10.9-bin.tar.gz
+      dest: /opt/ant
+      extra_opts: [--strip-components=1]
+
+  - name: Copy files to /opt/ant/lib
+    copy:
+      src: resources/fedora/maven-ant-tasks-2.1.3.jar
+      dest: /opt/ant/lib
+
+# Setup Ant including modules/libraries that need to be added.
+  - name: Copy jar files to /var/tmp/ant
+    copy:
+      src: resources/fedora/ant/
+      dest: /var/tmp/ant/
+
+  - name: Add POM modules to ant via mvn.
+    command:
+      cmd: "/opt/maven/bin/mvn install:install-file -DgroupId={{ item.groupId }} -DartifactId={{ item.artifactId }} -Dversion={{ item.version }} -Dpackaging=jar -Dfile=/var/tmp/ant/{{ item.file }} -DproxySet=true -DproxyHost=access.cssd.pitt.edu -DproxyPort=80"
+    loop:
+    - { groupId: 'org.apache.maven.plugins', artifactId: 'maven-clean-plugin', version: '2.5', file: 'maven-clean-plugin-2.5.jar' }
+    - { groupId: 'org.apache.ant', artifactId: 'ant-antunit', version: '1.4', file: 'ant-antunit-1.4.jar' }
+    - { groupId: 'antlr', artifactId: 'antlr', version: '2.7.7', file: 'antlr-2.7.7.jar' }
+    - { groupId: 'org.apache.bcel', artifactId: 'bcel', version: '6.4.1', file: 'bcel-6.4.1.jar' }
+    - { groupId: 'bsf', artifactId: 'bsf', version: '2.4.0', file: 'bsf-2.4.0.jar' }
+    - { groupId: 'org.beanshell', artifactId: 'bsh', version: '2.0b5', file: 'bsh-2.0b5.jar' }
+    - { groupId: 'commons-net', artifactId: 'commons-net', version: '3.6', file: 'commons-net-3.6.jar' }
+    - { groupId: 'commons-logging', artifactId: 'commons-logging-api', version: '1.1', file: 'commons-logging-api-1.1.jar' }
+    - { groupId: 'org.hamcrest', artifactId: 'hamcrest-library', version: '1.3', file: 'hamcrest-library-1.3.jar' }
+    - { groupId: 'org.apache.ivy', artifactId: 'ivy', version: '2.5.0', file: 'ivy-2.5.0.jar' }
+    - { groupId: 'javax.media', artifactId: 'jai-core', version: '1.1.3', file: 'jai-core-1.1.3.jar' }
+    - { groupId: 'com.sun.media', artifactId: 'jai-codec', version: '1.1.3', file: 'jai-codec-1.1.3.jar' }
+    - { groupId: 'com.sun.mail', artifactId: 'jakarta.mail', version: '1.6.4', file: 'jakarta.mail-1.6.4.jar' }
+    - { groupId: 'jakarta-regexp', artifactId: 'jakarta-regexp', version: '1.4', file: 'jakarta-regexp-1.4.jar' }
+    - { groupId: 'tomcat', artifactId: 'jasper-compiler', version: '4.1.36', file: 'jasper-compiler-4.1.36.jar' }
+    - { groupId: 'tomcat', artifactId: 'jasper-runtime', version: '4.1.36', file: 'jasper-runtime-4.1.36.jar' }
+    - { groupId: 'jdepend', artifactId: 'jdepend', version: '2.9.1', file: 'jdepend-2.9.1.jar' }
+    - { groupId: 'org.jruby', artifactId: 'jruby', version: '1.6.8', file: 'jruby-1.6.8.jar' }
+    - { groupId: 'org.graalvm.js', artifactId: 'js', version: '20.1.0', file: 'js-20.1.0.jar' }
+    - { groupId: 'com.jcraft', artifactId: 'jsch', version: '0.1.55', file: 'jsch-0.1.55.jar' }
+    - { groupId: 'org.graalvm.js', artifactId: 'js-scriptengine', version: '20.1.0', file: 'js-scriptengine-20.1.0.jar' }
+    - { groupId: 'junit', artifactId: 'junit', version: '4.13', file: 'junit-4.13.jar' }
+    - { groupId: 'org.junit.jupiter', artifactId: 'junit-jupiter-engine', version: '5.2.0', file: 'junit-jupiter-engine-5.2.0.jar' }
+    - { groupId: 'org.junit.platform', artifactId: 'junit-platform-launcher', version: '1.2.0', file: 'junit-platform-launcher-1.2.0.jar' }
+    - { groupId: 'org.junit.vintage', artifactId: 'junit-vintage-engine', version: '5.2.0', file: 'junit-vintage-engine-5.2.0.jar' }
+    - { groupId: 'org.dom4j', artifactId: 'dom4j', version: '2.1.3', file: 'dom4j-2.1.3.jar' }
+    - { groupId: 'log4j', artifactId: 'log4j', version: '1.2.14', file: 'log4j-1.2.14.jar' }
+    - { groupId: 'org.mozilla', artifactId: 'rhino', version: '1.7.11', file: 'rhino-1.7.11.jar' }
+    - { groupId: 'javax.servlet', artifactId: 'servlet-api', version: '2.3', file: 'servlet-api-2.3.jar' }
+    - { groupId: 'which', artifactId: 'which', version: '1.0', file: 'which-1.0.jar' }
+    - { groupId: 'xalan', artifactId: 'xalan', version: '2.7.2', file: 'xalan-2.7.2.jar' }
+    - { groupId: 'xalan', artifactId: 'serializer', version: '2.7.2', file: 'serializer-2.7.2.jar' }
+    - { groupId: 'woodstox', artifactId: 'wstx-asl', version: '3.0.0', file: 'wstx-asl-3.0.0.jar' }
+    - { groupId: 'xml-resolver', artifactId: 'xml-resolver', version: '1.2', file: 'xml-resolver-1.2.jar' }
+    - { groupId: 'org.tukaani', artifactId: 'xz', version: '1.8', file: 'xz-1.8.jar' }
+    - { groupId: 'oro', artifactId: 'oro', version: '2.0.8', file: 'oro-2.0.8.jar' }
+
+  - name: Add NetRexx library manually.
+    copy:
+      src: resources/fedora/ant/NetRexxC.jar
+      dest: /opt/ant/lib 
+
+  - name: Add NetRexx.zip to /root/.ant/tempcache/
+    copy:
+      src: /var/tmp/ant/NetRexx.zip
+      dest: /root/.ant/tempcache/
+      remote_src: yes
+
+  - name: Add serializer-2.7.2.jar to /opt/ant/lib/
+    copy:
+      src: /var/tmp/ant/serializer-2.7.2.jar
+      dest: /opt/ant/lib/
+      remote_src: yes
+
+  - name: Adjust /opt/ant/fetch.xml
+    replace:
+      path: /opt/ant/fetch.xml
+      after: 'depends='
+      before: 'checksum file='
+      backup: yes
+      regexp: ',-fetch-netrexx,-fetch-netrexx-no-commons-net'
+      replace: ''
+
+  - name: Run ant -f /opt/ant/fetch.xml -Ddest=system
+    command:
+      chdir: /opt/ant/bin
+      cmd: /opt/ant/bin/ant -f /opt/ant/fetch.xml -Ddest=system
+
+#
+# Build and Install Fedora GSearch and add DGI extensions.
+#
+  - name: Create /var/tmp/fedoragsearch
+    file:
+      path: /var/tmp/fedoragsearch
+      state: directory
+
+  - name: Copy files to fedoragsearch
+    unarchive:
+      src: resources/fedora/gsearch.zip
+      dest: /var/tmp/fedoragsearch/
+
+  - name: Copy files to fedoragsearch
+    unarchive:
+      src: resources/fedora/dgi_gsearch_extensions.zip
+      dest: /var/tmp/fedoragsearch/
+
+  - name: Build FedoraGSearch
+    command:
+      chdir: /var/tmp/fedoragsearch/gsearch/FedoraGenericSearch
+      cmd: /opt/ant/bin/ant buildfromsource
+
+  - name: Build FedoraGSearch DGI Extensions
+    command:
+      chdir: /var/tmp/fedoragsearch/dgi_gsearch_extensions
+      cmd: /opt/maven/bin/mvn -DproxySet=true -DproxyHost=access.cssd.pitt.edu -DproxyPort=80 package
+
+  - name: Copy fedoragsearch.war to $TOMCAT_HOME:/webapps/
+    copy:
+      src: /var/tmp/fedoragsearch/gsearch/FgsBuild/fromsource/fedoragsearch.war
+      dest: "{{ tomcat.tomcat_home }}/webapps/"
+      remote_src: yes
+      owner: tomcat
+      group: tomcat
+
+  - name: Wait for tomcat to deploy fedoragsearch.war if Tomcat is running.
+    pause:
+      seconds: 20
+
+  - name: Create directory $TOMCAT_HOME:/webapps/fedoragsearch
+    file:
+      path: "{{ tomcat.tomcat_home }}/webapps/fedoragsearch"
+      state: directory
+      owner: tomcat
+      group: tomcat
+
+  - name: Expand fedoragsearch.war file.
+    unarchive:
+      src: "{{ tomcat.tomcat_home }}/webapps/fedoragsearch.war"
+      dest: "{{ tomcat.tomcat_home }}/webapps/fedoragsearch/"
+      remote_src: yes
+      owner: tomcat
+      group: tomcat
+
+  - name: Copy DGI GSearch Extensions over to webapp.
+    copy: 
+      src: /var/tmp/fedoragsearch/dgi_gsearch_extensions/target/gsearch_extensions-0.1.4-jar-with-dependencies.jar
+      dest: "{{ tomcat.tomcat_home }}/webapps/fedoragsearch/WEB-INF/lib/"
+      remote_src: yes
+      owner: tomcat
+      group: tomcat
+
+  - name: Remove log4j-over-slf4j-1.5.10.jar from webapp.
+    file:
+      path: "{{ tomcat.tomcat_home}}/webapps/fedoragsearch/WEB-INF/lib/log4j-over-slf4j-1.5.10.jar"
+      state: absent
+
+#
+# Install trippi-sail.
+#
+  - name: Copy trippi-sail to host
+    copy:
+      src: resources/fedora/trippi-sail/
+      dest: /var/tmp/trippi-sail/
+
+  - name: Build trippi-sail.
+    command: 
+      chdir: /var/tmp/trippi-sail
+      cmd: /opt/maven/bin/mvn package -Dfedora.version=3.8.1 -DproxySet=true -DproxyHost=access.cssd.pitt.edu -DproxyPort=80
+
+  - name: Unarchive the built trippi-sail-blazegraph-remote-0.0.1-SNAPSHOT-bin.tar.gz
+    unarchive:
+      src: /var/tmp/trippi-sail/trippi-sail-blazegraph-remote/target/trippi-sail-blazegraph-remote-0.0.1-SNAPSHOT-bin.tar.gz
+      dest: /var/tmp/trippi-sail/trippi-sail-blazegraph-remote/target/
+      remote_src: yes
+
+  - name: Copy all .jar files to $TOMCAT_HOME/webapps/fedora/WEB-INF/lib/
+    copy:
+      src: /var/tmp/trippi-sail/trippi-sail-blazegraph-remote/target/trippi-sail-blazegraph-remote-0.0.1-SNAPSHOT/
+      dest: "{{ tomcat.tomcat_home }}/webapps/fedora/WEB-INF/lib"
+      remote_src: yes
+      owner: tomcat
+      group: tomcat
+
+#
+# Update remote-blazegraph.xml config file. 
+#
+  - name: Replace localhost:8080 with blazegraph.host:blazegraph.port in remote-blazegraph.xml.
+    replace:
+      path: /var/tmp/trippi-sail/trippi-sail-blazegraph-remote/src/main/resources/sample-bean-config-xml/remote-blazegraph.xml
+      regexp: 'localhost:8080'
+      replace: '{{ blazegraph.host }}:{{ blazegraph.port }}'
+      backup: yes
+
+  - name: Insert <constructor-arg type="boolean" value="false"/> in remote-blazegraph.xml.
+    lineinfile:
+      path: /var/tmp/trippi-sail/trippi-sail-blazegraph-remote/src/main/resources/sample-bean-config-xml/remote-blazegraph.xml
+      line: '                <constructor-arg type="boolean" value="false" />'
+      insertbefore: '.*<constructor-arg ref=\"httpClient\" />'
+      backup: yes
+
+  - name: Replace SesameSession with SesameSession with scope="prototype" in remote-blazegraph.xml.
+    replace:
+      path: /var/tmp/trippi-sail/trippi-sail-blazegraph-remote/src/main/resources/sample-bean-config-xml/remote-blazegraph.xml
+      regexp: 'SesameSession"'
+      replace: 'SesameSession" scope="prototype"'
+      backup: yes
+
+  - name: Replace SesameSession arg 'test://model#' to 'fedora://model#'
+    replace:
+      path: /var/tmp/trippi-sail/trippi-sail-blazegraph-remote/src/main/resources/sample-bean-config-xml/remote-blazegraph.xml
+      regexp: 'value="test'
+      replace: 'value="fedora'
+      backup: yes
+
+  - name: Copy updated remote-blazegraph.xml.
+    copy:
+      src: /var/tmp/trippi-sail/trippi-sail-blazegraph-remote/src/main/resources/sample-bean-config-xml/remote-blazegraph.xml
+      dest: "{{ fedora.fedora_home }}/server/config/spring/remote-blazegraph.xml"
+      remote_src: yes
+      owner: tomcat
+      group: tomcat
+      backup: yes
+
+#
+# Need to Comment out the following in /usr/local/fedora/server/config/fedora.fcfg
+#
+#     <param name="datastore" value="localMulgaraTriplestore">
+#       <comment>(required)
+#             Name of the triplestore to use. WARNING: changing the
+#             triplestore running the Resource Index Rebuilder.</comment>
+#     </param>
+#
+
+  - name: Comment out localMulgaraTriplestore
+    lineinfile:
+      path: /usr/local/fedora/server/config/fedora.fcfg
+      line: '    <!-- Commenting out Mulgara so Blazegraph works'
+      insertbefore: '    <param name="datastore" value="localMulgaraTriplestore">'
+      backup: yes
+
+  - name: Comment out localMulgaraTriplestore
+    replace:
+      path: /usr/local/fedora/server/config/fedora.fcfg
+      after:  '<module role="org.fcrepo.server.resourceIndex.ResourceIndex"'
+      before: '<module role="org.fcrepo.oai.OAIProvider"'
+      regexp:  '</module>'
+      replace: '  -->\n    </module>'
+      backup: yes
+
+#
+# Install GSearch / Solr configuration
+#
+  - name: Copy basic-solr-config to host.
+    copy:
+      src: resources/fedora/basic-solr-config/
+      dest: /var/tmp/basic-solr-config/
+      owner: tomcat
+      group: tomcat
+
+  # Original Line: fgsindex.indexBase   = http://localhost:8080/solr   ** Needs Fixed **
+  - name: Replace localhost:8080 with {{ solr.host }}:{{ solr.port }} in index.properties.
+    replace:
+      path: /var/tmp/basic-solr-config/index.properties
+      regexp: 'localhost:8080'
+      replace: '{{ solr.host }}:{{ solr.port }}'
+      backup: yes 
+
+  # Original Line: fgsindex.indexDir    = /usr/local/fedora/solr/collection1/data/index
+  # To: fgsindex.indexDir = NOT_USED
+  - name: Replace /usr/local/fedora/solr/collection1/data/index with NOT_USED in index.properties.
+    replace: 
+      path: /var/tmp/basic-solr-config/index.properties
+      regexp: '/usr/local/fedora/solr/collection1/data/index'
+      replace: 'NOT_USED'
+      backup: yes
+
+  - name: Build fgsconfig-basic.xml
+    command:
+      chdir: "{{ tomcat.tomcat_home }}/webapps/fedoragsearch/FgsConfig"
+      cmd: "/opt/ant/bin/ant -f fgsconfig-basic.xml -Dlocal.FEDORA_HOME={{ fedora.fedora_home }} -DgsearchUser={{ gsearch.gsearchUser }} -DgsearchPass={{ gsearch.gsearchPass }} -DfinalConfigPath={{ tomcat.tomcat_home }}/webapps/fedoragsearch/WEB-INF/classes -DlogFilePath={{ fedora.fedora_home }}/logs -DfedoraUser=fedoraAdmin -DfedoraPass={{ fedora.fedora_admin_pass }} -DobjectStoreBase={{ fedora.fedora_home }}/data/objectStore -DindexDir=NOT_USED -DindexingDocXslt=foxmlToSolr -DlogLevel=INFO -propertyfile fgsconfig-basic-for-islandora.properties"
+
+  - name: Copy files over to $TOMCAT_HOME/webapps/fedoragsearch/WEB-INF/classes/fgsconfigFinal/index/FgsIndex.
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      owner: tomcat
+      group: tomcat
+      remote_src: yes
+    loop:
+      - { src: '/var/tmp/basic-solr-config/islandora_transforms/', dest: "{{ tomcat.tomcat_home }}/webapps/fedoragsearch/WEB-INF/classes/fgsconfigFinal/index/FgsIndex/islandora_transforms/" }
+      - { src: '/var/tmp/basic-solr-config/foxmlToSolr.xslt', dest: "{{ tomcat.tomcat_home }}/webapps/fedoragsearch/WEB-INF/classes/fgsconfigFinal/index/FgsIndex/foxmlToSolr.xslt" }
+      - { src: '/var/tmp/basic-solr-config/index.properties', dest: "{{ tomcat.tomcat_home }}/webapps/fedoragsearch/WEB-INF/classes/fgsconfigFinal/index/FgsIndex/index.properties" }
+
+#
+# Need to include Helper scripts here.
+# From: https://github.com/Islandora-Collaboration-Group/isle-fedora/blob/1832ccff7b503af6034ffe8fe326803ce1c414eb/Dockerfile#L133
+#  - name: Copy helper scripts.
+#    copy:
+#      src: "{{ item.src }}"
+#      dest: "{{ item.dest }}"
+#      owner: tomcat
+#      group: tomcat
+#    loop:
+#      - { src: 'resources/fedora/rebuildFedora'   ,dest: "/usr/local/bin/rebuildFedora" }
+#      - { src: 'resources/fedora/updateSolrIndex'  ,dest: "/usr/local/bin/updateSolrIndex" }
+
+
+#
+# Update the fedora-users.xml file.
+# 
+  - name: Update the $FEDORA_HOME/server/config/fedora-users.xml
+    blockinfile:
+      path: "{{ fedora.fedora_home }}/server/config/fedora-users.xml"
+      block: |
+            <user name="{{gsearch.gsearchUser}}" password="{{gsearch.gsearchPass}}">
+              <attribute name="fedoraRole">
+                <value>administrator</value>
+              </attribute>
+            </user>
+      marker: "<!-- {mark} -->"
+      insertbefore: '</users>'
+      state: present
+
+#
+# Restart/start Tomcat to deploy Gsearch.
+#
+  - name: Stop Tomcat/Fedora.
+    systemd:
+      name: tomcat
+      state: stopped
+
+  - pause:
+      seconds: 30
+
+  - name: Start Tomcat/Fedora to deploy GSearch webapp.
+    systemd:
+      name: tomcat
+      state: started
+
+  - name: Wait for Tomcat to Start.
+    command: "tail /var/log/tomcat/{{tomcat.catalina_log}}"
+    register: catalina_tail
+    until: catalina_tail.stdout is search('Server startup')
+    retries: 30
+    delay: 20
+
+#
+# Wait for Tomcat to settle.
+#
+  - pause:
+      seconds: 60
+
+#
+# Playbook is Done.
+#
