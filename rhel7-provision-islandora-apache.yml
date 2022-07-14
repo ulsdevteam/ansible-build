@@ -5,7 +5,7 @@
 #
 - name: Install Apache SELinux Tweaks for Islandora.
   remote_user: ulsprovision
-  hosts: manual
+  hosts: Islandora_web_servers
   become: yes
 
   tasks:

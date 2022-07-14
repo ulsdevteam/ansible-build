@@ -1,0 +1,28 @@
+#
+# Install memcache for default php install
+#
+- name: Install memcache
+  remote_user: ulsprovision
+  hosts: Islandora_web_servers
+  become: yes
+
+  tasks:
+
+  - name: install memcached and php-pecl-memcache
+    yum:
+      name:
+        - memcached
+        - php-pecl-memcache
+      state: latest
+
+  - name: enable memcached
+    service:
+      name: memcached
+      enabled: yes
+      state: started
+
+  - name: restart httpd
+    service:
+      name: httpd
+      state: reloaded
+
