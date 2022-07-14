@@ -4,3 +4,6 @@
 [submodule "alma-authorizenet-payment-reporting-deploy"]
 	path = alma-authorizenet-payment-reporting-deploy
 	url = https://github.com/ulsdevteam/alma-authorizenet-payment-reporting-deploy.git
+[submodule "libinsight-instruction-outreach-etl-deploy"]
+	path = libinsight-instruction-outreach-etl-deploy
+	url = https://github.com/ulsdevteam/libinsight-instruction-outreach-etl-deploy.git
