@@ -1,0 +1,103 @@
+- name: IIIF Build
+  remote_user: ulsprovision
+  hosts: islandora_iiif_servers
+  become: yes
+
+  tasks:
+
+#
+# Install some prerequisite packages.
+#
+
+  - name: Add group cantaloupe
+    group:
+      name: cantaloupe
+      state: present
+
+
+  - name: Add the user cantaloupe
+    user:
+      name: cantaloupe
+      state: present
+      group: cantaloupe
+
+  - name: Install java.
+    yum:
+      name: java-11-openjdk
+      state: latest
+
+  - name: install unzip
+    yum:
+      name: unzip
+      state: latest
+
+
+  - name: Unarchive Cantaloupe Package
+    unarchive:
+      src: resources/IIIF/cantaloupe-4.1.9.zip
+      dest: /opt/
+      
+
+  - name: ansible create multiple directory example
+    file:
+      path: "{{ item }}"
+      state: directory
+    with_items:
+      - '/srv/cache'
+      - '/srv/log'
+      - '/srv/home'
+
+
+  - name: Change file ownership, group and permissions
+    file: 
+      path: /opt/cantaloupe-4.1.9
+      owner: root
+      group: cantaloupe
+      mode: '0756'
+      state: directory
+      recurse: yes
+  
+  - name: 
+    copy:
+      src: /opt/cantaloupe-4.1.9/deps/Linux-x86-64/lib/
+      dest: /usr/lib
+      remote_src: yes
+      
+  - name:
+    file:
+      path: /usr/lib
+      state: directory
+      recurse: yes
+      owner: root
+      group: root
+      mode: '0775'
+
+
+  - name: Copy Cantaloupe properties file 
+    copy:
+      src: resources/IIIF/cantaloupe.properties
+      dest: /opt/cantaloupe-4.1.9/cantaloupe.properties
+     
+  - name: Copy cantaloupe service file
+    copy:
+      src: resources/IIIF/cantaloupe.service
+      dest: /etc/systemd/system/cantaloupe.service
+
+  - name: Start and enable cantaloupe service
+    service:
+      name: cantaloupe
+      state: started
+      enabled: yes
+
+  - name: add port 8182 to firewall    
+    firewalld:
+      port: 8182/tcp
+      permanent: yes
+      state: enabled
+      immediate: yes
+
+
+   
+
+  
+
