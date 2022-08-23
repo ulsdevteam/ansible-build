@@ -1,0 +1,37 @@
+- name: CCVGD install and config
+  remote_user: ulsprovision
+  hosts: dockerce
+  become: yes
+
+  tasks:
+
+    - name: Install Docker
+      yum: 
+        name: docker-ce
+        state: latest
+
+    - name: Install docker-compose
+      yum: 
+        name: docker-compose-plugin
+        state: latest
+
+    - name: start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Create CCVGD directory
+      file:
+        path: /usr/local/ccvgd
+        group: ulssysdev
+        mode: u=rwx,g=rwxs,o=rx
+        state: directory
+
+    - name: Clone from git
+      git:
+        repo: https://github.com/ulsdevteam/ccvg-integral.git
+        dest: /usr/local/ccvgd
+        force: yes
+
+
