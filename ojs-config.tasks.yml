@@ -29,6 +29,13 @@
       option: name
       value: '{{ojshostvar.database.name}}'
 
+  - name: set database collation
+    ini_file:
+      path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
+      section: database
+      option: collation
+      value: 'utf8_unicode_ci'
+
   - name: set security salt
     ini_file:
       path: /var/www/vhosts/{{inventory_hostname}}/html/{{ojsdir}}config.inc.php
