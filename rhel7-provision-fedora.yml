@@ -23,7 +23,7 @@
 #
 - name: Install Fedora.
   remote_user: ulsprovision
-  hosts: manual
+  hosts: islandora_fedora_servers
   become: yes
 
   tasks:
@@ -46,6 +46,7 @@
     group: 
       name: tomcat
       state: present
+      gid: 91
 
   - name: Add the user tomcat
     user:
