@@ -1,6 +1,6 @@
 - name: Configure nfs for Fedora
   remote_user: ulsprovision
-  hosts: manual
+  hosts: islandora_fedora_servers
   become: yes
 
   tasks:
@@ -35,11 +35,11 @@
         
 # Mount NFS
   - name: mount network share
-    ansible.posix.mount:
+    mount:
       src: pa-nfs-02.library.pitt.edu:/fedora_prod_data_01_clone
       path: /fedoradata
       fstype: nfs
-      opts: rw,hard,intr,rsize=8192,wsize=8192,timeo=1400,tcp
+      opts: rw,hard,intr,rsize=8192,wsize=8192,timeo=1400,tcp,context="system_u:object_r:public_content_rw_t:s0"
       state: mounted
 
 # Move original datastreamstore and objectstore
@@ -74,6 +74,20 @@
       regexp: 'fedora_inst'
       replace: 'fedora_prod'
       backup: yes
+
+
+  - name: copy custom selinux modules for nfs 
+    copy:
+      src: resources/fedora/NFS
+      dest: /tmp
+        
+  - name: Run selinux policy nfs
+    command: semodule -i /tmp/NFS/tomcatnfs.pp
+
+  - name: Run selinux policy nfs
+    command: semodule -i /tmp/NFS/local_tomcat.cil
+     
+
 
 # Start Tomcat          
   - name: Start Tomcat 
