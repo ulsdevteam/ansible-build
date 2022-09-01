@@ -35,7 +35,7 @@
 #
 - name: Install Fedora GSearch Playbook.
   remote_user: ulsprovision
-  hosts: manual
+  hosts: islandora_fedora_servers
   become: yes
 
   tasks:
