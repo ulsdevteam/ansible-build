@@ -1,0 +1,768 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>NetRexx Changes</title>
+<meta name="owner"    content="mfc@uk.ibm.com">
+<meta name="review"   content="20050318">
+</head>
+<body bgcolor="#FFFFFF">
+<img src="IBMsw.gif" alt="IBM" width=584 height=70><br>
+<br>
+<table cellpadding=12>
+<tr valign=top>
+<td><img src="netrexx.gif" width=64 height=64 alt=""></td>
+<td><font size=6><strong>
+
+NetRexx Change History
+</strong></font></td></tr></table>
+
+<hr>
+<br>
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<h3><a name="nr201">NetRexx 2.01</a></h3>
+
+<p>This release is the reference implementation for NetRexx 2, and
+requires Java 1.1.2 (or later) to run.
+NetRexx 2 releases are a superset of NetRexx 1.00, as published in
+<a href="nrl.html"><em>The NetRexx Language</em></a>.  New language
+features since NetRexx 1.00 are documented in the
+<a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">NetRexx
+Supplement</a>.
+
+<table cellpadding=6 border=0>
+
+<tr valign=top><td><b>Updates:</b></td><td>&nbsp;</td></tr>
+
+<tr valign=top>
+<td>2.02<br><font size=-1>[22&nbsp;May&nbsp;2001]&nbsp;</font></td>
+<td>
+This is a maintenance release; <tt>&nbsp;loop i=a to b until
+x&nbsp;</tt> incorrectly optimized the control variable test in some
+circumstances.
+No other changes are included.
+</td></tr>
+
+<tr valign=top>
+<td>2.01<br><font size=-1>[1&nbsp;Apr&nbsp;2001]&nbsp;</font></td>
+<td>
+This is a maintenance release which corrects excessive memory usage when
+large numbers of files are imported and the -prompt option is used.  No
+other changes are included.
+</td></tr>
+
+<tr valign=top>
+<td>2.00<br><font size=-1>[26&nbsp;Aug&nbsp;2000]&nbsp;</font></td>
+<td>
+This is a major new release, which consolidates the changes of NetRexx
+1.1 and adds the NetRexx interpreter and improved documentation.  The
+enhancements are:
+<ul>
+<li>
+The various installation and user documents have been consolidated into
+a new expanded and indexed User's Guide, available in both
+<a href="nrusers.html">HTML</a> and
+<a href="http://www2.hursley.ibm.com/netrexx/nrusers.pdf">PDF
+(Acrobat)</a> formats.
+<li>
+The reference implementation now includes the <a href="nruinter.html">
+<b>NetRexx interpreter</b></a>, which allows programs and classes to be
+run without being compiled, together with a new API which makes it easy
+to use the interpreter from NetRexx or Java applications.
+
+<li>
+The new
+<a href="nruprom.html"><b>-prompt</b> option</a>, which lets the
+translator be used repeatedly without requiring re-loading.  This allows
+sub-second compilation and interpretation of NetRexx programs.
+
+<li>
+The structure of the NetRexx package has been revised to make
+installation and maintenance simpler.  Shell scripts for Linux have been
+added.
+Please see the new
+<a href="nrusers.html">User's Guide</a> for details.
+
+<li>
+The Language Overview (quick start) has been updated and is now also
+available in
+<a href="http://www2.hursley.ibm.com/netrexx/nroverv.pdf">PDF
+(Acrobat)</a> format for viewing or printing.
+
+<li>
+A warning is now given if a private method in a class is not referenced.
+
+<li>
+The <b>compact</b> option for compact error messages has now been
+documented (see the
+<a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">NetRexx
+Supplement</a> for details).
+
+<li>
+The documentation was inconsistent as regards the file name generated
+when <b>-nocompile</b> was specified; the intent was that NetRexx should never
+leave a plain <tt>.java</tt> file on disk, as this prevents the next
+compilation if unprocessed.  The documentation and code have been fixed
+to ensure that <b>-nocompile</b> exactly implies <b>-keep</b>.
+
+<li>
+Several performance optimizations have been added.
+</ul>
+</td></tr>
+</table>
+
+<!-- ============================================================== -->
+<h3><a name="nr110">NetRexx 1.1xx</a></h3>
+<p>The following changes are those which were made in NetRexx 1.1xx
+releases.
+NetRexx 1.1xx releases require Java 1.1.0 (or later).
+<p>
+<table cellpadding=6 border=0>
+
+<tr valign=top><td><b>Updates:</b></td><td>&nbsp;</td></tr>
+
+<tr valign=top>
+<td>1.160<br><font size=-1>[10&nbsp;Feb&nbsp;2000]&nbsp;</font></td>
+<td>
+This release has some language enhancements, along with some problem
+fixes and other improvements:
+<ul>
+<li>
+The <b>if</b> clause in the <b>if</b> instruction and the <b>when</b>
+clause in the <b>select</b> instruction have both been enhanced to
+accept multiple expressions, separated by commas.  These are evaluated
+in turn from left to right, and if the result of any evaluation is 1 (or
+equals the <b>case</b> expression for a <b>when</b> clause in a
+<b>select case</b> instruction) then the test has succeeded and the
+instruction following the associated <b>then</b> clause is executed.
+<p>
+Note that once an expression evaluation has resulted in a successful
+test, no further expressions in the clause are evaluated.  So, for
+example, in:
+<pre>
+-- assume name is a string
+if name=null, name='' then say 'Empty'
+</pre>
+then if <tt>name</tt> does not refer to an object it will compare equal to
+null and the <b>say</b> instruction will be executed without
+evaluating the second expression in the <b>if</b> clause.
+<p>
+Here is an example in a <b>select case</b> instruction:
+<pre>
+select case i
+  when 1 then say 'one'
+  when 2 then say 'two'
+  when 3, 4, 5 then say 'many'
+end
+</pre>
+
+<li>
+The <b>select case</b> instruction will now generate a Java
+<tt>switch</tt> instruction under the right conditions.
+See the <a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">NetRexx
+Supplement</a> for details.
+<li>
+The new <b>nojava</b> option allows Java code generation to be inhibited.
+This can be used to speed up a syntax checking run, when no compilation
+or Java source code is required.
+<li>
+Invoking NetRexxC with no arguments will now display all options, not
+just the 'outer level' options.
+<li>
+The class <tt>Exception</tt> is now treated as a Checked exception (as
+Java does).
+<li>
+Calls to <tt>super()</tt> in dependent classes may now be qualified by
+<tt>parent.</tt> as well as by constructor arguments, if appropriate.
+<li>
+<tt>.jar</tt> files in the <tt>/lib/ext</tt> (automatic extensions in
+Java 2 [1.2]) are automatically added to the classpath.
+<li>
+Classpaths containing multiple quoted segments are now handled
+correctly, and various other minor problems have been fixed.
+<li>
+Several optimizations and improvements to formatting have been added.
+</ul>
+</td></tr>
+
+<tr valign=top>
+<td>1.151<br><font size=-1>[3&nbsp;Sep&nbsp;1999]&nbsp;</font></td>
+<td>
+This refresh has some minor enhancements:
+<ul>
+<li>
+The 'direct call from Java' entry points have been enhanced to allow
+paths with embedded blanks to be specified.
+See the <a href="nrusers.html">User's Guide</a> (<i>Using the translator
+as a Compiler</i>).
+<li>
+Several improvements in code generation when incrementing and
+decrementing integers.
+<li>
+This release has been tested under the first Java 1.3 beta; no problems
+were found and no changes from earlier NetRexx 1.1 releases were
+necessary.
+</ul>
+</td></tr>
+
+<tr valign=top>
+<td>1.150<br><font size=-1>[23&nbsp;Jul&nbsp;1999]&nbsp;</font></td>
+<td>
+This release is a maintenance update with some minor enhancements:
+<ul>
+<li>New <b>unused</b> modifier on the <b>properties</b> instruction may
+be used (in conjunction with <b>private</b> only) to indicate that a
+private property is not used.  This keyword will stop the compiler
+warning that a property is not used.  For example:
+<pre>
+  properties private constant unused
+    copyright="Copyright (C) Speleo Corp., 1999"
+</pre>
+<li>New <b>strictprops</b> compiler option requires that references to
+properties, even from within the same class as the property, be
+qualified (either by <tt>this.</tt> or the name of the class).
+This can be useful for large and complex classes.
+<li>
+Several improvements in code generation, mostly for testing of
+equality.
+<li>
+Calls to <tt>this()</tt> and <tt>super()</tt> in minor classes will no
+longer attempt to refer to generated constants.
+</ul>
+</td></tr>
+
+<tr valign=top>
+<td>1.148<br><font size=-1>[21&nbsp;Dec&nbsp;1998]&nbsp;</font></td>
+<td>
+This release makes significant improvements in importing classes and in
+the <b>select</b> instruction:
+<ul>
+<li>The <b>select</b> instruction now adds a <b>case</b> keyword,
+which lets an expression be evaluated once and then tested in each
+<b>when</b> clause.  For example:
+<pre>
+i=1
+select case i+1
+  when 1 then say 'one'
+  when 2 then say 'two'
+  when 3 then say 'three'
+end
+</pre>
+See the <a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">NetRexx
+Supplement</a> for details.
+<li>
+An explicit class import will now disambiguate short references.
+For example, after <tt>import java.awt.List</tt> a reference to the
+class <tt>List</tt> would refer to that class, not the class
+<tt>java.util.List</tt> introduced in Java 1.2.
+<li>
+Several improvements in code generation, including the treatment of small
+integers as, for example, <tt>byte</tt> without need for explicit casts.
+<li>The <b>format</b> method in the <tt>Rexx</tt> class has been
+corrected to completely follow the ANSI X3-274 definition and the
+NetRexx specification.
+</ul>
+</td></tr>
+
+<tr valign=top>
+<td>1.144<br><font size=-1>[21&nbsp;Oct&nbsp;1998]&nbsp;</font></td>
+<td>
+This maintenance release primarily allows more explicit control over the
+compiler, for working with 'minimal' virual machines.
+<ul>
+<li>New <b>strictimport</b> compiler option prevents any automatic
+class imports (even java.lang.Object).  This can be useful when
+compiling programs for reduced-function JVMs for embedded systems and
+palm-sized devices.
+<li>The package <tt>java.math</tt> is no longer imported automatically.
+<li>Occasional incorrect loop termination when <b>trace</b> is in use
+has been corrected.
+</ul>
+</td></tr>
+
+<tr valign=top>
+<td>1.142<br><font size=-1>[1&nbsp;Sep&nbsp;1998]&nbsp;</font></td>
+<td>
+This version is a maintenance release, primarily to support changes in
+the Java Development Kit (JDK) introduced for Java 1.2.  Please see
+the <a href="nrusers.html">User's Guide</a> for details for additions
+to the class path needed to run under Java 1.2.
+<p>
+The other changes are:
+<ul>
+<li>A type on the left hand side of an operator that could be a prefix
+operator (<tt>+</tt>, <tt>-</tt>, or <tt>\</tt>) is now assumed to imply
+a cast, rather than being an error.
+<br>For example: <tt>x=int -1</tt>
+
+<li>Improved code generation for <b>for</b> and <b>to</b> loops.
+
+<li>The euro character ('\u20ac') is now treated in the same way as the
+dollar character (that is, it may be used in the names of variables and
+other identifiers).  Note that only UTF8-encoded source files can
+currently use the euro character, and a 1.1.7 (or later) version of a
+Java compiler is needed to generate the class files.
+
+<li>The arithmetic routines have slightly improved performance, and
+provide accurate binary floating point conversions for constants.
+
+<li>More robust handling of <b>import</b>, and import from classpath
+root segments generalized.
+
+<li>Improved error messages when an indirect property is initialized
+with a forward reference.
+</ul>
+</td></tr>
+
+<tr valign=top>
+<td>1.140<br><font size=-1>[26&nbsp;May&nbsp;1998]&nbsp;</font></td>
+<td>
+<ul>
+<li>Three enhancements have been made to tracing:
+<ol>
+<li>
+The new <b>var</b> option on <b>trace</b> lets changes to named
+variables be traced selectively.  For example:
+<pre>
+trace var a b c
+</pre>
+requests that whenever the variables a, b, or c are changed (either
+directly or using an index), the line changing them and their new values
+should be traced.  Variables may be added to or removed from the list
+as required.
+<li>
+The <b>trace</b> instruction may now be used before the first
+<b>class</b> instruction; it then applies to all classes in a program.
+<li>
+Context is now shown while tracing &#150; if a trace line is produced
+from a different program or thread than the preceding trace line, then
+an indicator line (prefixed with <tt>---</tt>) is displayed.
+</ol>
+See the <a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">NetRexx
+Supplement</a> for details.
+
+<li>The <b>numeric</b> instruction may now be used before the first
+<b>class</b> instruction; it then applies to all classes in a program.
+
+<li>The new <b>-savelog</b> NetRexxC option requests that compiler
+messages be written to the file NetRexxC.log in the current directory.
+The messages are also displayed on the console, unless
+<b>-noconsole</b> is specified.
+
+<li>The new <b>-noconsole</b> NetRexxC option requests that compiler
+messages not be written to the console.
+
+<li>When calling the compiler directly from NetRexx or Java, a
+PrintWriter can now be provided; messages are then written to that
+stream (see the <a href="nrusers.html">User's Guide</a> for details).
+
+<li>A <b>catch</b> clause may now specify an exception that is a
+subclass of an exception signalled in the body of its construct.
+
+<li>The <b>leave</b> and <b>iterate</b> instructions may now be used in
+the <b>catch</b> and <b>finally</b> clauses of nested loops.
+
+<li>Many improvements to the formatting of generated Java code have been
+made (plain-name labels, fewer braces, better comments handling,
+<i>etc.</i>).
+
+<li>A <b>constant</b> indirect property may now be changed by methods in
+its class, though no <tt>set</tt> method for it is generated or permitted.
+
+<li>Several performance improvements and optimizations have been added,
+improving both run time and compilation time.  If you have a long
+CLASSPATH or many files in directories, you may see a 20% or better
+reduction in compile time.
+
+<li>The NetRexxC.cmd and .bat files now add the value of the NETREXX_JAVA
+environment variable to the options passed to java.exe.  For example,
+<tt>SET NETREXX_JAVA=-mx24M</tt> changes the maximum Java heap size
+to 24 MegaBytes.  Try this if you see a java.lang.OutOfMemoryError while
+running the compiler.
+
+<li>Several related problems with loading minor classes from directories
+and zip files have been corrected.
+
+<li>Parentheses around sub-expressions were incorrectly optimized out in
+some situations; they are now preserved.
+
+<li>A work-around for a problem caused by empty directories on the
+CLASSPATH in Linux has been added.
+</ul></td></tr>
+
+<tr valign=top>
+<td>1.132<br><font size=-1>[15&nbsp;Apr&nbsp;1998]&nbsp;</font></td>
+<td>
+<ul>
+<li>This version includes one major enhancement: support for
+<a href="nrusers.html">Minor and Dependent classes</a> - Java's Nested
+and Member (inner) classes, using simplified syntax and concepts.
+</ul></td></tr>
+
+<tr valign=top>
+<td>1.130<br><font size=-1>[8&nbsp;Mar&nbsp;1998]&nbsp;</font></td>
+<td>
+<ul>
+<li>The new copyIndexed method on the <m>Rexx</m> class allows the
+sub-values (indexed strings) of one Rexx object to be merged into the
+sub-value collection of another Rexx object
+[available in runtime since NetRexx 1.120].
+<li>
+The '$' character is now permitted in variable and other names.
+<li>
+It is now an error to attempt to use a concatenate operator on an array
+(unless the array is of type <m>char[]</m>).
+<li>
+The methods generated for indirect properties are no longer
+inhibited by methods of the same name in superclasses.
+<li>
+The <a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">NetRexx
+Supplement</a> has been updated to document changes since August 1997.
+</ul></td></tr>
+
+<tr valign=top>
+<td>1.128<br><font size=-1>[14&nbsp;Feb&nbsp;1998]&nbsp;</font></td>
+<td>
+<ul>
+<li>The new <b>linecomment</b> example is a small command-line
+application that processes a text file.  It demonstrates the use of
+Readers and Writers, and exception handling.
+<li>A workaround for a bug in <tt>javac</tt> in JDK1.2b2 has been
+included.
+<li>Retry of a failing <b>do</b> instruction as a <b>loop</b>
+instruction now works.
+<li>'\1a' (EOF) characters no longer need to follow line-end sequences
+in order to be ignored.
+<li>Import of package hierarchies from .zip or .jar files now works
+correctly (previously it only worked for the standard imports).
+</ul></td></tr>
+
+<tr valign=top>
+<td>1.125<br><font size=-1>[10&nbsp;Jan&nbsp;1998]&nbsp;</font></td>
+<td>
+<ul>
+<li>The new <b>sourcedir</b> option requests that all <m>.class</m>
+files be placed in the same directory as the source file from which they
+are compiled.  Other output files are already placed in that directory.
+Note that using this option will prevent <b>-run</b> from working unless
+the source directory is the current directory.
+<li>The new <b>explicit</b> option indicates that all local variables
+must be explicitly declared (by assigning them a type but no value)
+before assigning any value to them.
+<li>Indexed strings are now serializable (can be made persistent).
+<li>Minor improvements to generated code.
+</ul></td></tr>
+
+<tr valign=top>
+<td>1.122<br><font size=-1>[27&nbsp;Nov&nbsp;1997]&nbsp;</font></td>
+<td>
+<ul>
+<li>A workaround for a JIT bug in Java 1.1.4 (showing as an exception in
+an <tt>optioncheck</tt> method during compilation) has been included.
+<li>Formatting for the Java code when the <b>comments</b> option
+is used has been improved.
+<li><b>strictcase</b> and <b>nostrictcase</b> programs can now be
+safely mixed in a single compilation.
+<li>Minor improvements to generated code and performance.
+</ul></td></tr>
+
+<tr valign=top>
+<td>1.121<br><font size=-1>[21&nbsp;Oct&nbsp;1997]&nbsp;</font></td>
+<td>
+<ul>
+<li>The new experimental <b>comments</b> option copies comments from the
+NetRexx source program through to the .java output file, which may be
+saved using the <b>keep</b> command option.
+<li>
+Decimal addition has been updated to conform to ANSI X3-274 arithmetic
+and the NetRexx documentation (this is a very minor change: an addition
+such as 77+1E-999 now pads with zeros).
+<li>
+An abstract method in an abstract class was incorrectly reported as
+error.
+<li>Minor improvements to error messages, formatting, and performance.
+</ul></td></tr>
+
+<tr valign=top>
+<td>1.120<br><font size=-1>[1&nbsp;Sep&nbsp;1997]&nbsp;</font></td>
+<td>
+<ul>
+<li>Minor improvements to error messages, signals handling, and
+performance.
+<li>Redesigned web pages and improved documentation.
+</ul></td></tr>
+
+<tr valign=top>
+<td>1.113<br><font size=-1>[3&nbsp;Aug&nbsp;1997]&nbsp;</font></td>
+<td>
+<ul>
+<li>Multiple .java files are compiled using a single call to javac,
+giving improved performance and interdependency resolution.
+<li>Individual methods may be designated as binary, using the
+<b>binary</b> keyword.
+<li>Numerous 'cosmetic' improvements in error messages, formatting,
+<i>etc.</i>
+</ul></td></tr>
+
+<tr valign=top>
+<td>1.104<br><font size=-1>[22&nbsp;Jul&nbsp;1997]&nbsp;</font></td>
+<td>
+<ul>
+<li>Whole numbers may now be expressed in a hexadecimal or binary
+notation, for example: <tt>0xbeef 2x81 8b10101010</tt> - see the
+<a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">Supplement</a>
+for details.
+<li>Conversions from <tt>String</tt> to <tt>Rexx</tt> (<i>etc.</i>) now
+'pass through' nulls, rather than raising <tt>NullPointerException</tt>.
+<li><strong>options symbols</strong> may be used to include debugging
+information (a symbol table) in the generated <tt>.class</tt> files.
+<li>Numerous 'cosmetic' improvements in error messages, formatting,
+<i>etc.</i>
+</ul></td></tr>
+
+<tr valign=top>
+<td>1.103<br><font size=-1>[3&nbsp;Jul&nbsp;1997]&nbsp;</font></td>
+<td>
+<ul>
+<li>A new modifier, <b>adapter</b>, for classes has been introduced.
+This makes it easy to use Java 1.1 events, without the complexity and
+extra nesting of Java Inner Classes.
+Please see the <a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">
+Supplement</a> for details, and the new
+<a href="scribble.html">Scribble</a> sample for a simple example.
+
+<li>Compressed Zip files as produced by the Java 1.1 <tt>jar</tt>
+utility ('jar files') can now be used for class file collections.
+The current NetRexxC.zip file is such a file.
+
+<li>The NetRexx string class, <tt>netrexx.lang.Rexx</tt>, is now
+serializable.
+
+<li>The compiler now uses the Java 1.1 Writer and Reader classes for
+reading and writing text files; this means that the text code page in
+use on your machine will be automatically translated to and from Unicode
+for use by the compiler.
+
+<li>Associated with the previous change, <b>options utf8</b> must now be
+consistent with the options passed to the compiler (see the
+<a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">Supplement</a>
+for details).
+
+<li>The <tt>NetRexxC.properties</tt> (error messages) file is now
+included as a resource in the NetRexxC.zip file.  The copy in the \lib
+directory is no longer needed, nor is the NETREXX_HOME environment
+variable (if you needed to use that before).
+
+<li>The Pinger and Spectrum sample applications have been updated to use
+the Java 1.1 event model; Pinger has also had some other minor
+improvements.
+
+<li>Performance improvements reduce start-up time when compiling with a
+long CLASSPATH or with class directories with large numbers of files.
+</ul></td></tr>
+</table>
+
+<!-- ============================================================== -->
+<h3><a name="nr100">NetRexx 1.0x</a></h3>
+<p>This release is the reference implementation for NetRexx 1.00, as
+published in <a href="nrl.html"><em>The NetRexx Language</em></a>, and
+later updates.
+NetRexx 1.0x updates will run on Java 1.0.1 or any later releases,
+though certain new features may require a Java 1.1 compiler to compile
+the generated Java code.
+<p>
+A <a href="nrchange0.html">change list for earlier releases of
+NetRexx</a> is also available.
+<p>
+<table cellpadding=6 border=0>
+
+<tr valign=top><td><b>Updates:</b></td><td>&nbsp;</td></tr>
+
+<tr valign=top><td>1.02<br><font size=-1>[25&nbsp;Jun&nbsp;1997]</font></td>
+<td>
+<ul>
+<li>
+You can now add the <b>shared</b> keyword to the <b>method</b> or
+<b>properties</b> instructions to indicate that the method or a following
+property has <i>shared</i> access (that is, is accessible to other
+classes in the same package, but not to other classes).  This
+corresponds to the Java 1.1 'default access' visibility.
+Please see the <a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">NetRexx
+Supplement</a> for details.
+
+<li>
+The new <b>sourceline</b> special name may be used to return the line
+number of the current clause in the program.
+Please see the <a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">NetRexx
+Supplement</a> for details.
+
+<li>Array initializers have ben added.  These allow arrays to be created
+and assigned an initial value, for example: <tt>x=['one','two','three']</tt>
+Note that Java 1.1 is needed to use this enhancement.
+Please see the <a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">NetRexx
+Supplement</a> for details.
+
+<li>The property and method access rules have been enforced according to
+the current Java specification, along with enhanced error messages when
+the rules are infringed.
+</ul></td></tr>
+
+<tr valign=top><td>1.01<br><font size=-1>[15&nbsp;Jun&nbsp;1997]</font></td>
+<td>
+<ul>
+<li>The <a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">NetRexx
+Supplement</a> has been added.  This documents language enhancements and
+the <tt>netrexx.lang</tt> package.
+<li>NetRexxC now displays a warning when it encounters any deprecated
+(out-of-date or no longer recommended) class, method, or property for
+the first time in a program.
+<p>
+Note that under Java 1.1, the javac compiler always displays at least
+one message if any deprecated fields or classes are encountered.  The
+invitation to 'Recompile with "-deprecation" for details' can be
+ignored.
+<li>
+You can now add the <b>deprecated</b> keyword to the <b>class</b>,
+<b>method</b>, or <b>properties</b> instructions to indicate that the
+following class, method, or properties are deprecated.  You have to run
+with a Java 1.1 compiler for this to be reflected in the <tt>.class</tt>
+file.
+<li>Methods and properties with the same name are now permitted (and can
+be accessed).
+<li>An <b>import</b> of one of the standard packages (for example,
+<tt>java.io</tt>) no longer causes the classpath to be searched.
+This makes redundant standard <b>import</b>s much faster.
+</ul></td></tr>
+
+<tr valign=top><td>1.00<br><font size=-1>[24&nbsp;May&nbsp;1997]</font></td><td>
+<ul>
+<li>Cosmetic changes:
+<ol>
+<li>Methods listed during compilation now have their argument types
+listed (if any)
+<li>Methods generated from Indirect Properties are now listed.
+</ol>
+<li>The <a href="nrusers.html">installation instructions</a> now
+include instructions for using NetRexx with Visual J++.
+<li>A reference to java.awt.image.ImageObserver treated java.awt.image
+as a class reference rather than as a package name; it will now
+correctly refer to the ImageObserver class.
+</ul></td></tr>
+
+<tr valign=top><td><font size=-1>[6&nbsp;May&nbsp;1997]</font></td><td>
+<ul>
+<li>
+Multiple file concurrent compilation: when two or more programs are
+specifed on the NetRexxC command, they are all compiled with the same
+class context: that is, they can 'see' the classes, properties, and
+methods of the other programs being compiled, much as though they were
+all in one file.  This allows mutually interdependent programs and
+classes to be compiled in a single operation, while maintaining their
+independence (the programs may have different <b>options</b>,
+<b>import</b>, and <b>package</b> instructions).
+<p>
+Compiling programs together in this way also gives substantial performance
+improvements, as the classes for NetRexxC and the javac compiler are
+only loaded once for all the files being compiled.
+See <i>Using the translator as a Compiler</i> in the
+<a href="nrusers.html">NetRexx User's Guide</a> for full details.
+
+<li>
+The warning 'Method argument not used' will now only be given if the
+<b>strictargs</b> option is specified.
+
+<li>
+The '.crossref' and '.java.keep' files resulting from a compilation now
+are placed in the same directory as the source file (instead of the
+current directory).  The multiple compilation support also requires that
+the source directory be writeable.
+
+<li>
+<b>import</b> of a package (with no trailing period) was not accepted by
+the compiler; this should now work correctly.
+
+</ul></td></tr>
+
+<tr valign=top><td><font size=-1>[15&nbsp;Apr&nbsp;1997]</font></td><td>
+<ul>
+<li>Preliminary, experimental, support for JavaBeans is now available
+in the NetRexxC compiler.
+It is described in the
+<a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">NetRexx
+Supplement</a>.
+<li>Checking has been added for the use of Java reserved words as
+externally visible names (such properties, method, and class names
+cannot be accessed by people writing in the Java language).
+<li>The translator phase of the compiler has numerous performance
+improvements, and now runs 35% faster than the first (January) 1.00
+release.
+<li>Forward references from property initialization expressions to
+methods in the current class are now permitted, providing they are not
+circular.
+<li>Several improvements have been made to error and progress messages.
+</ul></td></tr>
+
+<tr valign=top><td><font size=-1>[13&nbsp;Mar&nbsp;1997]</font></td><td>
+<ul>
+<li>The source and documentation for the Tablet (navigation tabs) applet
+have been added to the package.
+<li>Forward references involving default constructors now work
+correctly.
+<li>The <tt>.equals</tt> method was not being used for '=' and '\='
+comparisons of subclassed objects.
+<li><strong>options nodecimal</strong> may be used to report the use of
+decimal arithmetic as an error, for performance-critical applications.
+</ul></td></tr>
+
+<tr valign=top><td><font size=-1>[18 Feb 1997]</font></td><td>
+<ul>
+<li>Minor improvements to the compiler for error messages, localization,
+and Java 1.1.
+<li>The <b>Say</b> instruction can now handle all expressions that evaluate
+to <tt>null</tt>.
+</ul>
+
+<tr valign=top><td><font size=-1>[6 Feb 1997]</font></td><td>
+<ul>
+<li>LOOP OVER did not correctly snapshot indexed strings with 'hidden'
+elements.
+<li>Some unused method arguments were not being reported as unused.
+<li>Minor improvements to error messages, progress messages, and code
+generation.
+</ul></td></tr>
+
+<tr valign=top><td><font size=-1>[3 Jan 1997]</font></td><td>
+<ul>
+<li>Minor cosmetic and performance improvements over 0.90.
+<li>NetRexxC.bat and nrc.bat have been added to the NetRexx package.
+</ul>
+</table>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<hr>
+<p>
+<strong>[
+<a href="http://www.ibm.com/">IBM home page</a> |
+<a href="http://www.ibm.com/Search/">Search</a> |
+<a href="http://www.ibm.com/Assist/">Contact IBM</a> |
+<a href="http://www.ibm.com/Finding/">Help</a> |
+<a href="http://www.ibm.com/Legal">Terms of use</a> |
+<a href="http://www2.hursley.ibm.com/privacy.html">Privacy</a>
+]</strong>
+<br>
+<!-- <font size=2>This page was created on 14 Jan 2005.</font> -->
+<script><!--
+var lm=Date.parse(document.lastModified)
+if (lm!=0) {
+  var dlm=new Date(lm)
+  var y=dlm.getYear();    if (y<100) y+=100; if (y<1000) y+=1900
+  var m=dlm.getMonth()+1; if (m<10) m='0'+m
+  var d=dlm.getDate();    if (d<10) d='0'+d
+  var rdate=y+'.'+m+'.'+d
+  document.write('<table width=100%><td align=right>')
+  document.write('<font size=2>This page was created on ')
+  document.write(rdate+'.</font>')
+  document.write('</td></table>')
+  }
+//--></script>
+</body>
+</html>
+

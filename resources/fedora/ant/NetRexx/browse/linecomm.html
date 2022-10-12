@@ -1,0 +1,90 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>NetRexx example</title>
+<meta name="owner"    content="mfc@uk.ibm.com">
+<meta name="review"   content="20050318">
+</head>
+<body bgcolor="#FFFFFF">
+<img src="IBMsw.gif" alt="IBM" width=584 height=70><br>
+<br>
+<table cellpadding=12>
+<tr valign=top>
+<td><img src="netrexx.gif" width=64 height=64 alt=""></td>
+<td><font size=6><strong>
+
+File manipulation application
+</strong></font></td></tr></table>
+
+<hr>
+<p>
+This example is a NetRexx command-line application showing file input
+and output.  It converts block-style comments (<tt>/* ... */</tt>) to
+NetRexx line comments (<tt>-- ...</tt>), for comments on the end of a
+line that contains some other data.
+It is easily modified to make other changes to the contents
+of files.
+<p>
+Here's the source, as a <a href="linecomment.nrx">plain
+ASCII file</a> (linecomment.nrx).
+And here's a <a href="comment.txt">plain
+ASCII test file</a> (comment.txt).
+<p>
+To run the program, create or copy the 'linecomment.nrx' source file and
+the 'comment.txt' test file in your current directory, and then enter
+the commands
+<pre>
+  java COM.ibm.netrexx.process.NetRexxC linecomment
+  java linecomment comment.txt comment.out
+</pre>
+<p>These would:
+<ol>
+<li>Call the NetRexx translator to translate the program from NetRexx to
+Java
+<li>Call the Java compiler (javac) to compile the program into a class
+file
+<li>Call the Java interpreter (java) to interpret the class file, which
+should then process the test file and create the 'comment.out' file.
+This should look similar to the 'comment.txt' file, with block comments
+at the ends of lines converted to line comments.
+</ol>
+
+<p>Note that the Java toolkit (<em>e.g.</em>, from the Java Development
+Kit, version 1.1.2 or later) must be installed.
+
+<p>
+If you have the netrexxc command script available, you can compile
+the sample, using just:
+<pre>
+  netrexxc linecomment
+</pre>
+and then run it using the java command, as before.
+<!-- end ibmbody -->
+<hr>
+<p>
+<strong>[
+<a href="http://www.ibm.com/">IBM home page</a> |
+<a href="http://www.ibm.com/Search/">Search</a> |
+<a href="http://www.ibm.com/Assist/">Contact IBM</a> |
+<a href="http://www.ibm.com/Finding/">Help</a> |
+<a href="http://www.ibm.com/Legal">Terms of use</a> |
+<a href="http://www2.hursley.ibm.com/privacy.html">Privacy</a>
+]</strong>
+<br>
+<!-- <font size=2>This page was created on 14 Jan 2005.</font> -->
+<script><!--
+var lm=Date.parse(document.lastModified)
+if (lm!=0) {
+  var dlm=new Date(lm)
+  var y=dlm.getYear();    if (y<100) y+=100; if (y<1000) y+=1900
+  var m=dlm.getMonth()+1; if (m<10) m='0'+m
+  var d=dlm.getDate();    if (d<10) d='0'+d
+  var rdate=y+'.'+m+'.'+d
+  document.write('<table width=100%><td align=right>')
+  document.write('<font size=2>This page was created on ')
+  document.write(rdate+'.</font>')
+  document.write('</td></table>')
+  }
+//--></script>
+</body>
+</html>
+

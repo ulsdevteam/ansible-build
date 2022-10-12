@@ -1,0 +1,181 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>NetRexx example</title>
+<meta name="owner"    content="mfc@uk.ibm.com">
+<meta name="review"   content="20050318">
+</head>
+<body bgcolor="#FFFFFF">
+<img src="IBMsw.gif" alt="IBM" width=584 height=70><br>
+<br>
+<table cellpadding=12>
+<tr valign=top>
+<td><img src="netrexx.gif" width=64 height=64 alt=""></td>
+<td><font size=6><strong>
+
+The NetRexx Tablet applet
+</strong></font></td></tr></table>
+
+<hr>
+<p>
+This is an example of a Java navigation applet, which has been written
+in <a href="netrexx.html">NetRexx</a>; when in use, it looks something
+like this:
+<br>
+<img src="tablet1.gif" width=610 height=60 alt="/card-index\/tabs\"></td>
+<table width=600 cellpadding=8><tr><td>
+These tabs can be used to give a 'horizontally organized' feel to a web
+site.
+
+<p><em>Notes:</em>
+<ol>
+<li>When live, the tabs react to the mouse pointer moving over them by
+turning the text blue (indicating that they are clickable).
+<li>The text for each tab, and the URL that each tab selects, is set by
+parameters to the applet (see below); each tab is sized to fit the text.
+<li>A further parameter chooses which tab appears to be at the 'front'
+of the stack (in the example above, the fourth tab).
+<li>The same applet is used to provide the bottom edge of the 'index
+cards'.
+<li>In a Java-enabled browser, the applet is normally set so it
+automatically fits the full width of the browser window.
+</ol>
+</td></tr></table>
+<img src="tablet2.gif" width=610 height=20 alt="\_____/"></td>
+
+<p>
+Here's the NetRexx source, as a <a href="Tablet.nrx">plain ASCII
+file</a>.  The compiled .class file is roughly the same size as the .gif
+'banner' image at the top of this page.
+<p>
+You can also download the Tablet package (with the .class file already
+compiled from the source) in <a href="tablet.zip">zip format</a>
+[tablet.zip, 14kB].
+The Tablet package is also included in the <a href="nrdown.html">NetRexx
+package</a> &#150; you may prefer to download the whole package, including
+the other <a href="nrsample.html">NetRexx samples and examples.</a>
+
+<p>Please note that the Tablet package is part of the NetRexx package,
+and is covered by the terms in the <a href="license.txt">IBM License
+Agreement</a> for that package.
+
+<hr>
+<h3>Using the Tablet applet</h3>
+<p>To have the applet displayed in a World Wide Web (HTML) page, you
+need to
+<ol>
+<li>place the Tablet.class and tablet.gif files in the same directory as
+the page in which they are to be used (the small tablet.gif provides the
+prototype from which the tabs are constructed)
+<li>refer to the applet, wherever you want it to appear on the page,
+with the &lt;applet&gt; tag, for example:
+<pre>
+  &lt;applet code="Tablet.class" width=100% height=40&gt;
+  &lt;param name=tab1 value="News nrnews.html"&gt;
+  &lt;param name=tab2 value="Documentation nrdocs.html"&gt;
+  &lt;param name=show value="2"&gt;
+  &lt;/applet&gt;
+</pre>
+Here,
+<ul>
+<li>The first line names the class for the applet, and sets the maximum
+size for the window in which the applet will appear.
+<li>The next two lines name and describe the tabs (tab1, tab2, tab3,
+<i>etc.</i>).  In the value for each, the first word is displayed on the
+tab, and the second word is the URL that it will take you to if the tab
+is clicked.  See <a href="Tablet.nrx">Tablet.nrx</a> for more details.
+<li>
+The 'show' parameter value gives the number of the tab
+that will be brought to the front (numbered 1-n, from the
+left).  If omitted, "1" is assumed.
+</ul>
+<li>To show the 'bottom edge' of the card, use:
+<pre>
+  &lt;applet code="Tablet.class" width=100% height=15&gt;
+  &lt;param name=show value="0"&gt;
+  &lt;/applet&gt;
+</pre>
+Note that the height in the applet tag should be 15 in this case.
+</ol>
+<p>You can then view the HTML file that includes the applet tags with
+any Java-enabled browser.
+<p>
+If you do not have a Java-enabled browser, you can view the applet using
+the 'applet viewer' that comes with the Java Development Kit.  To do
+this, change to the directory containing the World Wide Web (HTML) page
+that contains the reference to the applet, and issue the command
+<pre>
+  applet testapp.htm
+</pre>
+where 'testapp.htm' is the name of the page.  This should start up the
+applet viewer, showing a window for each applet referenced from the
+page.  [Note: the applet viewer may be called 'appletviewer' on some
+systems; also, you may need to change the '100%' in the width setting to
+a fixed number such as '500'.]
+<p>
+If you do not see the applet in the window, or the window does not
+appear, close the viewer (if necessary) and see if there are any
+messages in the applet viewer's 'weblog' file.  This may be found in the
+'applet' or 'weblogs' subdirectory which you should find in the Java
+home directory (<i>e.g.</i>, d:\java, depending on where you installed Java).
+<p>
+<em>Warning:</em> the applet viewer takes a URL (e.g., http://etc...) or
+a plain file name.  If you want to give it the name of a file that needs
+a path, prefix the file specification with 'file:/'.  For example:
+<pre>
+  applet file:/d:\fred\myapplet.htm
+</pre>
+The format of the file specification will vary from platform to
+platform.
+
+<h3>Compiling the Tablet applet</h3>
+<p>
+To compile the applet, ensure the 'Tablet.nrx' file (note the first
+letter is a capital letter) is in your current directory, and then enter
+the command:
+<pre>
+  java COM.ibm.netrexx.process.NetRexxC Tablet
+</pre>
+
+<p>This would:
+<ol>
+<li>Call the NetRexx translator to translate the program from NetRexx to
+Java
+<li>Call the Java compiler (javac) to compile the program into the class
+file for the applet.
+</ol>
+This should leave a new Tablet.class file (and also a cross-reference
+listing, Tablet.crossref) in your current directory.  The Tablet.class
+file can then be used for running the applet as described above.  [Note:
+most browsers need to be restarted to load a new version of a class
+file.]
+
+<!-- end ibmbody -->
+<hr>
+<p>
+<strong>[
+<a href="http://www.ibm.com/">IBM home page</a> |
+<a href="http://www.ibm.com/Search/">Search</a> |
+<a href="http://www.ibm.com/Assist/">Contact IBM</a> |
+<a href="http://www.ibm.com/Finding/">Help</a> |
+<a href="http://www.ibm.com/Legal">Terms of use</a> |
+<a href="http://www2.hursley.ibm.com/privacy.html">Privacy</a>
+]</strong>
+<br>
+<!-- <font size=2>This page was created on 14 Jan 2005.</font> -->
+<script><!--
+var lm=Date.parse(document.lastModified)
+if (lm!=0) {
+  var dlm=new Date(lm)
+  var y=dlm.getYear();    if (y<100) y+=100; if (y<1000) y+=1900
+  var m=dlm.getMonth()+1; if (m<10) m='0'+m
+  var d=dlm.getDate();    if (d<10) d='0'+d
+  var rdate=y+'.'+m+'.'+d
+  document.write('<table width=100%><td align=right>')
+  document.write('<font size=2>This page was created on ')
+  document.write(rdate+'.</font>')
+  document.write('</td></table>')
+  }
+//--></script>
+</body>
+</html>
+

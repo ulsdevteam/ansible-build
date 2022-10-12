@@ -1,0 +1,65 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>User's Guide - Installing the NetRexx translator</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx User's Guide</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>Draft of 14 Jan 2005</td>
+</tr><tr><td>[<a href="nruipack.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruij11.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="iexec"><font face=helvetica color=#006644>Installing the NetRexx translator</font></a></h2>
+
+The NetRexx package includes the NetRexx translator &#8211; a Java
+application which can be used for compiling, interpreting, or
+syntax-checking NetRexx programs.  The procedure for installation is
+briefly as follows (full details are given later):
+<ol>
+<li>
+Make the translator visible to the Java Virtual Machine (JVM):
+<ul>
+<li>
+If you are running Java <b>1.2</b> or later, copy the
+file <tt>NetRexx\lib\NetRexxC.jar</tt> to the <tt>jre\lib\ext</tt> directory
+in the Java installation tree.
+The JVM will automatically find it there and make it available.
+<li>
+If you are using an earlier Java version (<b>1.1.2</b> through
+<b>1.1.8</b>) instead add the full path and filename of
+the <tt>NetRexx\lib\NetRexxC.jar</tt> to the CLASSPATH environment
+variable for your operating system.
+</ul>
+<i></i>
+Note: if you have a NetRexxC.zip in your CLASSPATH from an earlier
+version of Rexx, remove it (NetRexxC.jar replaces NetRexxC.zip).
+<li>
+Copy all the files in the <tt>NetRexx\bin</tt> directory to a directory in
+your PATH (perhaps the <tt>\bin</tt> directory in the Java installation
+tree).  This is not essential, but makes shorthand scripts and a test
+case available.
+<li>
+If you are running Java <b>1.2</b> or later, make the
+file <tt>\lib\tools.jar</tt> (which contains the <tt>javac</tt> compiler) in
+the Java tree visible to the JVM.  You can do this either by adding its
+path and filename to the CLASSPATH environment variable, or by moving it
+to the <tt>jre\lib\ext</tt> directory in the Java tree.
+<li>
+Test the installation by making the <tt>\bin</tt> directory the current
+directory and issuing the following two commands exactly as written:
+<pre>
+  java COM.ibm.netrexx.process.NetRexxC hello
+  java hello
+</pre>
+<i></i>
+The first of these should translate the test program and then invoke
+the <tt>javac</tt> compiler to generate the class file
+(<tt>hello.class</tt>) for the program.  The second should run the program
+and display a simple greeting.
+</ol>
+<p>
+If you have any problems or errors in the above process, please read the
+detailed instructions and problem-solving tips that follow.
+<hr>
+[<a href="nruipack.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruij11.html">next</a>]
+</body></html>

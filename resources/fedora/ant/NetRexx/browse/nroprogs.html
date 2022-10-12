@@ -1,0 +1,67 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>NetRexx overview - NetRexx programs</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx Overview</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>14 Jan 2005</td>
+</tr><tr><td>[<a href="netrexxo.html">contents</a> | <a href="nroexprs.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="refoprogs"><font face=helvetica color=#006644>NetRexx programs</font></a></h2>
+
+The structure of a NetRexx program is extremely simple.  This sample
+program, &#8216;toast&#8217;, is complete, documented, and executable as it
+stands:
+<pre>
+  /* This wishes you the best of health. */
+  say &#8217;Cheers!&#8217;
+</pre>
+
+This program consists of two lines: the first is an optional
+comment that describes the purpose of the program, and the second is a
+<b>say</b> instruction.  <b>say</b> simply displays the result of
+the expression following it &#8211; in this case just a literal string
+(you can use either single or double quotes around strings, as you
+prefer).
+<p>
+To run this program using the reference implementation of NetRexx,
+create a file called <tt>toast.nrx</tt> and copy or paste the two
+lines above into it.  You can then use the <tt>NetRexxC</tt> Java
+program to compile it:
+<pre>
+  java COM.ibm.netrexx.process.NetRexxC toast
+</pre>
+<i></i>(this should create a file called <tt>toast.class</tt>),
+and then use the <tt>java</tt> command to run it:
+<pre>
+  java toast
+</pre>
+
+You may also be able to use the <tt>netrexxc</tt> or <tt>nrc</tt>
+command to compile and run the program with a single command (details
+may vary &#8211; see the installation and user&#8217;s guide document for your
+implementation of NetRexx):
+<pre>
+  netrexxc toast -run
+</pre>
+
+Of course, NetRexx can do more than just display a character string.
+Although the language has a simple syntax, and has a small number of
+instruction types, it is powerful; the reference implementation of the
+language allows full access to the rapidly growing collection of Java
+programs known as <i>class libraries</i>, and allows new class
+libraries to be written in NetRexx.
+<p>
+The rest of this overview introduces most of the features of NetRexx.
+Since the economy, power, and clarity of expression in NetRexx is best
+appreciated with use, you are urged to try using the language yourself.
+<hr>
+[<a href="netrexxo.html">contents</a> | <a href="nroexprs.html">next</a>]
+<p><font size=2>From
+<a href="/netrexx/nrl.html"><em>The NetRexx Language</em></a> by 
+<a href="http://www2.hursley.ibm.com/mfcsumm.html">Mike Cowlishaw</a>,
+<a href="mailto:mfc@uk.ibm.com"><m>mfc@uk.ibm.com</m></a>
+(ISBN 0-13-806332-X, 197pp, Prentice-Hall, 1997).</font>
+</body></html>

@@ -1,0 +1,142 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>NetRexx overview - Binary types and conversions</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx Overview</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>14 Jan 2005</td>
+</tr><tr><td>[<a href="nrotrace.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nroexcep.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="refobinar"><font face=helvetica color=#006644>Binary types and conversions</font></a></h2>
+
+Most programming environments support the notion of fixed-precision
+&#8216;primitive&#8217; binary types, which correspond closely to the binary
+operations usually available at the hardware level in computers.
+For the reference implementation, these types are:
+<ul>
+<li>
+<i>byte, short, int,</i> and <i>long</i> &#8211; signed integers
+that will fit in 8, 16, 32, or 64 bits respectively
+<li>
+<i>float</i> and <i>double</i> &#8211; signed floating point
+numbers that will fit in 32 or 64 bits respectively.
+<li>
+<i>char</i> &#8211; an unsigned 16-bit quantity, holding a Unicode
+character
+<li>
+<i>boolean</i> &#8211; a 1-bit logical value,
+representing <tt>0</tt> or <tt>1</tt> (&#8216;false&#8217; or &#8216;true&#8217;).
+</ul>
+<p>
+Objects of these types are handled specially by the implementation
+&#8216;under the covers&#8217; in order to achieve maximum efficiency; in
+particular, they cannot be constructed like other objects &#8211; their
+value is held directly.  This distinction rarely matters to the NetRexx
+programmer: in the case of string literals an object is
+constructed automatically; in the case of an <tt>int</tt> literal, an
+object is not constructed.
+<p>
+Further, NetRexx automatically allows the conversion between the various
+forms of character strings in implementations<a name="backref.1"><a href="#footnote.1"><font size=3><sup>[1]</sup></font></a></a>&nbsp;
+and the primitive types.  The &#8216;golden rule&#8217; that is followed by
+NetRexx is that any automatic conversion which is applied must not lose
+information: either it can be determined before execution that the
+conversion is safe (as in <tt>int</tt> to <tt>String</tt>) or it
+will be detected at execution time if the conversion fails (as
+in <tt>String</tt> to <tt>int</tt>).
+<p>
+The automatic conversions greatly simplify the writing of programs;
+the exact type of numeric and string-like method arguments rarely needs
+to be a concern of the programmer.
+<p>
+For certain applications where early checking or performance override
+other considerations, the reference implementation of NetRexx provides
+options for different treatment of the primitive types:
+<ol>
+<li>
+<b>options strictassign</b> &#8211; ensures exact type matching for all
+assignments.  No conversions (including those from shorter integers to
+longer ones) are applied.  This option provides stricter type-checking
+than most other languages, and ensures that all types are an exact match.
+<li>
+<b>options binary</b> &#8211; uses implementation-dependent fixed
+precision arithmetic on binary types (also, literal numbers, for
+example, will be treated as binary, and local variables will be given
+&#8216;native&#8217; types such as <tt>int</tt> or <tt>String</tt>, where
+possible).
+<br>
+Binary arithmetic currently gives better performance than NetRexx
+decimal arithmetic, but places the burden of avoiding overflows and
+loss of information on the programmer.
+</ol>
+<p>
+The options instruction (which may list more than one option) is placed
+before the first class instruction in a file; the <b>binary</b>
+keyword may also be used on a <b>class</b> or <b>method</b>
+instruction, to allow an individual class or method to use binary
+arithmetic.
+<h4><font face=helvetica color=#006644>Explicit type assignment</font></h4>
+
+You may explicitly assign a type to an expression or variable:
+<pre>
+  i=int 3000000  -- &#8217;i&#8217; is an &#8217;int&#8217; with value 3000000
+  j=int 4000000  -- &#8217;j&#8217; is an &#8217;int&#8217; with value 4000000
+  k=int          -- &#8217;k&#8217; is an &#8217;int&#8217;, with no initial value
+  say i*j        -- multiply and display the result
+  k=i*j          -- multiply and assign result to &#8217;k&#8217;
+</pre>
+
+This example also illustrates an important difference between
+<b>options nobinary</b> and <b>options binary</b>.  With the former
+(the default) the <b>say</b> instruction would display the result
+&#8216;<tt>1.20000000E+13</tt>&#8217; and a conversion overflow would be
+reported when the same expression is assigned to the variable <tt>k</tt>.
+<p>
+With <b>options binary</b>, binary arithmetic would be used for the
+multiplications, and so no error would be detected; the <b>say</b>
+would display &#8216;<tt>-138625024</tt>&#8217; and the variable <tt>k</tt>
+takes the incorrect result.
+<h4><font face=helvetica color=#006644>Binary types in practice</font></h4>
+
+In practice, explicit type assignment is only occasionally needed in
+NetRexx.  Those conversions that are necessary for using existing
+classes (or those that use <b>options binary</b>) are generally
+automatic.
+For example, here is an &#8216;Applet&#8217; for use by Java-enabled
+browsers:
+<pre>
+  /* A simple graphics Applet */
+  class Rainbow extends Applet
+    method paint(g=Graphics)  -- called to repaint window
+      maxx=size.width-1
+      maxy=size.height-1
+      loop y=0 to maxy
+        col=Color.getHSBColor(y/maxy, 1, 1) -- new colour
+        g.setColor(col)                     -- set it
+        g.drawLine(0, y, maxx, y)           -- fill slice
+      end y
+</pre>
+
+In this example, the variable <tt>col</tt> will have
+type <tt>Color</tt>, and the three arguments to the
+method <tt>getHSBColor</tt> will all automatically be converted to
+type <tt>float</tt>.  As no overflows are possible in this example,
+<b>options binary</b> may be added to the top of the program with no
+other changes being necessary.
+<hr><font size=2>Footnotes:</font><table cellpadding=5>
+<tr valign=top><td><font size=2><a name="footnote.1"><a href="#backref.1">[1]</a></a></font></td>
+<td><font size=2>In the reference implementation, these
+are <tt>String</tt>, <tt>char</tt>, <tt>char[]</tt> (an
+array of characters), and the NetRexx string type, <tt>Rexx</tt>.
+</font></tr></td>
+</table>
+<hr>
+[<a href="nrotrace.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nroexcep.html">next</a>]
+<p><font size=2>From
+<a href="/netrexx/nrl.html"><em>The NetRexx Language</em></a> by 
+<a href="http://www2.hursley.ibm.com/mfcsumm.html">Mike Cowlishaw</a>,
+<a href="mailto:mfc@uk.ibm.com"><m>mfc@uk.ibm.com</m></a>
+(ISBN 0-13-806332-X, 197pp, Prentice-Hall, 1997).</font>
+</body></html>

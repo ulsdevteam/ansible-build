@@ -1,0 +1,112 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>NetRexx applet example</title>
+<meta name="owner"    content="mfc@uk.ibm.com">
+<meta name="review"   content="20050318">
+</head>
+<body bgcolor="#FFFFFF">
+<img src="IBMsw.gif" alt="IBM" width=584 height=70><br>
+<br>
+<table cellpadding=12>
+<tr valign=top>
+<td><img src="netrexx.gif" width=64 height=64 alt=""></td>
+<td><font size=6><strong>
+
+Scribble applet
+</strong></font></td></tr></table>
+
+<hr>
+<p>
+This example is an applet which lets you 'scribble' with the mouse in an
+applet window (based on the example in the book <cite>Java in a
+Nutshell</cite>, by David Flanagan).
+<p>
+This example demonstrates the Java 1.1 mouse and button event handling
+mechanism, and as such it requires a Java 1.1 appletviewer or browser
+(such as Netscape Communicator 4.02 with the
+<a href="http://developer.netscape.com/software/jdk/download.html">
+JDK 1.1 patch</a>) to run.
+<p>
+Here's the source, as a <a href="Scribble.nrx">plain ASCII file</a>.
+
+<h4>Event handling in Java 1.1</h4>
+<p>
+The <tt>init</tt> method of the applet registers the Scribble class as a
+listener for mouse events (mouse button clicks, <i>etc.</i>) and mouse
+movements.  It also adds a Button for clearing the applet window, and
+registers the Scribble class as a listener for the action events that
+occur when the button is pressed.
+<p>
+Once registered as a listener for events, appropriate methods are called
+whenever events occur.  The Scribble applet only uses the methods
+<tt>mousePressed</tt> (called when the primary mouse button is
+depressed), <tt>mouseDragged</tt> (called repeatedly when the mouse
+moves over the window with the primary button held down), and
+<tt>actionPerformed</tt> (called when the "Clear" Button is clicked).
+<p>
+Other methods (described by the Listener interface classes listed after
+the <b>implements</b> keyword on the <b>class</b> instruction) receive
+other events (such as <tt>mouseReleased</tt>, called when the primary
+mouse button is released); these other methods are provided
+automatically by NetRexx since the class is indicated to be an
+<i>adapter</i> class.
+
+<h4>Compiling the applet</h4>
+<p>The applet is compiled using the same steps as for the 'Hello World'
+applet.
+<p>To have the applet displayed in World Wide Web page, you then need to
+<ol>
+<li>place the class file in the same directory as the page in which is
+is to appear
+<li>refer to it, wherever you want it to appear on the page, with the
+&lt;applet&gt; tag:
+<pre>
+  &lt;applet code="Scribble.class" width=400 height=400&gt;
+  &lt;/applet&gt;
+</pre>
+<p>which also sets the size for the window in which the applet will
+appear.
+</ol>
+
+<p>You can then view the page with a Java-1.1-enabled browser, or with
+the 'applet viewer' that comes with the Java Development Kit.  If you
+are using such program, you should see the applet below here.
+<p>
+<table border=2><tr><td>
+<applet code="Scribble.class" width=400 height=400 alt="">
+</applet>
+</td></tr></table>
+<p>
+For more details on running applets, see the
+<a href="helloapp.html">Hello World applet</a> page.
+
+<!-- end ibmbody -->
+<hr>
+<p>
+<strong>[
+<a href="http://www.ibm.com/">IBM home page</a> |
+<a href="http://www.ibm.com/Search/">Search</a> |
+<a href="http://www.ibm.com/Assist/">Contact IBM</a> |
+<a href="http://www.ibm.com/Finding/">Help</a> |
+<a href="http://www.ibm.com/Legal">Terms of use</a> |
+<a href="http://www2.hursley.ibm.com/privacy.html">Privacy</a>
+]</strong>
+<br>
+<!-- <font size=2>This page was created on 14 Jan 2005.</font> -->
+<script><!--
+var lm=Date.parse(document.lastModified)
+if (lm!=0) {
+  var dlm=new Date(lm)
+  var y=dlm.getYear();    if (y<100) y+=100; if (y<1000) y+=1900
+  var m=dlm.getMonth()+1; if (m<10) m='0'+m
+  var d=dlm.getDate();    if (d<10) d='0'+d
+  var rdate=y+'.'+m+'.'+d
+  document.write('<table width=100%><td align=right>')
+  document.write('<font size=2>This page was created on ')
+  document.write(rdate+'.</font>')
+  document.write('</td></table>')
+  }
+//--></script>
+</body>
+</html>
+

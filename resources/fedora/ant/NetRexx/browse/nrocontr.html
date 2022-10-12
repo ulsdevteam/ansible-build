@@ -1,0 +1,78 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>NetRexx overview - Control instructions</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx Overview</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>14 Jan 2005</td>
+</tr><tr><td>[<a href="nroexprs.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nroarith.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="refocontr"><font face=helvetica color=#006644>Control instructions</font></a></h2>
+
+NetRexx provides a selection of <i>control</i> instructions, whose form was
+chosen for readability and similarity to natural languages.  The control
+instructions include <b>if</b>... <b>then</b>... <b>else</b> (as
+in the &#8216;greet&#8217; example) for simple conditional processing:
+<pre>
+  if ask=&#8217;Yes&#8217; then say "You answered Yes"
+               else say "You didn&#8217;t answer Yes"
+</pre>
+
+<b>select</b>... <b>when</b>... <b>otherwise</b>... <b>end</b>
+for selecting from a number of alternatives:
+<pre>
+  select
+    when a&gt;0 then say &#8217;greater than zero&#8217;
+    when a&lt;0 then say &#8217;less than zero&#8217;
+    otherwise say &#8217;zero&#8217;
+    end
+  
+  select case i+1
+    when 1 then say &#8217;one&#8217;
+    when 1+1 then say &#8217;two&#8217;
+    when 3, 4, 5 then say &#8217;many&#8217;
+    end
+</pre>
+
+<b>do</b>... <b>end</b> for grouping:
+<pre>
+  if a&gt;3 then do
+    say &#8217;A is greater than 3; it will be set to zero&#8217;
+    a=0
+    end
+</pre>
+
+and <b>loop</b>... <b>end</b> for repetition:
+<pre>
+  /* repeat 10 times; I changes from 1 to 10 */
+  loop i=1 to 10
+    say i
+    end i
+</pre>
+
+The <b>loop</b> instruction can be used to step a variable <b>to</b>
+some limit, <b>by</b> some increment, <b>for</b> a specified number of
+iterations, and <b>while</b> or <b>until</b> some condition is
+satisfied.  <b>loop forever</b> is also provided, and
+<b>loop over</b> can be used to work through a collection of
+variables.
+<p>
+Loop execution may be modified by <b>leave</b> and <b>iterate</b>
+instructions that significantly reduce the complexity of many programs.
+<p>
+The <b>select</b>, <b>do</b>, and <b>loop</b> constructs also have
+the ability to <a href="nroexcep.html#refoexcep">&#8216;catch&#8217; exceptions</a> that occur in
+the body of the construct.  All three, too, can specify a
+<b>finally</b> instruction which introduces instructions which are to
+be executed when control leaves the construct, regardless of how the
+construct is ended.
+<hr>
+[<a href="nroexprs.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nroarith.html">next</a>]
+<p><font size=2>From
+<a href="/netrexx/nrl.html"><em>The NetRexx Language</em></a> by 
+<a href="http://www2.hursley.ibm.com/mfcsumm.html">Mike Cowlishaw</a>,
+<a href="mailto:mfc@uk.ibm.com"><m>mfc@uk.ibm.com</m></a>
+(ISBN 0-13-806332-X, 197pp, Prentice-Hall, 1997).</font>
+</body></html>

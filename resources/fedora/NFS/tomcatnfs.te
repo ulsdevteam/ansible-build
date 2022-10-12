@@ -1,0 +1,11 @@
+
+module tomcatnfs 1.0;
+
+require {
+	type tomcat_t;
+	type nfs_t;
+	class lnk_file read;
+}
+
+#============= tomcat_t ==============
+allow tomcat_t nfs_t:lnk_file read;

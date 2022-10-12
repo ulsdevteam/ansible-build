@@ -1,0 +1,107 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>User's Guide - Installing for Visual J++</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx User's Guide</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>Draft of 14 Jan 2005</td>
+</tr><tr><td>[<a href="nruiunix.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruirun.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="injpp"><font face=helvetica color=#006644>Installing for Visual J++</font></a></h2>
+
+(Many thanks to Bill Potvin and Bernhard Hurzeler for the details in
+this section.)
+<p>
+Here&#8217;s how to install NetRexx for use with Visual J++:
+<ol>
+<li>
+Copy the following file into the [java&#95;root]<tt>\Lib</tt> directory:
+<pre>
+  NetRexxC.jar
+</pre>
+<i></i>For example, if [java&#95;root] is at <tt>E:\Java</tt>:
+<pre>
+  C:\&gt;copy NetRexxC.jar E:\Java\Lib
+</pre>
+<li>
+Similarly, copy the <tt>nrc.bat</tt> and <tt>NetRexxC.bat</tt> files to the
+[java&#95;root]<tt>\Bin</tt> directory.
+<li>
+Add the jar file explicitly to the CLASSPATH:
+<pre>
+  C:\&gt;set CLASSPATH=%CLASSPATH%;[java&#95;root]\Lib\NetRexxC.jar;
+</pre>
+<i></i>For example, if [java&#95;root] is <tt>E:\Java</tt>, your CLASSPATH
+might then look like this:
+<pre>
+  CLASSPATH=E:\Java\Lib;E:\Java\TrustLib;E:\Java\Lib\NetRexxC.jar;
+</pre>
+<i></i>
+Under Windows NT 4.0 and Windows 2000 this can be done using Start,
+Settings, Control Panel, System, Environment tab, System Variables, and
+clicking on CLASSPATH.
+</ol>
+<h4><font face=helvetica color=#006644>Using NetRexx with Visual J++</font></h4>
+
+Using NetRexx with J++ is very similar to using it with other Java
+development kits; the main difference is in the command names:
+<ol>
+<li>
+Use the J++ <tt>jview</tt> command to invoke the NetRexx translator to
+convert a NetRexx program (<i>e.g.</i>, <tt>hello.nrx</tt>) into a Java program
+(<tt>hello.java</tt>).
+<br>
+Note that some versions of the jview package do not provide
+a <tt>classes.zip</tt> file by default, but the NetRexx compiler needs
+this to determine information about classes that you use.  If this is
+the case, you will get a <i>class not found</i> error
+for <tt>java.lang.Object</tt>.  In this case, run the command
+<pre>
+  clspack -auto
+</pre>
+from an MS-DOS prompt to create the <tt>classes.zip</tt> file.
+<br>
+When running the NetRexx compiler, you must specify
+the <tt>-nocompile</tt> option to NetRexx in order to prevent it from
+trying to invoke the Java toolkit compiler <tt>javac</tt> (which isn&#8217;t in
+the MicroSoft J++ classes).
+<br>
+For example, if <tt>hello.nrx</tt> is in the current directory:
+<pre>
+  jview COM.ibm.netrexx.process.NetRexxC hello -nocompile
+</pre>
+<i></i>The result of this step should be a Java source file
+called <tt>hello.java</tt>.
+<li>
+Use the J++ &#8216;jvc&#8217; command to compile the Java source file:
+<pre>
+  jvc hello.java
+</pre>
+The result of this step should be a Java class file
+called <tt>hello.class</tt>.
+<li>
+Execute the class file with the J++ command <tt>jview</tt>:
+<pre>
+  jview hello
+</pre>
+<li>
+Note that some earlier versions of <tt>jview</tt> fail with an exception
+(an <tt>ArrayIndexOutOfBoundsException</tt> in RexxUtil.translate) when
+compiling <tt>hello.nrx</tt>.  This is due to a bug in the jview JIT;<a name="backref.1"><a href="#footnote.1"><font size=3><sup>[1]</sup></font></a></a>&nbsp;
+the workaround is to turn the JIT off.
+</ol>
+<p>
+Note that all the commands above probably have to be typed exactly as
+shown (Java is very case-sensitive).  The supplied <tt>NetRexxC.bat</tt>
+can be modified to work with the above commands by using <tt>jview</tt>
+instead of the <tt>java</tt> command and adding the <tt>jvc</tt> step.
+<hr><font size=2>Footnotes:</font><table cellpadding=5>
+<tr valign=top><td><font size=2><a name="footnote.1"><a href="#backref.1">[1]</a></a></font></td>
+<td><font size=2>Just In Time compiler.
+</font></tr></td>
+</table>
+<hr>
+[<a href="nruiunix.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruirun.html">next</a>]
+</body></html>

@@ -1,0 +1,144 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>NetRexx example</title>
+<meta name="owner"    content="mfc@uk.ibm.com">
+<meta name="review"   content="20050318">
+</head>
+<body bgcolor="#FFFFFF">
+<img src="IBMsw.gif" alt="IBM" width=584 height=70><br>
+<br>
+<table cellpadding=12>
+<tr valign=top>
+<td><img src="netrexx.gif" width=64 height=64 alt=""></td>
+<td><font size=6><strong>
+
+The NetRexx Pinger application
+</strong></font></td></tr></table>
+
+<hr>
+<p>
+This is an example of a stand-alone Java application, which has been
+written in <a href="netrexx.html">NetRexx</a>; when running, it should
+look something like this:
+<br>
+<table cellpadding=10>
+<tr valign=top>
+<td><img src="pinger.gif" width=186 height=167 alt=""></td>
+<td>
+<strong>Pinger</strong> is a 'kitchen timer' application.  Use the
+unmarked spin buttons to set the minutes and seconds, then press Start
+to start the timer.
+<p>
+The program shows the use of Frames, simple menus and Dialogs,
+multiple threads (for the spin buttons and the main timer function),
+a custom component, off-screen Image drawing (graphics), Java 1.1 mouse
+and event handling, and playing an audio clip from a file.
+</td>
+</tr>
+</table>
+<p><em>Notes:</em>
+<ol>
+<li>To hear the pinger 'ring', you need a sound card or equivalent
+installed and working.  This plays the clip in the file 'Pinger.au'
+&#150; this can be any sound clip in .au format, 0.5 seconds or less; a
+default is supplied below.
+<li>The first time you press Start, you may notice a pause or hear a
+short click or ring, as the Java audio system is started.  This is
+normal, and ensures that the audio will be played promptly when the
+timer reaches zero.
+<li>Some platforms may limit the maximum font size available for
+displaying the timer.
+<li>This application requires Java 1.1.
+</ol>
+
+<hr>
+<p>
+Here's the NetRexx source, as a <a href="Pinger.nrx">plain ASCII
+file</a>.  Here, too is the <a href="Pinger.au">pinger sound clip</a>.
+<p>
+You can also download the Pinger package (with the .class files already
+compiled from the source) in <a href="pinger.zip">zip format</a>
+[pinger.zip, 23kB].
+The Pinger package is also included in the <a href="nrdown.html">NetRexx
+package</a> &#150; you may prefer to download the whole package,
+including the other <a href="nrsample.html">NetRexx samples and
+examples.</a>
+
+<p>Please note that the Pinger package is part of the NetRexx package,
+and is covered by the terms in the <a href="license.txt">IBM License
+Agreement</a> for that package.
+
+<hr>
+<h3>Running the Pinger</h3>
+
+<p>Note that the Java runtime (<em>e.g.</em>, from the Java Development
+Kit) must be installed before you can run stand-alone Java applications,
+and you must also have either the NetRexx runtime or compiler installed,
+too.
+See <a href="nrdown.html">downloading the NetRexx package</a> for more
+details.
+
+<h4>Running the Pinger from the .class files</h4>
+<p>
+If you downloaded the package above (pinger.zip), first unpack the files
+into a directory (see <a href="nrusers.html">User's Guide</a> for
+details of the commands to use for unpacking).
+Then, in that directory, run:
+<pre>
+  java Pinger
+</pre>
+<p>
+Note that you need the capital letter 'P' as shown, as the java command
+is case-sensitive.
+
+<h4>Compiling and running the Pinger</h4>
+<p>
+To compile and run the program, create or copy the 'Pinger.nrx' file (note the
+first letter is a capital letter), and then enter the commands:
+<pre>
+  java COM.ibm.netrexx.process.NetRexxC Pinger
+  java Pinger
+</pre>
+
+<p>This would:
+<ol>
+<li>Call the NetRexx translator to translate the program from NetRexx to
+Java
+<li>Call the Java compiler (javac) to compile the program into the class
+files for the pinger
+<li>Call the Java interpreter (java) to interpret the class file, which
+should then display the pinger.
+<!-- As well as running the pinger, try resizing the window to watch it
+adjust the font and buttons.  -->
+</ol>
+
+<!-- end ibmbody -->
+<hr>
+<p>
+<strong>[
+<a href="http://www.ibm.com/">IBM home page</a> |
+<a href="http://www.ibm.com/Search/">Search</a> |
+<a href="http://www.ibm.com/Assist/">Contact IBM</a> |
+<a href="http://www.ibm.com/Finding/">Help</a> |
+<a href="http://www.ibm.com/Legal">Terms of use</a> |
+<a href="http://www2.hursley.ibm.com/privacy.html">Privacy</a>
+]</strong>
+<br>
+<!-- <font size=2>This page was created on 14 Jan 2005.</font> -->
+<script><!--
+var lm=Date.parse(document.lastModified)
+if (lm!=0) {
+  var dlm=new Date(lm)
+  var y=dlm.getYear();    if (y<100) y+=100; if (y<1000) y+=1900
+  var m=dlm.getMonth()+1; if (m<10) m='0'+m
+  var d=dlm.getDate();    if (d<10) d='0'+d
+  var rdate=y+'.'+m+'.'+d
+  document.write('<table width=100%><td align=right>')
+  document.write('<font size=2>This page was created on ')
+  document.write(rdate+'.</font>')
+  document.write('</td></table>')
+  }
+//--></script>
+</body>
+</html>
+

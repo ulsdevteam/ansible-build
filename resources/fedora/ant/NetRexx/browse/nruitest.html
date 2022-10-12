@@ -1,0 +1,83 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>User's Guide - Testing the NetRexx installation</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx User's Guide</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>Draft of 14 Jan 2005</td>
+</tr><tr><td>[<a href="nruij12.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruiebc.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="testing"><font face=helvetica color=#006644>Testing the NetRexx installation</font></a></h2>
+
+After installing NetRexx, it is recommended that you test that it is
+working correctly.  If there are any problems, check the
+<a href="nruiprob.html#problems"><cite>Installation Problems</cite> section</a>.
+<p>
+To test your installation, make the directory to which you copied the
+executables the current directory, then (being very careful to get the
+case of letters correct):
+<ol>
+<li>
+Enter the command
+<pre>
+  java COM.ibm.netrexx.process.NetRexxC hello
+</pre>
+<i></i>This should run the NetRexx compiler, which first translates the
+NetRexx program <tt>hello.nrx</tt> to the Java program <tt>hello.java</tt>.
+It then invokes the default Java compiler (<tt>javac</tt>), to compile the
+file <tt>hello.java</tt> to make the binary class file <tt>hello.class</tt>.
+The intermediate <tt>.java</tt> file is then deleted, unless an error
+occurred or you asked for it to be kept.<a name="backref.1"><a href="#footnote.1"><font size=3><sup>[1]</sup></font></a></a>&nbsp;
+<br>
+If you get errors from Java and you&#8217;re running Java 1.2 or later,
+first re-check the final two steps in the <a href="nruij12.html#inj12"><cite>Installing
+for Java 1.2+</cite> section</a> before trying the
+<a href="nruiprob.html#problems"><cite>Installation Problems</cite> section</a>.
+<li>
+Enter the command
+<pre>
+  java hello
+</pre>
+This runs (interprets the bytecodes in) the <tt>hello.class</tt> file,
+which should display a simple greeting.  On some systems, you may
+first have to add the directory that contains the <tt>hello.class</tt>
+file to the CLASSPATH setting so Java can find it.
+<li>
+With the sample scripts provided (<tt>NetRexxC.cmd</tt>, <tt>NetRexxC.bat</tt>,
+or <tt>NetRexxC.sh</tt>,), or the equivalent in the scripting language of
+your choice, the steps above can be combined into a simple single
+command such as:
+<pre>
+  NetRexxC.sh -run hello
+</pre>
+
+This package also includes a trivial <tt>nrc.cmd</tt>, and
+matching <tt>nrc.bat</tt> and <tt>nrc</tt> scripts, which simply pass on
+their arguments to NetRexxC; &#8216;<tt>nrc</tt>&#8217; is just a shorter name
+that saves keystrokes, so for the last example you could type:
+<pre>
+  nrc -run hello
+</pre>
+Note that scripts may be case-sensitive, and unless running the OS/2
+Rexx script, you will probably have to spell the name of the program
+exactly as it appears in the filename.  Also, to use <tt>-run</tt>, you
+may need to omit the <tt>.nrx</tt> extension.
+<br>
+You could also edit the appropriate <tt>nrc.cmd</tt>, <tt>nrc.bat</tt>,
+or <tt>nrc</tt> script and add your favourite &#8216;default&#8217; NetRexxC
+options there.
+For example, you might want to add the <tt>-prompt</tt> flag (described
+later) to save reloading the translator before every compilation.
+If you do change a script, keep a backup copy so that if you install
+a new version of the NetRexx package you won&#8217;t overwrite your changes.
+</ol>
+<hr><font size=2>Footnotes:</font><table cellpadding=5>
+<tr valign=top><td><font size=2><a name="footnote.1"><a href="#backref.1">[1]</a></a></font></td>
+<td><font size=2>For example, by specifying the <tt>-keep</tt> or <tt>-nocompile</tt> flags.
+</font></tr></td>
+</table>
+<hr>
+[<a href="nruij12.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruiebc.html">next</a>]
+</body></html>

@@ -1,0 +1,13 @@
+Files in the folder:
+README - This file.
+
+bashrc - .bashrc file for the 'tomcat' user placed in /usr/share/tomcat/                                 
+
+fcrepo-installer-3.8.1-javadoc.jar - Extra file.        
+fcrepo-installer-3.8.1-fedora-home.zip  - Extra file.
+fcrepo-installer-3.8.1-utilities-main.jar  - Extra file.
+fcrepo-installer-3.8.1.jar - Java installer for fedora 3.8.1.             
+
+fcrepo-install.properties.j2 - Template for install.properties file to allow for unattended install of fedora.              
+install.properties - Example install.properties file.
+install.properties.lyrasis - Example install.properties file from lyrasis.

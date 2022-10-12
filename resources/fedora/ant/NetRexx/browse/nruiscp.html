@@ -1,0 +1,66 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>User's Guide - Setting the CLASSPATH</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx User's Guide</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>Draft of 14 Jan 2005</td>
+</tr><tr><td>[<a href="nruirun.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruidoc.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="inscp"><font face=helvetica color=#006644>Setting the CLASSPATH</font></a></h2>
+
+Most implementations of Java use an <i>environment variable</i> called
+CLASSPATH to indicate a search path for Java classes.  The Java Virtual
+Machine and the NetRexx translator rely on the CLASSPATH value to find
+directories, zip files, and jar files which may contain Java classes.
+<p>
+The procedure for setting the CLASSPATH environment variable depends on
+your operating system (and there may be more than one way).  Here are
+some examples:
+<ul>
+<li>
+For most <b>Windows</b> installations, or for <b>OS/2</b>, use a <tt>SET
+CLASSPATH=</tt> command in AUTOEXEC.BAT (for Windows) or in CONFIG.SYS
+(for OS/2), and then re-boot after changing.  In both cases the command
+syntax is the same, and might look like this:
+<pre>
+  set classpath=.;c:\java1.2\lib\NetRexxC.jar
+</pre>
+In this example, the first segment of the value (before the semicolon)
+lets classes in the current directory be found, and the second segment
+includes the classes needed by the NetRexx translator.  Both
+environments normally include the standard Java classes automatically.
+Under Java 1.2, you may need to add the Sun tools classes explicitly (in
+tools.jar, see above).
+<li>
+Under <b>Windows NT 4.0</b> and <b>Windows 2000</b> the CLASSPATH should
+be set using Start, Settings, Control Panel, System, Environment tab,
+System Variables, and clicking on CLASSPATH; new command windows will
+then inherit the new setting immediately.
+<li>
+For <b>Linux</b> and <b>Unix</b> (<b>BASH</b>, <b>Korn</b>, or
+<b>Bourne</b> shell), use:
+<pre>
+  CLASSPATH=&lt;newdir&gt;:$CLASSPATH
+  export CLASSPATH
+</pre>
+<i></i>Changes for re-boot or opening of a new window should be placed
+in your <tt>/etc/profile</tt>, <tt>.login</tt>, or <tt>.profile</tt> file, as
+appropriate.
+<li>
+For <b>Linux</b> and <b>Unix</b>
+(<b>C</b> shell), use:
+<pre>
+  setenv CLASSPATH &lt;newdir&gt;:$CLASSPATH
+</pre>
+<i></i>Changes for re-boot or opening of a new window should be
+placed in your <tt>.cshrc</tt> file.
+</ul>
+<p>
+If you are unsure of how to do this, check the documentation you have
+for installing the Java toolkit.
+<hr>
+[<a href="nruirun.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruidoc.html">next</a>]
+</body></html>

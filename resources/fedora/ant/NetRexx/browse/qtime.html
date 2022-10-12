@@ -1,0 +1,80 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>NetRexx example</title>
+<meta name="owner"    content="mfc@uk.ibm.com">
+<meta name="review"   content="20050318">
+</head>
+<body bgcolor="#FFFFFF">
+<img src="IBMsw.gif" alt="IBM" width=584 height=70><br>
+<br>
+<table cellpadding=12>
+<tr valign=top>
+<td><img src="netrexx.gif" width=64 height=64 alt=""></td>
+<td><font size=6><strong>
+
+Query Time application
+</strong></font></td></tr></table>
+
+<hr>
+<p>
+This example is a NetRexx version of one of the earliest Rexx programs;
+it displays the time in 'plain English'.
+<p>
+Here's the source, as a <a href="qtime.nrx">plain
+ASCII file</a>.
+<p>
+To run the program, create or copy the 'qtime.nrx' file in your current
+directory, and then enter the commands
+<pre>
+  java COM.ibm.netrexx.process.NetRexxC qtime
+  java qtime
+</pre>
+<p>These would:
+<ol>
+<li>Call the NetRexx translator to translate the program from NetRexx to
+Java
+<li>Call the Java compiler (javac) to compile the program into a class
+file
+<li>Call the Java interpreter (java) to interpret the class file, which
+should then display the time in words.
+</ol>
+
+<p>Note that the Java runtime (<em>e.g.</em>, from the Java Development
+Kit) must be installed.
+
+<p>
+If you have the netrexxc command script available, you can compile and
+run the sample, using just:
+<pre>
+  netrexxc -run qtime
+</pre>
+<!-- end ibmbody -->
+<hr>
+<p>
+<strong>[
+<a href="http://www.ibm.com/">IBM home page</a> |
+<a href="http://www.ibm.com/Search/">Search</a> |
+<a href="http://www.ibm.com/Assist/">Contact IBM</a> |
+<a href="http://www.ibm.com/Finding/">Help</a> |
+<a href="http://www.ibm.com/Legal">Terms of use</a> |
+<a href="http://www2.hursley.ibm.com/privacy.html">Privacy</a>
+]</strong>
+<br>
+<!-- <font size=2>This page was created on 14 Jan 2005.</font> -->
+<script><!--
+var lm=Date.parse(document.lastModified)
+if (lm!=0) {
+  var dlm=new Date(lm)
+  var y=dlm.getYear();    if (y<100) y+=100; if (y<1000) y+=1900
+  var m=dlm.getMonth()+1; if (m<10) m='0'+m
+  var d=dlm.getDate();    if (d<10) d='0'+d
+  var rdate=y+'.'+m+'.'+d
+  document.write('<table width=100%><td align=right>')
+  document.write('<font size=2>This page was created on ')
+  document.write(rdate+'.</font>')
+  document.write('</td></table>')
+  }
+//--></script>
+</body>
+</html>
+

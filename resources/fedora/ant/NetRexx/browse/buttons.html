@@ -1,0 +1,85 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>NetRexx example</title>
+<meta name="owner"    content="mfc@uk.ibm.com">
+<meta name="review"   content="20050318">
+</head>
+<body bgcolor="#FFFFFF">
+<img src="IBMsw.gif" alt="IBM" width=584 height=70><br>
+<br>
+<table cellpadding=12>
+<tr valign=top>
+<td><img src="netrexx.gif" width=64 height=64 alt=""></td>
+<td><font size=6><strong>
+
+Buttons application
+</strong></font></td></tr></table>
+
+<hr>
+<p>
+This is a simple example of a stand-alone windowed application;
+when started, it displays a 'frame window' in the middle of the desktop
+with two buttons; pressing a button fills the window with the selected
+color.
+This example assumes that Java 1.1 is available: it uses dependent
+(inner) classes and the Java 1.1 event model.
+<p>
+Here's the source, as a <a href="Buttons.nrx">plain
+ASCII file</a>.
+<p>
+To run the program, create or copy the 'Buttons.nrx' file (note the
+first letter is a capital letter), and then enter the commands:
+<pre>
+  java COM.ibm.netrexx.process.NetRexxC Buttons
+  java Buttons
+</pre>
+If you are using OS/2 or Windows, or other systems where a NetRexxC
+command is provided, you can use the single command
+<pre>
+  netrexxc -run Buttons
+</pre>
+to do this.  This command would:
+<ol>
+<li>Call the NetRexx translator to translate the program from NetRexx to
+Java
+<li>Call the Java compiler (javac) to compile the program into a class
+file (this assumes you've installed the Java 1.1.2 or later toolkit)
+<li>Call the Java interpreter (java) to interpret the class file, which
+should then display the buttons, which should then react to being
+clicked.
+</ol>
+
+<p>
+For a more sophisticated application, with a menu bar, multiple threads,
+and so on, see the <a href="pinger.html">Pinger example</a>.
+
+<!-- end ibmbody -->
+<hr>
+<p>
+<strong>[
+<a href="http://www.ibm.com/">IBM home page</a> |
+<a href="http://www.ibm.com/Search/">Search</a> |
+<a href="http://www.ibm.com/Assist/">Contact IBM</a> |
+<a href="http://www.ibm.com/Finding/">Help</a> |
+<a href="http://www.ibm.com/Legal">Terms of use</a> |
+<a href="http://www2.hursley.ibm.com/privacy.html">Privacy</a>
+]</strong>
+<br>
+<!-- <font size=2>This page was created on 14 Jan 2005.</font> -->
+<script><!--
+var lm=Date.parse(document.lastModified)
+if (lm!=0) {
+  var dlm=new Date(lm)
+  var y=dlm.getYear();    if (y<100) y+=100; if (y<1000) y+=1900
+  var m=dlm.getMonth()+1; if (m<10) m='0'+m
+  var d=dlm.getDate();    if (d<10) d='0'+d
+  var rdate=y+'.'+m+'.'+d
+  document.write('<table width=100%><td align=right>')
+  document.write('<font size=2>This page was created on ')
+  document.write(rdate+'.</font>')
+  document.write('</td></table>')
+  }
+//--></script>
+</body>
+</html>
+

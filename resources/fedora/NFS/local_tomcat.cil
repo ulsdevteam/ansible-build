@@ -1,0 +1,3 @@
+(allow tomcat_t public_content_rw_t (dir (add_name getattr ioctl lock open read remove_name search write)))
+(allow tomcat_t public_content_rw_t (file (append create getattr ioctl link lock open read rename setattr unlink write)))
+(allow tomcat_t public_content_rw_t (lnk_file (append create getattr ioctl link lock read rename setattr unlink write)))

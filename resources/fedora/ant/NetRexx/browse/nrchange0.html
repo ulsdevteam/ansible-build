@@ -1,0 +1,423 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>NetRexx Changes - 0.xx</title>
+<meta name="owner"    content="mfc@uk.ibm.com">
+<meta name="review"   content="20050318">
+</head>
+<body bgcolor="#FFFFFF">
+<img src="IBMsw.gif" alt="IBM" width=584 height=70><br>
+<br>
+<table cellpadding=12>
+<tr valign=top>
+<td><img src="netrexx.gif" width=64 height=64 alt=""></td>
+<td><font size=6><strong>
+
+NetRexx Change History - 0.xx
+</strong></font></td></tr></table>
+
+<hr>
+This document lists the changes in NetRexx prior to NetRexx 1.00.
+<br>                      <strong>[</strong>
+<a href="#nr100">1.00</a> <strong>|</strong>
+<a href="#nr090">0.90</a> <strong>|</strong>
+<a href="#nr088">0.88</a> <strong>|</strong>
+<a href="#nr086">0.86</a> <strong>|</strong>
+<a href="#nr084">0.84</a> <strong>|</strong>
+<a href="#nr082">0.82</a> <strong>|</strong>
+<a href="#nr081">0.81</a> <strong>|</strong>
+<a href="#nr077">0.77</a> <strong>|</strong>
+<a href="#nr076">0.76</a> <strong>|</strong>
+<a href="#nr075">0.75</a> <strong>|</strong>
+<a href="#nr067">0.67</a> <strong>|</strong>
+<a href="#nr054">0.54</a> <strong>|</strong>
+<a href="#nr050">0.50</a> <strong>]</strong>
+<br>
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<hr><h3><a name="nr100">NetRexx 1.00</a> <font size=-1>[3 Jan 1997]</font></h3>
+<p>This release is the reference implementation for NetRexx 1.00, as
+published in <a href="nrl.html"><em>The NetRexx Language</em></a>.
+
+<ul>
+<li>Minor cosmetic and performance improvements over 0.90.
+<li>NetRexxC.bat and nrc.bat have been added to the NetRexx package.
+</ul>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<hr><h3><a name="nr090">NetRexx 0.90</a> <font size=-1>[17 Dec 1996]</font></h3>
+<p>This release is the 'gamma' release prior to NetRexx 1.00.  The main
+changes are in packaging and installation.
+
+<ul>
+<li>The compiler name and classes have been moved from the
+netrexx.process package to the COM.ibm.netrexx.process package, to
+comply with the Java language recommendations.  The compiler name is
+therefore now <tt>COM.ibm.netrexx.process.NetRexxC</tt>.
+
+<li>The compiler and runtime classes are now packaged in a Zip file that
+lets them be used directly by Java without unzipping the individual
+classes.  To use the Zip file in this way, it must be included in the
+CLASSPATH setting &#150; see the <a href="nrusers.html">User's Guide</a>.
+
+<li>A similar Zip file, with just the runtime classes, is also included,
+for those who need to distribute these with some other program.
+
+<li>The cross-reference listing is now written to a separate file
+(xxx.crossref) instead of to the standard output stream.  This makes it
+easier to see errors and warnings.
+
+<li>Reports of variables that are set but not used are now reported as
+Warnings, rather than as incidental information at the end of the
+cross-reference listing.
+
+<li>A defined entry-point in NetRexxC allows the compiler to be invoked
+directly from NetRexx or Java programs.
+
+<li>Several cosmetic improvements, notably to tracing of <b>loop</b>
+instructions.
+</ul>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<hr><h3><a name="nr088">NetRexx 0.88</a> <font size=-1>[1 Dec 1996]</font></h3>
+<p>With this release the full function intended for NetRexx 1.00 is
+available.
+
+<ul>
+<li>The power operator (for both the <tt>Rexx</tt> class and primitive
+types) is now implemented.
+
+<li>The <tt>format</tt>, <tt>insert</tt>, <tt>overlay</tt>, and
+<tt>trunc</tt> methods of the <tt>Rexx</tt> class are now implemented.
+
+<li>Conversion from <tt>double</tt> to a string now provides 15 digits
+of precision instead of the 6 digits supplied by Java.
+
+<li>Tracing of <b>loop</b> instructions has been improved, and other
+cosmetic changes have been made to messages and other compiler output.
+
+<li>Forward references from the <b>class</b> instruction to other
+classes in a program are now permitted.
+
+<li>The generated Java source code no longer includes <b>import</b>
+instructions (<em>i.e.</em>, all class references are now qualified).
+
+<li><strong>options compact</strong> may be used to request compact
+warnings and error messages, intended for use by editing environments.
+Please consider this an 'experimental' option; the format may change.
+</ul>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<hr><h3><a name="nr086">NetRexx 0.86</a> <font size=-1>[14 Nov 1996]</font></h3>
+<p>The major change in this release is the new error message processing.
+
+<ul>
+<li>The NetRexx compiler now has the completely new error message
+processing that has been 'in the works' for some time.  Error messages
+should now be much more helpful, and (where useful) more than one error
+message may be produced during a compilation.
+
+<li>Error messages are held in a separate file (NetRexxC.properties),
+which allows for translation.  This file will be installed automatically
+in the Java 'lib' directory when the NetRexx compiler is installed (if
+you don't have access to the Java 'lib' directory, an alternative path
+can be identified &#150; see the NetRexx installation document).
+
+<li>Interface classes should now use the <b>implements</b> keyword for
+extending other interface classes, because in the .class files, all
+interface classes must extend java.lang.Object.  This change also allows
+interface classes to extend more than one other interface class.
+The <b>extends</b> keyword will continue to work for a single class (for the
+time being), with a warning.
+
+<li>Various problems with <strong>import</strong> and qualified class
+references have been resolved; in particular, you should now be warned
+about ambiguous class references again.
+
+<li><strong>options trace1</strong> may be used to redirect trace output
+to stdout instead of stderr.  Please consider this an 'experimental'
+option.
+</ul>
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<hr><h3><a name="nr084">NetRexx 0.84</a> <font size=-1>[29 Oct 1996]</font></h3>
+<ul>
+<li>
+Local variables now have a defined initial value, consistent with
+properties (variables of primitive type are initialized to 0, all others
+to <tt>null</tt>).
+<li>
+The <tt>Rexx</tt> class now has a new <tt>sequence(<i>final</i>)</tt>
+method for generating a sequence of characters.  This serves the same
+purpose as the Rexx and Object Rexx <tt>xrange</tt> function.
+<li>
+The <tt>compare</tt>, <tt>delstr</tt>, <tt>delword</tt>, <tt>d2x</tt>,
+<tt>translate</tt>, and <tt>x2d</tt> methods of the <tt>Rexx</tt> class
+are now implemented.
+<li>
+The values of method arguments are now traced, for <b>trace all</b> and
+<b>trace methods</b>.
+<li>
+The <b>numeric</b> instruction is now allowed in binary classes.
+<li>
+Terms may now start with numeric symbols (for example,
+<tt>12.max(i)</tt>).
+<li>
+Interface classes may now be extended, and methods in Interface classes
+may now have Signals lists.
+<li>
+The <tt>source</tt> and <tt>version</tt> special words now always
+return strings of class <tt>Rexx</tt>.
+<li>
+Many improvements and clarifications in the documentation.
+</ul>
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<hr><h3><a name="nr082">NetRexx 0.82</a> <font size=-1>[26 Sep 1996]</font></h3>
+<ul>
+<li>
+Unicode characters (accented characters, non-arabic numerals,
+<i>etc.</i>) are now allowed for identifiers (variable and other names)
+and numeric symbols (numbers in programs).  By default, characters in
+the source file are assumed to be in the "Latin-1" character set (the
+first 256 Unicode characters).
+<li>
+The new <b>utf8</b> option indicates that the source file is encoded
+with UTF-8 encoding.  This allows the full range of up to 65536 Unicode
+characters to be used in NetRexx programs (including in literal strings
+and comments).  To make best use of this you'll need an editor or
+utility that can produce files in UTF-8 format.
+<li>
+The <tt>upper</tt> and <tt>lower</tt> methods of the <tt>Rexx</tt>
+class have been extended to allow uppercasing or lowercasing of
+substrings.
+<li>
+The <tt>Rexx</tt> class has now got a new <tt>exists(<i>name</i>)</tt>
+method for testing whether an indexed variable called <i>name</i>
+exists.  Also, an indexed variable can be 'reset' (or 'dropped') by
+assigning <tt>null</tt> to it, for example:
+<pre>
+  fred='?'      -- fred.exists('3') is now 0
+  fred[3]='abc' -- fred.exists('3') is now 1
+  fred[3]=null  -- fred.exists('3') is now 0
+</pre>
+<li>Improved error messages.
+</ul>
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<hr><h3><a name="nr081">NetRexx 0.81</a> <font size=-1>[7 Sep 1996]</font></h3>
+<ul>
+<li>
+The translator now parses <tt>.class</tt> files directly, so no longer
+uses the <tt>Agent</tt> debugging class.  This gives the translator full
+information about classes and methods, and has allowed the removal of
+several restrictions.
+<li>
+The translator can now track 'checked exceptions', and will
+automatically add those that are not caught to the <b>signals</b> list
+for each method.  When this is done, the added exceptions are listed by
+the translator.
+<li>
+<b>options strictsignal</b> causes checked exceptions that are not
+caught to be treated as an error (as in Java).
+<li>
+The following methods in the <tt>Rexx</tt> class are now implemented:
+<pre>
+b2x, x2b, x2c, c2x, max, min
+</pre>
+<li>The <tt>abs</tt> method in the <tt>Rexx</tt> class no longer rounds
+to nine digits.
+<li>
+The <b>verbose</b> settings have been reworked to reduce the amount of
+output that the translator produces (though all the previously generated
+information is still available at <b>verbose4</b> or <b>verbose5</b>).
+<li>
+Methods that override methods in superclasses or interfaces now list the
+overridden or implemented methods.  Additional checking, as required for
+Java, reports mismatches of the return types of overridden methods, etc.
+<li>
+Using a variable name that matches (hides) the name of a Type that has
+previously been referenced as a type by a short name now gives a warning
+(this will probably change to be an error, later).
+<li>
+Attempts to subclass (extend) <b>private</b> or <b>final</b> classes are
+now reported as errors.
+<li>'Unreachable' statements are now reported, as in Java.
+<li>
+A method called '<tt>main</tt>' with argument type '<tt>String[]</tt>'
+is assumed static.  This now produces a warning.
+<li>
+When '=' or '\=' are used to compare two objects that are unknown to
+NetRexx (i.e., not strings), the Java '<tt>equals</tt>' method is used
+for the comparison.  '==' and '\==' check for identical objects, as
+before.
+<li>
+The translator now exits with a return value of 2 if an error was
+detected, 1 if a warning was displayed, and 0 otherwise.
+</ul>
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<hr><h3><a name="nr077">NetRexx 0.77</a> <font size=-1>[26 Aug 1996]</font></h3>
+<ul>
+<li>New <b>uses</b> keyword on the <b>class</b> instruction lets you
+specify one or more classes that will be used as a source for static
+methods and properties.  For example, if your class is called Fred, then
+after
+<pre>
+class Fred uses Math
+</pre>
+you can refer to the properties and methods in the class
+<tt>java.lang.Math</tt> simply by name, without qualifying them by the class
+name.  For example:
+<pre>
+say sin(PI/4)
+</pre>
+<li>Case-insensitivity is now fully implemented.  It is no longer
+necessary to use the exact case for external classes and methods (unless
+you want to, see below).  For example you can invoke the
+<tt>reverse()</tt> method in the <tt>Rexx</tt> class
+using any of:
+<pre>
+'data'.reverse
+'data'.Reverse
+'data'.ReVerse
+</pre>
+<li>
+<b>Options strictcase</b> can be used to enforce strict case
+checking (for local variables, methods, and properties as well as for
+external methods and properties), for those that prefer it.  When in
+effect, all name matches must be exact.
+<li>
+Improvements to <b>Trace</b>: for example, all assignments are traced,
+with changed trace tags to indicate the type of variable being set.
+<li>
+New methods in the Rexx class: <tt>d2c()</tt> and <tt>c2d</tt>.
+</ul>
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<hr><h3><a name="nr076">NetRexx 0.76</a> <font size=-1>[13 Aug 1996]</font></h3>
+<p>
+Changes:
+<ul>
+<li>Three-pass processing allows forward references from properties and
+methods to later classes in the same program.
+<li>
+New <cite>'Methods for Rexx strings'</cite> section in the Language Specification
+<li>
+Minor improvements to and tuning of <b>Trace</b>.
+</ul>
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<hr><h3><a name="nr075">NetRexx 0.75</a> <font size=-1>[7 Aug 1996]</font></h3>
+<ul>
+<li>The first draft of the <cite>NetRexx Language Specification</cite>
+is now available in online (HTML) format and in printable (PDF)
+format.
+<p>
+This specification will be published by Prentice-Hall as part of a new
+book, <cite>"The NetRexx Language"</cite>, later this year.
+<li>
+NetRexx now has a new <b>trace</b> instruction for tracing method
+arguments, clauses, and results (including arguments passed to methods)
+during execution.  Associated with this are <b>options notrace</b> and
+the <b>trace</b> special word.
+<li>
+<b>numeric form engineeering</b> is now implemented.
+<li>
+The <b>static</b> option has been added to the <b>properties</b>
+instruction, to allow for static properties that are not constant.
+<li>
+The unpopular <b>constant</b> keyword on the <b>method</b> instruction
+has been renamed <b>static</b>, to align with the <b>properties</b>
+instruction.  <b>constant</b> will continue to be accepted (with a
+warning) for a few months.
+</ul>
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<hr><h3><a name="nr067">NetRexx 0.67</a> <font size=-1>[27 Jun 1996]</font></h3>
+<ul>
+<li>
+The compiler is now entirely written in NetRexx, and so should run on
+all platforms that support the Java toolkit.
+It calls the javac compiler by direct method invocation, and typically
+runs about ten times faster than before (the current slow spots are (a)
+reading large classes.zip files and (b) loading classes).
+<p>
+This level of NetRexx (0.67) should be a functional superset of the
+final 0.62 OS/2 translator, though there is one small language change.
+<li>
+There is one language change: items of type '<tt>char</tt>' are now
+treated as a single-character string, rather than as a number
+representing the encoding of the character.  This avoids anomalies
+between binary and non-binary classes.
+<p>
+For those programs that do need to get at the bit representation of
+numbers, primitive constructors are introduced, for example:
+<pre>
+c=char 'M'    -- c is the character 'M'
+i=int(c)      -- i has the value 77
+d=char(i)     -- d is now 'M'
+</pre>
+<li>the <b>for</b> keywords on <b>loop</b> are now implemented, as in
+<pre>
+loop for 3000; say 'hi'; end
+loop i=n by for 10 while j&lt;10; j=n+i; end
+</pre>
+<li>the <b>over</b> keyword on <b>loop</b> is now implemented; this
+allows easy traversal through the contents of NetRexx indexed variables.
+For example:
+<pre>
+/* display the contents of myvar indexed Rexx variable */
+do tail over myvar
+  say myvar[tail]
+  end
+</pre>
+<b>loop over</b> can be used with any subclass of <tt>Rexx</tt> or of
+<tt>Dictionary</tt> (for example, <tt>Hashtable</tt>).
+<li>
+Invalid <b>do</b> syntax is re-tried as a <b>loop</b> instruction, after
+a warning.
+<li>
+A list highlighting variables that are referenced only once is included
+in the variables cross-reference.
+</ul>
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<hr><h3><a name="nr054">NetRexx 0.54</a> <font size=-1>[30 Apr 1996]</font></h3>
+<p>
+<ul>
+<li>This release is a minor update to the translator, except for the
+addition of a fairly substantial example of a Java application
+written in NetRexx.  See:
+<pre>
+<a href="http://www2.hursley.ibm.com/netrexx/pinger.html">
+http://www2.hursley.ibm.com/netrexx/pinger.html</a>
+</pre>
+for a picture of how it looks.  You can use this application without
+downloading the whole NetRexx package.
+</ul>
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<hr><h3><a name="nr050">NetRexx 0.50</a> <font size=-1>[22 Apr 1996]</font></h3>
+<p>
+The first non-IBM release of NetRexx &#150; the OS/2 Rexx prototype.
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<!-- end ibmbody -->
+<hr>
+<p>
+<strong>[
+<a href="http://www.ibm.com/">IBM home page</a> |
+<a href="http://www.ibm.com/Search/">Search</a> |
+<a href="http://www.ibm.com/Assist/">Contact IBM</a> |
+<a href="http://www.ibm.com/Finding/">Help</a> |
+<a href="http://www.ibm.com/Legal">Terms of use</a> |
+<a href="http://www2.hursley.ibm.com/privacy.html">Privacy</a>
+]</strong>
+<br>
+<!-- <font size=2>This page was created on 14 Jan 2005.</font> -->
+<script><!--
+var lm=Date.parse(document.lastModified)
+if (lm!=0) {
+  var dlm=new Date(lm)
+  var y=dlm.getYear();    if (y<100) y+=100; if (y<1000) y+=1900
+  var m=dlm.getMonth()+1; if (m<10) m='0'+m
+  var d=dlm.getDate();    if (d<10) d='0'+d
+  var rdate=y+'.'+m+'.'+d
+  document.write('<table width=100%><td align=right>')
+  document.write('<font size=2>This page was created on ')
+  document.write(rdate+'.</font>')
+  document.write('</td></table>')
+  }
+//--></script>
+</body>
+</html>
+

@@ -1,0 +1,131 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>NetRexx applet example</title>
+<meta name="owner"    content="mfc@uk.ibm.com">
+<meta name="review"   content="20050318">
+</head>
+<body bgcolor="#FFFFFF">
+<img src="IBMsw.gif" alt="IBM" width=584 height=70><br>
+<br>
+<table cellpadding=12>
+<tr valign=top>
+<td><img src="netrexx.gif" width=64 height=64 alt=""></td>
+<td><font size=6><strong>
+
+Hello World applet
+</strong></font></td></tr></table>
+
+<hr>
+<p>
+This example is an applet which simply displays some text in a window.
+Here's the source (also available as a <a href="HelloApplet.nrx">plain
+ASCII file</a>):
+<pre>
+  /* A terribly simple Applet */
+
+  class HelloApplet extends Applet
+    method init
+      resize(200, 40)
+
+    method paint(g=Graphics)
+      g.drawString("Hello world!", 50, 30)
+</pre>
+<p>
+The first line is a comment, which isn't really needed.  The third line
+introduces the class that will form the applet (<em>warning:</em> the
+name of the class should exactly match the name of the file, including
+use of capitals, or Java will get confused).
+<p>
+The class contains two methods: the first is called when the applet is
+initialized, and the second when the window needs to be displayed.
+<p>
+To run the program, you'd create a plain text file containing the
+lines above, and then enter the command:
+<pre>
+  java COM.ibm.netrexx.process.NetRexxC helloapplet
+</pre>
+<p>This would:
+<ol>
+<li>Call the NetRexx translator to translate the program from NetRexx to
+Java
+<li>Call the Java compiler (javac) to compile the program into a class
+file
+</ol>
+<p>To have the applet displayed in World Wide Web page, you then need to
+<ol>
+<li>place the class file in the same directory as the page in which is
+is to appear
+<li>refer to it, wherever you want it to appear on the page, with the
+&lt;applet&gt; tag:
+<pre>
+  &lt;applet code="HelloApplet.class" width=200 height=40&gt;
+  &lt;/applet&gt;
+</pre>
+<p>which sets the maximum size for the window in which the applet will
+appear.
+</ol>
+<p>You can then view it with any Java-enabled browser.  If you are
+using such program to view this page, you should see the applet just
+below here.
+<br>
+<applet code="HelloApplet.class" width=200 height=40 alt="">
+</applet>
+<p>
+If you do not have a Java-enabled browser, you can view the applet using
+the 'applet viewer' that comes with the Java Development Kit.  To do
+this, change to the directory containing the World Wide Web (HTML) page
+that contains the reference to the applet, and issue the command
+<pre>
+  applet helloapp.htm
+</pre>
+where 'helloapp.htm' is the name of the page.  This should start up the
+applet viewer, showing a window for each applet referenced from the
+page.  [Note: the applet viewer may be called 'appletviewer' on some
+systems.]
+<p>
+If you do not see the applet in the window, or the window does not
+appear, close the applet (if necessary) and see if there are any
+messages in the applet viewer's 'weblog' file.  This may be found in the
+'applet' or 'weblogs' subdirectory which you should find in the Java
+home directory (<i>e.g.</i>, d:\javaos2, depending on where you
+installed Java).
+<p>
+<em>Warning:</em> the applet viewer takes a URL (e.g., http://etc...) or
+a plain file name.  If you want to give it the name of a file that needs
+a path, prefix the file specification with 'file:/'.  For example
+<pre>
+  applet file:/d:\fred\myapplet.htm
+</pre>
+The format of the file specification will vary from platform to
+platform.
+
+<!-- end ibmbody -->
+<hr>
+<p>
+<strong>[
+<a href="http://www.ibm.com/">IBM home page</a> |
+<a href="http://www.ibm.com/Search/">Search</a> |
+<a href="http://www.ibm.com/Assist/">Contact IBM</a> |
+<a href="http://www.ibm.com/Finding/">Help</a> |
+<a href="http://www.ibm.com/Legal">Terms of use</a> |
+<a href="http://www2.hursley.ibm.com/privacy.html">Privacy</a>
+]</strong>
+<br>
+<!-- <font size=2>This page was created on 14 Jan 2005.</font> -->
+<script><!--
+var lm=Date.parse(document.lastModified)
+if (lm!=0) {
+  var dlm=new Date(lm)
+  var y=dlm.getYear();    if (y<100) y+=100; if (y<1000) y+=1900
+  var m=dlm.getMonth()+1; if (m<10) m='0'+m
+  var d=dlm.getDate();    if (d<10) d='0'+d
+  var rdate=y+'.'+m+'.'+d
+  document.write('<table width=100%><td align=right>')
+  document.write('<font size=2>This page was created on ')
+  document.write(rdate+'.</font>')
+  document.write('</td></table>')
+  }
+//--></script>
+</body>
+</html>
+

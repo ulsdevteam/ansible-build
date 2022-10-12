@@ -1,0 +1,176 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>User's Guide - Appendix: Current restrictions</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx User's Guide</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>Draft of 14 Jan 2005</td>
+</tr><tr><td>[<a href="nruappl.html">previous</a> | <a href="nrusers.html">contents</a>]
+</td></tr></table>
+<hr>
+<h1><a name="restrict"><font face=helvetica color=#006644>Appendix: Current restrictions</font></a></h1>
+
+The NetRexx translator is now functionally complete, though work
+continues on usability and performance improvements.  As of this version
+there are still a number of restrictions, listed below.
+<p>
+Please note that the presence of an item in this section is not a
+commitment to remove a restriction in some future update; NetRexx
+enhancements are dependent on on-going research, your feedback, and
+available resources.  You should treat this list as a &#8216;wish-list&#8217;
+(and please send in your wishes).
+<h4><font face=helvetica color=#006644>General restrictions</font></h4>
+<ul>
+<li>
+The translator requires that Java <b>1.1.2</b> or later be installed.
+To use the interpreter functions, Java <b>1.2</b> (Java 2) is required.
+<li>
+Certain forward references (in particular, references to methods later
+in a program from the argument list of an earlier method) are not
+handled by the translator.  For these, try reordering the methods.
+</ul>
+<h4><font face=helvetica color=#006644>Compiler restrictions</font></h4>
+
+The following restrictions are due to the use of a translator for
+compiling, and would probably only be lifted if a direct-to-bytecodes
+NetRexx compiler were built.
+<ul>
+<li>
+Externally-visible names (property, method, and class names) cannot be
+Java reserved words (you probably want to avoid these anyway, as people
+who have to write in Java cannot refer to them), and cannot start with
+&#8216;<tt>$0</tt>&#8217;.
+<li>
+There are various restrictions on naming and the contents of programs
+(the first class name must match the program name, <i>etc.</i>), required to
+meet Java rules.
+<li>
+The <tt>javac</tt> compiler requires that mutually-dependent source files
+be on the CLASSPATH, so it can find the source files.
+NetRexxC does not have this restriction, but when using <tt>javac</tt> for
+the final compilation you will need to follow the convention described
+in the <a href="nrucomp.html#compmult"><cite>Compiling multiple programs and using
+packages</cite> section</a>.
+<li>
+The <tt>symbols</tt> option (which requests that debugging information be
+added to generated <tt>.class</tt> files) applies to all programs compiled
+together if any of them specify that option.
+<li>
+Some binary floating point underflows may be treated as zero instead
+of being trapped as errors.
+<li>
+When <b>trace</b> is used, side-effects of calls to <tt>this()</tt>
+and <tt>super()</tt> in constructors may be seen before the method and
+method call instructions are traced &#8211; this is because the Java
+language does not permit tracing instructions to be added before the
+call to <tt>this()</tt> or <tt>super()</tt>.
+<li>
+The results of expressions consisting of the single term
+&#8216;<tt>null</tt>&#8217; are not traced.
+<li>
+When a minor (inner) class is explicitly imported, its parent class or
+classes must also be explicitly imported, or <tt>javac</tt> will report
+that the class cannot be found.
+<li>
+If you have a <b>loop</b> construct with a large number (perhaps
+hundreds) of instructions inside it, running the compiled class may fail
+with an <b>illegal target of jump or branch</b> verification error
+(or, under Java 1.1, simply terminate execution after one iteration of
+the loop).  This is due to a bug in <tt>javac</tt>;<a name="backref.1"><a href="#footnote.1"><font size=3><sup>[1]</sup></font></a></a>&nbsp;
+one workaround is to move some of the code out of the loop, perhaps into
+a private method.
+<li>
+(The following problem may occur in larger methods, with Java 1.1.2; it
+seems to have been fixed in later versions of Java):
+NetRexxC does not restrict the number of local variables used or
+generated.  However, the 1.1.2 <tt>javac</tt> compiler fails with
+unrelated error messages (such as <b>statement unreachable</b> or
+<b>variable may be uninitialized</b>) if asked to handle more than 63
+local variables.
+</ul>
+<h4><a name="restint"><font face=helvetica color=#006644>Interpreter restrictions</font></a></h4>
+
+Interpreting Java-based programs is complex, and is constrained by
+various security issues and the architecture of the Java Virtual
+Machine.  As a result, the following restrictions apply; these will
+not affect most uses of the interpreter.
+<ul>
+<li>
+For interpretation to proceed, when any of <tt>-exec</tt>, <tt>-arg</tt>,
+or <tt>-noarg</tt> is specified, you must be running a Java 2 JVM (Java
+Virtual Machine).
+That is, the command &#8216;<tt>java -version</tt>&#8217; should report a version
+of <b>1.2</b> or later.  Parsing and compilation, however, only require
+Java 1.1.2.
+<li>
+Certain &#8216;built-in&#8217; Java classes
+(notably <tt>java.lang.Object</tt>, <tt>java.lang.String</tt>,
+and <tt>java.lang.Throwable</tt>) are constrained by the JVM in that they
+are assumed to be pre-loaded.  An attempt to interpret them is allowed,
+but will cause the later loading of any other classes to fail with a
+class cast exception.
+<li>
+Interpreted classes have a stub which is loaded by a private class
+loader.  This means that they will usually not be visible to external
+(non-interpreted) classes which attempt to find them explicitly using
+reflection, <tt>Class.forName()</tt>, <i>etc.</i>  Instead, these calls may find
+compiled versions of the classes from the classpath.  Therefore, to find
+the &#8216;live&#8217; classes being interpreted, use the NetRexxA interpreter
+API interface (described below).
+<li>
+An interpreter cannot completely emulate the actions taken by the Java
+Virtual Machine as it closes down.  Therefore, special rules are
+followed to determine when an application is assumed to have ended when
+interpreting (that is, when any of <tt>-exec</tt>, <tt>-arg</tt>,
+or <tt>-noarg</tt> is specified):
+<ul>
+<li>
+If the application being interpreted invokes the <tt>exit</tt> method of
+the <tt>java.lang.System</tt> class, the run ends immediately (even
+if <tt>-prompt</tt> was specified).  The call cannot be intercepted by the
+interpreter, and is assumed to be an explicit request by the application
+to terminate the process and release all resources.
+</ul>
+<br>
+In other cases, NetRexxC has to decide when the application ends and
+hence when to leave NetRexxC (or display the prompt, if <tt>-prompt</tt>
+was specified).  The following rules apply:
+<ul>
+<li>
+If any of the programs being interpreted contains the NetRexx
+<b>exit</b> instruction and the application leaves extra user threads
+active after the <tt>main</tt> method ends then NetRexxC will wait for an
+exit instruction to be executed before assuming the application has
+ended and exiting (or re-prompting).
+<li>
+Otherwise (that is, there are no extra threads, or no <b>exit</b>
+instruction was seen) the application is assumed to have ended as soon
+as the <tt>main</tt> method returns and in this case the run ends (or the
+prompt is shown) immediately.  This rule allows a program such as
+&#8216;hello world&#8217; to be run after a windowing application (which leaves
+threads active) without a deadlocked wait.
+</ul>
+<br>
+These rules normally &#8216;do the right thing&#8217;.  Applications which
+create windows may, however, appear to exit prematurely unless they use
+the NetRexx <b>exit</b> instruction to end their execution, because of
+the last rule.
+<br>
+Applications which include both thread creation and an <b>exit</b>
+instruction which is never executed will wait indefinitely and will need
+to be interrupted by an external &#8216;break&#8217; request, or equivalent,
+just as they would if run from compiled classes.
+<li>
+Interpreting programs which set up their own security managers may
+prevent correct operation of the interpreter.
+</ul>
+<hr><font size=2>Footnotes:</font><table cellpadding=5>
+<tr valign=top><td><font size=2><a name="footnote.1"><a href="#backref.1">[1]</a></a></font></td>
+<td><font size=2>A <tt>goto</tt> bytecode instruction is being generated instead of
+a <tt>goto&#95;w</tt> instruction.
+</font></tr></td>
+</table>
+<hr>
+[<a href="nruappl.html">previous</a> | <a href="nrusers.html">contents</a>]
+</body></html>

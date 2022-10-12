@@ -1,0 +1,86 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>NetRexx applet example</title>
+<meta name="owner"    content="mfc@uk.ibm.com">
+<meta name="review"   content="20050318">
+</head>
+<body bgcolor="#FFFFFF">
+<img src="IBMsw.gif" alt="IBM" width=584 height=70><br>
+<br>
+<table cellpadding=12>
+<tr valign=top>
+<td><img src="netrexx.gif" width=64 height=64 alt=""></td>
+<td><font size=6><strong>
+
+Nervous Text applet
+</strong></font></td></tr></table>
+
+<hr>
+<p>
+This example is an applet which displays some moving text in a window;
+this applet follows the algorithm used in one of the earliest Java
+applets, 'NervousText'.
+<p>
+Here's the source, as a <a href="NervousTexxt.nrx">plain
+ASCII file</a>.
+<p>
+This one is a bit more sophisticated than the 'Hello World' applet: the
+text jiggles, and you can start or stop the movement by clicking on
+the applet window.
+<p>The applet is compiled using the same steps as for the 'Hello World'
+applet.  Unlike 'Hello World', however, this applet takes as a parameter
+the text to be displayed; to have the applet displayed in World Wide
+Web page, you need to
+<ol>
+<li>place the class file in the same directory as the page in which is
+is to appear
+<li>refer to it, wherever you want it to appear on the page, with the
+&lt;applet&gt; tag:
+<pre>
+  &lt;applet code="NervousTexxt.class" width=300 height=50&gt;
+  &lt;param name=text value="NetRexx applet"&gt;
+  &lt;/applet&gt;
+</pre>
+<p>which sets the maximum size for the window in which the applet will
+appear, and the text that will appear.
+</ol>
+<p>You can then view the page with any Java-enabled browser, or with the
+'applet viewer' that comes with the Java Development Kit.  If you are
+using such program, you should see the applet below here.
+<br>
+<applet code="NervousTexxt.class" width=300 height=50 alt="">
+<param name=text value="NetRexx applet">
+</applet>
+<p>For more details on running applets, see the
+<a href="helloapp.html">Hello World applet</a> page.
+
+<!-- end ibmbody -->
+<hr>
+<p>
+<strong>[
+<a href="http://www.ibm.com/">IBM home page</a> |
+<a href="http://www.ibm.com/Search/">Search</a> |
+<a href="http://www.ibm.com/Assist/">Contact IBM</a> |
+<a href="http://www.ibm.com/Finding/">Help</a> |
+<a href="http://www.ibm.com/Legal">Terms of use</a> |
+<a href="http://www2.hursley.ibm.com/privacy.html">Privacy</a>
+]</strong>
+<br>
+<!-- <font size=2>This page was created on 14 Jan 2005.</font> -->
+<script><!--
+var lm=Date.parse(document.lastModified)
+if (lm!=0) {
+  var dlm=new Date(lm)
+  var y=dlm.getYear();    if (y<100) y+=100; if (y<1000) y+=1900
+  var m=dlm.getMonth()+1; if (m<10) m='0'+m
+  var d=dlm.getDate();    if (d<10) d='0'+d
+  var rdate=y+'.'+m+'.'+d
+  document.write('<table width=100%><td align=right>')
+  document.write('<font size=2>This page was created on ')
+  document.write(rdate+'.</font>')
+  document.write('</td></table>')
+  }
+//--></script>
+</body>
+</html>
+

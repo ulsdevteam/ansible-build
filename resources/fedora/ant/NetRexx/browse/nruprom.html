@@ -1,0 +1,64 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>User's Guide - Using the prompt option</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx User's Guide</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>Draft of 14 Jan 2005</td>
+</tr><tr><td>[<a href="nrucomp.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruinter.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="useprom"><font face=helvetica color=#006644>Using the prompt option</font></a></h2>
+
+The <b>prompt</b> option may be be used for interactive invocation of
+the translator.  This requests that the processor not be ended after a
+file (or set of files) has been processed.  Instead, you will be
+prompted to enter a new request.  This can either repeat the process
+(perhaps if you have altered the source in the meantime), specify a new
+set of files, or alter the processing options.
+<p>
+On the second and subsequent runs, the processor will re-use class
+information loaded on the first run.  Also, the classes of the processor
+itself (and the <tt>javac</tt> compiler, if used) will not need to be
+verified and JIT-compiled again.  These savings allow extremely fast
+processing, as much as fifty times faster than the first run for small
+programs.
+<p>
+When you specify <tt>-prompt</tt> on a NetRexxC command, the NetRexx
+program (or programs) will initially be processed as usual, according to
+the other flags specified.  Once processing is complete, you will be
+prompted thus:
+<pre>
+  Enter new files and additional options, &#8217;=&#8217; to repeat, &#8217;exit&#8217; to end:
+</pre>
+
+At this point, you may enter:
+<ul>
+<li>
+One or more file names (with or without additional flags): the previous
+process, modified by any new flags, is repeated using the source file
+or files specified.  Files named previously are not included in the
+process (unless they are named again in the new list of names).
+<li>
+Additional flags (without any new files): the previous process, modified
+by the new flags, is repeated, on the same files as before.
+Note that flags are accumulated; that is, flags are not reset to
+defaults between prompts.
+<li>
+The character &#8216;<tt>=</tt>&#8217;: this simply repeats the previous process,
+on the same file or files (which may have had their contents changed
+since the last process) and using the same flags.  This is especially
+useful when you simply wish to re-compile (or re-interpret, see below)
+the same file or files after editing.
+<li>
+The word &#8216;<tt>exit</tt>&#8217;, which causes NetRexxC to cease execution
+without any more prompts.
+<li>
+Nothing (just press Enter or the equivalent) &#8211; usage hints, including
+the full list of possible options, <i>etc.</i>, are displayed and you are then
+prompted again.
+</ul>
+<hr>
+[<a href="nrucomp.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruinter.html">next</a>]
+</body></html>

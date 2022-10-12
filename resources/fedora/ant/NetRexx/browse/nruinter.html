@@ -1,0 +1,157 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>User's Guide - Using the translator as an Interpreter</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx User's Guide</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>Draft of 14 Jan 2005</td>
+</tr><tr><td>[<a href="nruprom.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruapi.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="useinter"><font face=helvetica color=#006644>Using the translator as an Interpreter</font></a></h2>
+
+In addition to being used as a compiler, the translator also includes a
+true NetRexx interpreter, allowing NetRexx programs to be run on the
+Java 2 (1.2) platform without needing a compiler or generating .class
+files.
+<p>
+The startup time for running programs can therefore be significantly
+reduced as no Java source code or compilation is needed, and also the
+interpreter can give better runtime support (for example, exception
+tracebacks are localized to the programs being interpreted, and the
+location of an exception will be identified often to the nearest token
+in a term or expression).
+<p>
+Further, in a single run, a NetRexx program can be both interpreted and
+then compiled.  This shares the parsing between the two processes, so
+the <tt>.class</tt> file is produced without the overhead of
+re-translating and re-checking the source.
+<h4><font face=helvetica color=#006644>Interpreting programs</font></h4>
+
+The NetRexx interpreter is currently designed to be fully compatible
+with NetRexx programs compiled conventionally.  There are some minor
+<a href="nrurestr.html#restint">restrictions</a>, but in general any program that NetRexxC
+can compile without error should run.  In particular, multiple programs,
+threads, event listeners, callbacks, and Minor (inner) classes are fully
+supported.
+<p>
+To use the interpreter, use the NetRexxC command as usual and specify
+either of the following command options (flags):
+<dl>
+<p><dt><a name="optexec"><tt>-exec</tt></a>
+<dd><p>
+after parsing, execute (interpret) the program or programs by calling
+the static <tt>main(String[])</tt> method on the first class, with an
+empty array of strings as the argument.  (If there is no suitable <tt>main</tt>
+method an error will be reported.)
+<p><dt><a name="optarg"><tt>-arg words...</tt></a>
+<dd><p>
+as for <tt>-exec</tt>, except that the remainder of the command argument
+string passed to NetRexxC will be passed on to the main method as the
+array of argument strings, instead of being treated as file
+specifications or flags.  Specifying <tt>-noarg</tt> is equivalent to
+specifying <tt>-exec</tt>; that is, an empty array of argument strings
+will be passed to the main method (and any remaining words in the
+command argument string are processed normally).
+</dl>
+<p>
+When any of <tt>-exec</tt>, <tt>-arg</tt>, or <tt>-noarg</tt> is specified,
+NetRexxC will first parse and check the programs listed on the command.
+If no error was found, it will then run them by invoking the main method
+of the first class interpretively.
+<p>
+Before the run starts, a line similar to:
+<pre>
+  ===== Exec: hello =====
+</pre>
+<i></i>
+will be displayed (you can stop this and other progress indicators being
+displayed by using the <tt>-verbose0</tt> flag, as usual).
+<p>
+Finally, after interpretation is complete, the programs are compiled in
+the usual way, unless <tt>-nojava</tt><a name="backref.1"><a href="#footnote.1"><font size=3><sup>[1]</sup></font></a></a>&nbsp;
+or <tt>-nocompile</tt> was specified.
+<p>
+For example, to interpret the &#8216;hello world&#8217; program without
+compilation, the command:
+<pre>
+  nrc hello -exec -nojava
+</pre>
+<i></i>
+can be used.  If you are likely to want to re-interpret the program (for
+example, after changing the source file) then also specify
+the <tt>-prompt</tt> flag, as described above.  This will give very much
+better performance on the second and subsequent interpretations.
+<p>
+Similarly, the command:
+<pre>
+  nrc hello -nojava -arg Hi Fred!
+</pre>
+<i></i>
+would invoke the program, passing the words &#8216;<tt>Hi Fred!</tt>&#8217; as
+the argument to the program (you might want to add the line &#8216;<tt>say
+arg</tt>&#8217; to the program to demonstrate this).
+<p>
+You can also invoke the interpreter directly from another NetRexx or
+Java program, as described in the <a href="nruapi.html#useapi"><cite>Using the NetRexxA
+API</cite> section</a>.
+<h4><font face=helvetica color=#006644>Interpreting &#8211; Hints and Tips</font></h4>
+
+When using the translator as an interpreter, you may find these hints
+useful:
+<ul>
+<li>
+If you can, use the <tt>-prompt</tt> command line option (see above).
+This will allow very rapid re-interpretation of programs after changing
+their source.
+<li>
+If you don&#8217;t want the programs to be compiled after interpretation,
+specify the <tt>-nojava</tt> option, unless you want the Java source code
+to be generated in any case (in which case specify <tt>-nocompile</tt>,
+which implies <tt>-keep</tt>).
+<li>
+By default, NetRexxC runs fairly &#8216;noisily&#8217; (with a banner and logo
+display, and progress of parsing being shown).  To turn off these
+messages during parsing (except error reports and warnings) use
+the <tt>-verbose0</tt> flag.
+<li>
+If you are watching NetRexx trace output while interpreting, it is often
+a good idea to use the <tt>-trace1</tt> flag.  This directs trace output
+to the standard output stream, which will ensure that trace output and
+other output (for example, from <b>say</b> instructions) are
+synchronized.
+<li>
+Use the NetRexx <b>exit</b> instruction (rather than the <tt>System.exit()</tt>
+method call) to end windowing (AWT) applications which are to be
+interpreted.  This will allow the interpreter to correctly determine
+when the application has ended.  This is discussed further in the
+<a href="nrurestr.html#restint"><cite>Interpreter restrictions</cite> section</a>.
+</ul>
+<h4><font face=helvetica color=#006644>Interpreting &#8211; Performance</font></h4>
+
+The initial release of the interpreter, in the NetRexx 2.0 reference
+implementation, directly and efficiently interprets NetRexx
+instructions.  However, to assure the stability of the code, terms and
+expressions within instructions are currently fully re-parsed and
+checked each time they are executed.  This has the effect of slowing the
+execution of terms and expressions significantly; performance
+measurements on the initial release are therefore unlikely to be
+representative of later versions that might be released in the future.
+<p>
+For example, at present a loop controlled using &#8216;<tt>loop for
+1000</tt>&#8217; will be interpreted around 50 times faster than a loop
+controlled by &#8216;<tt>loop i=1 to 1000</tt>&#8217;, even in a binary method,
+because the latter requires an expression evaluation each time around
+the loop.
+<hr><font size=2>Footnotes:</font><table cellpadding=5>
+<tr valign=top><td><font size=2><a name="footnote.1"><a href="#backref.1">[1]</a></a></font></td>
+<td><font size=2>The <tt>-nojava</tt> flag stops any Java source being produced, so
+prevents compilation.  This flag may be used to force syntax-checking of
+a program while preventing compilation, and with optional
+interpretation.
+</font></tr></td>
+</table>
+<hr>
+[<a href="nruprom.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruapi.html">next</a>]
+</body></html>

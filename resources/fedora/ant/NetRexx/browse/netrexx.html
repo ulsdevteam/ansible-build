@@ -1,0 +1,208 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>The NetRexx Language</title>
+<meta name="keywords" content="NetRexx programming language for Java,
+easier Java programming, scripting for Java, Rexx, Java, BASIC like,
+Java interpreter, ease of use in Java, user-friendly Java, decimal
+arithmetic, NetRexx home page, NetRexx definition">
+<meta name="owner"    content="mfc@uk.ibm.com">
+<meta name="review"   content="20050318">
+</head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=7>
+<tr valign=top><td>
+<img src="IBMsw.gif" alt="IBM" width=584 height=70>
+</td></tr></table>
+<table cellpadding=7>
+<tr valign=top><td>
+<b><font size=6 color=darkblue>NetRexx 2</font></b>
+<br>
+NetRexx is a <i>human-oriented</i> programming language which makes writing
+and using Java classes quicker and easier than writing in Java.
+</td>
+<td><img src="netrexx.gif" width=64 height=64 alt="">
+<br>
+<b><font size=3 color=darkblue>2.05</font></b>
+</td>
+</tr></table>
+<table cellpadding=7>
+<tr valign=top><td>
+  <table cellpadding=3 border=2>
+  <tr><td bgcolor="#FFFF90"><a href="netrexx.html">News</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrwhat.html">What's NetRexx?</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrlinks.html">NetRexx links</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrdown.html">Downloading</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrdocs.html">Documentation</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrfaq.html">FAQ</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrsamp.html">Samples</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrmlist.html">Mailing list</a></td></tr>
+  </table>
+</td><td>
+
+<!-- =============================================================== -->
+<h2>Recent News</h2>
+
+<ul>
+<li>
+Sat Srivastava's <a href="http://ssatguru.tripod.com/NetRexx/">
+Rexx and NetRexx site</a>, including the <b>NetRexxJe Plugin for
+jEdit</b> has moved.
+<img src="updated.gif" width=46 height=12 alt="updated">
+[10 Feb 2002]
+
+<li>
+<img src="new.gif" width=31 height=12 alt="new">
+Thomas.Schneider's
+<a href="http://www.rexx2nrx.com/">Classic Rexx to NetRexx
+converter</a>, which lets you run Rexx programs in a Java environment,
+is now available.
+[7 Nov 2001]
+
+<li>
+<img src="new.gif" width=31 height=12 alt="new">
+Ren&eacute; Jansen's
+<a href="http://www.xs4all.nl/~rvjansen/nrxsrv.html">
+<b>NrxSrv</b> &#150; Compiler server for NetRexx</a>
+is now available for use.
+[19 Sep 2001]
+
+<li>
+<img src="new.gif" width=31 height=12 alt="new">
+NetRexx 2.02 is now available for download.  This corrects
+<tt>&nbsp;loop i=a to b until x&nbsp;</tt> instructions which
+incorrectly optimized the control variable test in some circumstances,
+and also includes the fix in 2.01 (excessive memory usage when large
+numbers of files are imported and the -prompt option is used).  No other
+changes are included.
+[22 May 2001]
+
+
+<li>
+<img src="new.gif" width=31 height=12 alt="new">
+Problems installing NetRexx under Windows NT?  Please check the
+<a href="nrfaq.html">FAQ page</a> for some suggestions.
+[21 Feb 2001]
+
+<li>
+Jose Solorzano's TinyVM runs
+<a href="http://tinyvm.sourceforge.net/netrexx.html">NetRexx programs
+in the <b>Lego Mindstorms</b> RCX microcontroller</a>.
+[6 Sep 2000]
+
+<li>
+The first release of the NetRexx 2 compiler/interpreter, version 2.00,
+is available.
+The highlights of this release are:
+<ul>
+<li>
+The <b>NetRexx interpreter</b>, which allows programs and classes to be
+run without being compiled
+<li>
+The <b>-prompt</b> option, which allows sub-second compilation and
+interpretation of NetRexx programs
+<li>
+An expanded, reworked, and indexed <b>User's Guide</b>, available in
+both HTML and PDF formats
+<li>
+An updated <b>Language Overview</b>, available in both HTML and PDF
+formats
+<li>
+Revised <b>packaging</b>, including shell scripts for Linux, which makes
+installation and use easier.
+</ul>
+Please see the <a href="nrchange.html"><b>Changes list</b></a>
+for details of the changes, and the new
+<a href="nrusers.html"><b>User's Guide</b></a> for full information on using
+the <b><tt>-prompt</tt></b> option and the interpreter.
+[31 Aug 2000]
+
+<li>
+The latest version of the
+<a href="http://www.sourceforge.net/projects/jedit">jedit</a> editor
+includes Jerry McBride's NetRexx syntax highlighting.
+[6 Aug 2000]
+
+<li>
+The <a href="http://www2.hursley.ibm.com/netrexx/netrexxi.pdf">NetRexx
+Interpreter</a> presentation from the
+<a href="http://www.rexxla.org">Rexx Symposium</a>.
+[26 May 2000]
+
+<li>
+Martin Lafaix's interactive
+<a href="http://lafaix.online.fr/netrexx/workspace">Workspace for
+NetRexx</a>
+[17 May 2000]
+
+</ul>
+
+</td></tr></table><table><tr><td>
+
+<p><b><i>Current release</i></b>
+
+<p>
+<a href="http://www2.hursley.ibm.com/netrexx"> NetRexx <b>2.05</b></a>
+is the <font color=red>NetRexx reference implementation for Java 1.1 and
+Java 1.2</font>.  This release will only run correctly on a Java 1.1.2 (or
+later) platform.
+<p>
+NetRexx 2.05 includes the NetRexx interpreter, and supports minor
+(inner) classes (see the <a href="buttons.html">Buttons</a> sample),
+shortcut <b>if</b> and <b>when</b>, <b>trace var</b>, <b>select case</b>
+with <tt>switch</tt> generation, enhanced <b>import</b>, compressed
+class libraries ('jar files'), serialization of all Rexx objects,
+internationalization, adapter classes (see
+the <a href="scribble.html">Scribble</a> sample), comment pass-through,
+binary methods, hexadecimal and binary number notation, enforcement of
+explicit declarations, and many other improvements over NetRexx 1.0.
+<p>
+For details, please see the <a href="nrchange.html">changes list</a>, and
+the <a href="http://www2.hursley.ibm.com/nrl/nrlsupp.html">NetRexx
+Supplement</a>.
+The Supplement is also available on the web in
+<a href="http://www2.hursley.ibm.com/netrexx/nrlsupp.pdf">PDF
+(Acrobat)</a> format for viewing or printing; this is also included
+in the <a href="nrdown.html">NetRexxD (documentation) package</a>.
+<img src="updated.gif" width=46 height=12 alt="updated">
+
+</td></tr></table>
+<!-- =============================================================== -->
+<hr>
+
+<h4><a name="requests"><em>Requests and suggestions?</em></a></h4>
+<p>
+Your comments, questions, and suggestions for NetRexx and these Web
+pages are welcome!
+Either use the <a href="nrmlist.html">NetRexx mailing list</a>, or send
+mail to me (<a href="http://www2.hursley.ibm.com/mfcsumm.html">Mike
+Cowlishaw</a>) directly, using mail to
+<a href="mailto:mfc@uk.ibm.com">mfc@uk.ibm.com</a>.
+
+<p>
+<strong>[
+<a href="http://www.ibm.com/">IBM home page</a> |
+<a href="http://www.ibm.com/Search/">Search</a> |
+<a href="http://www.ibm.com/Assist/">Contact IBM</a> |
+<a href="http://www.ibm.com/Finding/">Help</a> |
+<a href="http://www.ibm.com/Legal">Terms of use</a> |
+<a href="http://www2.hursley.ibm.com/privacy.html">Privacy</a>
+]</strong>
+<br>
+<!-- <font size=2>This page was created on 14 Jan 2005.</font> -->
+<script><!--
+var lm=Date.parse(document.lastModified)
+if (lm!=0) {
+  var dlm=new Date(lm)
+  var y=dlm.getYear();    if (y<100) y+=100; if (y<1000) y+=1900
+  var m=dlm.getMonth()+1; if (m<10) m='0'+m
+  var d=dlm.getDate();    if (d<10) d='0'+d
+  var rdate=y+'.'+m+'.'+d
+  document.write('<table width=100%><td align=right>')
+  document.write('<font size=2>This page was created on ')
+  document.write(rdate+'.</font>')
+  document.write('</td></table>')
+  }
+//--></script>
+</body>
+</html>
+

@@ -1,0 +1,143 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>What's NetRexx?</title>
+<meta name="owner"    content="mfc@uk.ibm.com">
+<meta name="review"   content="20050318">
+</head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=7>
+<tr valign=top><td>
+<img src="IBMsw.gif" alt="IBM" width=584 height=70>
+</td></tr></table>
+<table cellpadding=7>
+<tr valign=top><td>
+<b><font size=6 color=darkblue>NetRexx 2</font></b>
+<br>
+NetRexx is a <i>human-oriented</i> programming language which makes writing
+and using Java classes quicker and easier than writing in Java.
+</td>
+<td><img src="netrexx.gif" width=64 height=64 alt="">
+<br>
+<b><font size=3 color=darkblue>2.05</font></b>
+</td>
+</tr></table>
+<table cellpadding=7>
+<tr valign=top><td>
+  <table cellpadding=3 border=2>
+  <tr><td bgcolor="#FFFF90"><a href="netrexx.html">News</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrwhat.html">What's NetRexx?</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrlinks.html">NetRexx links</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrdown.html">Downloading</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrdocs.html">Documentation</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrfaq.html">FAQ</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrsamp.html">Samples</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrmlist.html">Mailing list</a></td></tr>
+  </table>
+</td><td>
+
+<!-- =============================================================== -->
+<h2>What's NetRexx?</h2>
+<p>
+NetRexx is a programming and scripting language which has been designed
+to be a simple, effective, and complete alternative to the Java
+language.
+With NetRexx, you can create applications and applets for the Java
+environment faster and more easily than by programming in Java &#150;
+and you can compile or interpret them, as appropriate.  The new
+<tt>-prompt</tt> option allows very fast (usually sub-second) compilation
+or interpretation of most classes.
+<p>
+Using Java classes is especially easy in NetRexx, as the different
+types of numbers and strings that Java expects are handled automatically
+by the language.
+NetRexx classes and Java classes are entirely equivalent &#150; NetRexx
+can use any Java class (and vice versa).
+<p>
+Here's what a "Hello World" program looks like in NetRexx:
+<pre>
+/* A program, written in NetRexx */
+say 'Hello World!'
+</pre>
+To see more examples of what the language looks like, try the <a
+href="nrsample.html">NetRexx samples</a> page, or browse the <a
+href="netrexxo.html">NetRexx quick start</a>, an overview of the
+language.
+<p>
+Initial measurements using the current implementation suggest that the
+Java source for a typical class has approximately 35% more lexical
+tokens and requires 20% more keystrokes than the equivalent in NetRexx.
+<p>
+The free reference implementation for the language can either interpret
+the language directly, or it can compile it into pure Java .class files.
+In the latter case it first translates the NetRexx source code into Java
+source code; this is then compiled in turn to generate the Java
+bytecodes (class files) for execution.  The Java code can be kept for
+maintenance, and can also be used to generate <tt>javadoc</tt>
+documentation.
+<p>
+The compiler/interpreter is (of course) written in NetRexx, and should
+run on any Java platform that supports a Java 1.1.2 (or later) toolkit
+and compiler (javac).
+By default, NetRexxC automatically calls the javac compiler to
+create class files, but you can use other Java compilers if you wish.
+No Java compiler is needed to interpret NetRexx programs, though Java 2
+(1.2) is needed for this.
+<p>
+For formal details of the language, please see the NetRexx documentation
+at <a href="netrexx.html">http://www2.hursley.ibm.com</a>; you'll find
+the NetRexx packages to <a href="nrdown.html">download</a> there, too.
+<p>
+NetRexx 1.1 includes many new features, including some that especially
+simplify the programming of the Java 1.1 event model, inner classes, and
+JavaBeans.  NetRexx 2 supports direct interpretation and other new
+features.
+<p>
+NetRexx is inspired by two very different programming languages,
+<a href="http://www2.hursley.ibm.com/rexx/">Rexx</a> and
+<a href="http://www.javasoft.com">Java</a>.  It blends the clean
+easy-to-learn syntax of Rexx with the robustness and portability of the
+Java environment.  The result is a language which is tuned for both
+scripting and application development, and is designed for both
+interpretation and compilation.  It is therefore truly general-purpose.
+<p>
+</td></tr></table>
+<!-- =============================================================== -->
+<hr>
+
+<h4><a name="requests"><em>Requests and suggestions?</em></a></h4>
+<p>
+Your comments, questions, and suggestions for NetRexx and these Web
+pages are welcome!
+Either use the <a href="nrmlist.html">NetRexx mailing list</a>, or send
+mail to me (<a href="http://www2.hursley.ibm.com/mfcsumm.html">Mike
+Cowlishaw</a>) directly, using mail to
+<a href="mailto:mfc@uk.ibm.com">mfc@uk.ibm.com</a>.
+
+<p>
+<strong>[
+<a href="http://www.ibm.com/">IBM home page</a> |
+<a href="http://www.ibm.com/Search/">Search</a> |
+<a href="http://www.ibm.com/Assist/">Contact IBM</a> |
+<a href="http://www.ibm.com/Finding/">Help</a> |
+<a href="http://www.ibm.com/Legal">Terms of use</a> |
+<a href="http://www2.hursley.ibm.com/privacy.html">Privacy</a>
+]</strong>
+<br>
+<!-- <font size=2>This page was created on 14 Jan 2005.</font> -->
+<script><!--
+var lm=Date.parse(document.lastModified)
+if (lm!=0) {
+  var dlm=new Date(lm)
+  var y=dlm.getYear();    if (y<100) y+=100; if (y<1000) y+=1900
+  var m=dlm.getMonth()+1; if (m<10) m='0'+m
+  var d=dlm.getDate();    if (d<10) d='0'+d
+  var rdate=y+'.'+m+'.'+d
+  document.write('<table width=100%><td align=right>')
+  document.write('<font size=2>This page was created on ')
+  document.write(rdate+'.</font>')
+  document.write('</td></table>')
+  }
+//--></script>
+</body>
+</html>
+

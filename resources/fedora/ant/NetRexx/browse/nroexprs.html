@@ -1,0 +1,113 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>NetRexx overview - Expressions and variables</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx Overview</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>14 Jan 2005</td>
+</tr><tr><td>[<a href="nroprogs.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nrocontr.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="refoeprs"><font face=helvetica color=#006644>Expressions and variables</font></a></h2>
+
+Like <b>say</b> in the &#8216;toast&#8217; example, many instructions in NetRexx
+include <i>expressions</i> that will be evaluated.  NetRexx provides
+arithmetic operators (including integer division, remainder, and power
+operators), several concatenation operators, comparison operators, and
+logical operators.  These can be used in any combination within a
+NetRexx expression (provided, of course, that the data values are valid
+for those operations).
+<p>
+All the operators act upon strings of characters (known as <i>NetRexx
+strings</i>), which may be of any length (typically limited only by the
+amount of storage available).  Quotes (either single or double) are used
+to indicate literal strings, and are optional if the literal string is
+just a number.  For example, the expressions:
+<pre>
+  &#8217;2&#8217; + &#8217;3&#8217;
+  &#8217;2&#8217; + 3
+    2 + 3
+</pre>
+
+would all result in <tt>&#8217;5&#8217;</tt>.
+<p>
+The results of expressions are often assigned to <i>variables</i>, using a
+conventional assignment syntax:
+<pre>
+  var1=5            /* sets var1 to &#8217;5&#8217;    */
+  var2=(var1+2)*10  /* sets var2 to &#8217;70&#8217; */
+</pre>
+
+You can write the names of variables (and keywords) in whatever mixture
+of uppercase and lowercase that you prefer; the language is not
+case-sensitive.
+<p>
+This next sample program, &#8216;greet&#8217;, shows expressions used in
+various ways:
+<pre>
+  /* greet.nrx -- a short program to greet you.        */
+  /* First display a prompt:                           */
+  say &#8217;Please type your name and then press Enter:&#8217;
+  answer=ask            /* Get the reply into &#8217;answer&#8217; */
+  
+  /* If no name was entered, then use a fixed          */
+  /* greeting, otherwise echo the name politely.       */
+  if answer=&#8217;&#8217; then say &#8217;Hello Stranger!&#8217;
+               else say &#8217;Hello&#8217; answer&#8217;!&#8217;
+</pre>
+
+After displaying a prompt, the program reads a line of text from the
+user (&#8216;<tt>ask</tt>&#8217; is a keyword provided by NetRexx) and
+assigns it to the variable <tt>answer</tt>.  This is then tested to
+see if any characters were entered, and different actions are taken
+accordingly; for example, if the user typed &#8216;<tt>Fred</tt>&#8217; in
+response to the prompt, then the program would display:
+<pre>
+  Hello Fred!
+</pre>
+
+As you see, the expression on the last <b>say</b> (display)
+instruction concatenated the string &#8216;<tt>Hello</tt>&#8217; to the value
+of variable <tt>answer</tt> with a blank in between them (the blank is
+here a valid operator, meaning &#8216;concatenate with blank&#8217;).  The
+string &#8216;<tt>!</tt>&#8217; is then directly concatenated to the result
+built up so far.  These unobtrusive operators (the <i>blank
+operator</i> and abuttal) for concatenation are very natural and easy
+to use, and make building text strings simple and clear.
+<p>
+The layout of instructions is very flexible.  In the &#8216;greet&#8217;
+example, for instance, the <b>if</b> instruction could be laid out in
+a number of ways, according to personal preference.  Line breaks can be
+added at either side of the <b>then</b> (or following the
+<b>else</b>).
+<p>
+In general, instructions are ended by the end of a line.  To continue a
+instruction to a following line, you can use a hyphen (minus sign) just as
+in English:
+<pre>
+  say &#8217;Here we have an expression that is quite long,&#8217; -
+      &#8217;so it is split over two lines&#8217;
+</pre>
+
+This acts as though the two lines were all on one line, with the hyphen
+and any blanks around it being replaced by a single blank.  The net
+result is two strings concatenated together (with a blank in between)
+and then displayed.
+<p>
+When desired, multiple instructions can be placed on one line with the
+aid of the semicolon separator:
+<pre>
+  if answer=&#8217;Yes&#8217; then do; say &#8217;OK!&#8217;; exit; end
+</pre>
+
+(many people find multiple instructions on one line hard to read, but
+sometimes it is convenient).
+<hr>
+[<a href="nroprogs.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nrocontr.html">next</a>]
+<p><font size=2>From
+<a href="/netrexx/nrl.html"><em>The NetRexx Language</em></a> by 
+<a href="http://www2.hursley.ibm.com/mfcsumm.html">Mike Cowlishaw</a>,
+<a href="mailto:mfc@uk.ibm.com"><m>mfc@uk.ibm.com</m></a>
+(ISBN 0-13-806332-X, 197pp, Prentice-Hall, 1997).</font>
+</body></html>

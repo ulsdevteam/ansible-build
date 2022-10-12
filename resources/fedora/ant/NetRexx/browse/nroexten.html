@@ -1,0 +1,119 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>NetRexx overview - Extending classes</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx Overview</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>14 Jan 2005</td>
+</tr><tr><td>[<a href="nroobjec.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nrotrace.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="refoexten"><font face=helvetica color=#006644>Extending classes</font></a></h2>
+
+It&#8217;s common, when dealing with objects, to take an existing class and
+extend it.  One way to do this is to modify the source code of the
+original class &#8211; but this isn&#8217;t always available, and with many
+different people modifying a class, classes could rapidly get
+over-complicated.
+<p>
+Languages that deal with objects, like NetRexx, therefore allow new
+classes of objects to be set up which are derived from existing classes.
+For example, if you wanted a different kind of Oblong in which the
+Oblong had a new property that would be used when printing the Oblong as
+a rectangle, you might define it thus:
+<pre>
+  /* charOblong.nrx -- an oblong class with character */
+  class charOblong extends Oblong
+    printchar       -- the character for display
+  
+    /* Constructor to make a new oblong with character */
+    method charOblong(newwidth, newheight, newprintchar)
+      super(newwidth, newheight) -- make an oblong
+      printchar=newprintchar     -- and set the character
+  
+    /* &#8217;Print&#8217; the oblong */
+    method print
+      loop for super.height
+        say printchar.copies(super.width)
+        end
+</pre>
+
+There are several things worth noting about this example:
+<ol>
+<li>
+The &#8216;<tt>extends Oblong</tt>&#8217; on the class instruction means that
+this class is an extension of the Oblong class.  The properties and
+methods of the Oblong class are <i>inherited</i> by this class (that
+is, appear as though they were part of this class).
+<br>
+Another common way of saying this is that &#8216;<tt>charOblong</tt>&#8217;
+is a <i>subclass</i> of &#8216;<tt>Oblong</tt>&#8217; (and
+&#8216;<tt>Oblong</tt>&#8217; is the <i>superclass</i> of
+&#8216;<tt>charOblong</tt>&#8217;).
+<li>
+This class adds the <tt>printchar</tt> property to the properties
+already defined for Oblong.
+<li>
+The constructor for this class takes a width and height (just like
+Oblong) and adds a third argument to specify a print character.  It
+first invokes the constructor of its superclass (Oblong) to build
+an Oblong, and finally sets the printchar for the new object.
+<li>
+The new charOblong object also prints differently, as a rectangle
+of characters, according to its dimension.  The <tt>print</tt> method
+(as it has the same name and arguments &#8211; none &#8211; as that of the
+superclass) replaces (overrides) the <tt>print</tt> method of Oblong.
+<li>
+The other methods of Oblong are not overridden, and therefore can
+be used on charOblong objects.
+</ol>
+<p>
+The <tt>charOblong.nrx</tt> file is compiled just
+like <tt>Oblong.nrx</tt> was, and should create a file
+called <tt>charOblong.class</tt>.
+<p>
+Here&#8217;s a program to try it out:
+<pre>
+  /* trycharOblong.nrx -- try the charOblong class */
+  
+  first=charOblong(5,3,&#8217;#&#8217;)  -- make an oblong
+  first.print                -- show it
+  first.relsize(1,1).print   -- enlarge and print again
+  
+  second=charOblong(1,2,&#8217;*&#8217;) -- make another oblong
+  second.print               -- and print it
+</pre>
+
+This should create the two charOblong objects, and print them out in a
+simple &#8216;character graphics&#8217; form.
+Note the use of the method <tt>relsize</tt> from Oblong to resize
+the charOblong object.
+<h4><font face=helvetica color=#006644>Optional arguments</font></h4>
+
+All methods in NetRexx may have optional arguments (omitted from the
+right) if desired.  For an argument to be optional, you must supply a
+default value.  For example, if the charOblong constructor was to have a
+default value for <tt>printchar</tt>, its method instruction could
+have been written:
+<pre>
+  method charOblong(newwidth, newheight, newprintchar=&#8217;X&#8217;)
+</pre>
+
+which indicates that if no third argument is supplied
+then <tt>&#8217;X&#8217;</tt> should be used.  A program creating a charOblong
+could then simply write:
+<pre>
+  first=charOblong(5,3)       -- make an oblong
+</pre>
+
+which would have exactly the same effect as if <tt>&#8217;X&#8217;</tt> were
+specified as the third argument.
+<hr>
+[<a href="nroobjec.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nrotrace.html">next</a>]
+<p><font size=2>From
+<a href="/netrexx/nrl.html"><em>The NetRexx Language</em></a> by 
+<a href="http://www2.hursley.ibm.com/mfcsumm.html">Mike Cowlishaw</a>,
+<a href="mailto:mfc@uk.ibm.com"><m>mfc@uk.ibm.com</m></a>
+(ISBN 0-13-806332-X, 197pp, Prentice-Hall, 1997).</font>
+</body></html>

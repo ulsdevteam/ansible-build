@@ -1,0 +1,56 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>User's Guide - Installation on a Linux or Unix system</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx User's Guide</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>Draft of 14 Jan 2005</td>
+</tr><tr><td>[<a href="nruiebc.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruijpp.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="inunix"><font face=helvetica color=#006644>Installation on a Linux or Unix system</font></a></h2>
+
+The NetRexx binaries are identical for all operating systems; the same
+NetRexxC.jar runs everywhere, and the same installation process is used
+as on other systems.
+Some changes may be needed to text files, however (especially to the
+shell scripts), and there are alternatives to the &#8216;standard&#8217;
+installation process.  Here are some tips:
+<ul>
+<li>
+It is strongly recommended that you use the <tt>unzip</tt> command with
+the <tt>-a</tt> flag, if available.  This will automatically convert text
+files to Unix text file format, while leaving binaries (such
+as <tt>.jar</tt>, <tt>.class</tt>, or <tt>.gif</tt> files) unchanged.
+<li>
+If you cannot use the <tt>unzip -a</tt> command, you may need to take
+special action to use text files, such as the documentation or shell
+scripts.
+In the NetRexx package text files use a two-byte line end sequence
+(CRLF) whereas some Unix programs (including bash, the shell
+interpreter) only accept the one-byte (LF) line end sequence.  Some Unix
+file systems convert the files automatically, but if you are getting
+a <b>No such file</b> or <b>syntax error</b> message from bash you
+probably need to use the <tt>dos2unix</tt> command, to convert CRLF to LF.
+For example: <tt>dos2unix NetRexxC.sh</tt>.
+<li>
+File access control information is not preserved in the package.  You
+may therefore get a a <b>Permission denied</b> message when you try
+and run the scripts, indicating that the files are not marked as
+executable.
+To mark them as executable, use the <tt>chmod</tt> command, for
+example: <tt>chmod 751 NetRexxC.sh</tt>.
+<li>
+Instead of moving the files to specific locations, as suggested in the
+general installation instructions, you can instead link them
+symbolically.  For example, something like:
+<pre>
+  ln -s /usr/local/NetRexx/bin/* /usr/local/bin/.
+</pre>
+would link the shell scripts directory into a different <tt>bin</tt>
+directory.
+</ul>
+<hr>
+[<a href="nruiebc.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruijpp.html">next</a>]
+</body></html>

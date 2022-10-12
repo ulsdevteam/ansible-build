@@ -1,0 +1,69 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>NetRexx overview - NetRexx arithmetic</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx Overview</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>14 Jan 2005</td>
+</tr><tr><td>[<a href="nrocontr.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nrostrin.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="refoarith"><font face=helvetica color=#006644>NetRexx arithmetic</font></a></h2>
+
+Character strings in NetRexx are commonly used for arithmetic (assuming,
+of course, that they represent numbers).  The string representation of
+numbers can include integers, decimal notation, and exponential
+notation; they are all treated the same way.  Here are a few:
+<pre>
+  &#8217;1234&#8217;
+  &#8217;12.03&#8217;
+  &#8217;-12&#8217;
+  &#8217;120e+7&#8217;
+</pre>
+
+The arithmetic operations in NetRexx are designed for people rather than
+machines, so are decimal rather than binary, do not overflow at certain
+values, and follow the rules that people use for arithmetic.
+The operations are completely defined by the ANSI X3.274 standard for
+Rexx, so correct implementations always give the same results.
+<p>
+An unusual feature of NetRexx arithmetic is the <b>numeric</b>
+instruction: this may be used to select the <i>arbitrary
+precision</i> of calculations.  You may calculate to whatever
+precision that you wish (for financial calculations, perhaps), limited
+only by available memory.  For example:
+<pre>
+  numeric digits 50
+  say 1/7
+</pre>
+
+which would display
+<pre>
+  0.14285714285714285714285714285714285714285714285714
+</pre>
+
+The numeric precision can be set for an entire program, or be adjusted
+at will within the program.  The <b>numeric</b>  instruction can also
+be used to select the notation (<i>scientific</i>
+or <i>engineering</i>) used for numbers in exponential format.
+<p>
+NetRexx also provides simple access to the native binary arithmetic of
+computers.  Using binary arithmetic offers many opportunities for
+errors, but is useful when performance is paramount.  You select binary
+arithmetic by adding the instruction:
+<pre>
+  options binary
+</pre>
+
+at the top of a NetRexx program.  The language processor will then use
+<a href="nrobinar.html#refobinar">binary arithmetic</a> instead of NetRexx decimal
+arithmetic for calculations, if it can, throughout the program.
+<hr>
+[<a href="nrocontr.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nrostrin.html">next</a>]
+<p><font size=2>From
+<a href="/netrexx/nrl.html"><em>The NetRexx Language</em></a> by 
+<a href="http://www2.hursley.ibm.com/mfcsumm.html">Mike Cowlishaw</a>,
+<a href="mailto:mfc@uk.ibm.com"><m>mfc@uk.ibm.com</m></a>
+(ISBN 0-13-806332-X, 197pp, Prentice-Hall, 1997).</font>
+</body></html>

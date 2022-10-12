@@ -1,0 +1,122 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>NetRexx FAQ</title>
+<meta name="owner"    content="mfc@uk.ibm.com">
+<meta name="review"   content="20050318">
+</head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=7>
+<tr valign=top><td>
+<img src="IBMsw.gif" alt="IBM" width=584 height=70>
+</td></tr></table>
+<table cellpadding=7>
+<tr valign=top><td>
+<b><font size=6 color=darkblue>NetRexx 2</font></b>
+<br>
+NetRexx is a <i>human-oriented</i> programming language which makes writing
+and using Java classes quicker and easier than writing in Java.
+</td>
+<td><img src="netrexx.gif" width=64 height=64 alt="">
+<br>
+<b><font size=3 color=darkblue>2.05</font></b>
+</td>
+</tr></table>
+<table cellpadding=7>
+<tr valign=top><td>
+  <table cellpadding=3 border=2>
+  <tr><td bgcolor="#FFFF90"><a href="netrexx.html">News</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrwhat.html">What's NetRexx?</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrlinks.html">NetRexx links</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrdown.html">Downloading</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrdocs.html">Documentation</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrfaq.html">FAQ</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrsamp.html">Samples</a></td></tr>
+  <tr><td bgcolor="#FFFF90"><a href="nrmlist.html">Mailing list</a></td></tr>
+  </table>
+</td><td>
+
+<!-- =============================================================== -->
+<h2>NetRexx Frequently Asked Questions</h2>
+
+<ul>
+
+<li>
+Dion Gillard's <a href="http://www.multitask.com.au/netrexxfaq.htm">NetRexx
+FAQ</a> (Frequently Asked Questions)
+<img src="updated.gif" width=46 height=12 alt="updated">
+<p>
+
+<li>
+For general installation problems, trouble-shooting, and current
+restrictions, please see the
+<img src="new.gif" width=31 height=12 alt="new">
+<a href="nrusers.html">NetRexx User's Guide</a>.
+
+<p>
+<li>Problems installing under <b>Windows NT</b>?
+<p>
+A few people have been having problems getting NetRexx to run with some
+versions of the Java Virtual Machine under Windows NT.  The symptoms
+appear to be that the CLASSPATH setting is being ignored, and either the
+<tt>NetRexxC</tt> class cannot be found or the
+<tt>sun/tools/javac/Main</tt> class cannot be found.
+<p>
+The simplest solution to this seems to be to copy the NetRexxC.jar file
+and the tools.jar file (<i>e.g.</i>, from <tt>\jdk1.3\lib</tt>) to the
+extensions directory (<i>e.g.</i>, <tt>\jdk1.3\jre\lib\ext</tt>).  Note
+that the extensions directory may need to be created, and should be
+under <tt>...\jre\lib</tt>, not <tt>...\lib</tt>.
+<p>
+<img src="new.gif" width=31 height=12 alt="new">
+Note that on some NT systems, with some Java installations, the
+extensions directory may be called <tt>...\jre\1.3.0_01\lib\ext</tt> or
+similar.  If you have a directory named like this, try putting the
+<tt>NetRexxC.jar</tt> and <tt>tools.jar</tt> files there.
+<p>
+If these suggestions don't work for you, please send me e-mail at the
+address below with details of the symptoms, JVM you are using,
+<i>etc.</i>  Also, if you can identify the cause of the problem, please
+let me know.
+</ul>
+
+</td></tr></table>
+<!-- =============================================================== -->
+<hr>
+
+<h4><a name="requests"><em>Requests and suggestions?</em></a></h4>
+<p>
+Your comments, questions, and suggestions for NetRexx and these Web
+pages are welcome!
+Either use the <a href="nrmlist.html">NetRexx mailing list</a>, or send
+mail to me (<a href="http://www2.hursley.ibm.com/mfcsumm.html">Mike
+Cowlishaw</a>) directly, using mail to
+<a href="mailto:mfc@uk.ibm.com">mfc@uk.ibm.com</a>.
+
+<p>
+<strong>[
+<a href="http://www.ibm.com/">IBM home page</a> |
+<a href="http://www.ibm.com/Search/">Search</a> |
+<a href="http://www.ibm.com/Assist/">Contact IBM</a> |
+<a href="http://www.ibm.com/Finding/">Help</a> |
+<a href="http://www.ibm.com/Legal">Terms of use</a> |
+<a href="http://www2.hursley.ibm.com/privacy.html">Privacy</a>
+]</strong>
+<br>
+<!-- <font size=2>This page was created on 14 Jan 2005.</font> -->
+<script><!--
+var lm=Date.parse(document.lastModified)
+if (lm!=0) {
+  var dlm=new Date(lm)
+  var y=dlm.getYear();    if (y<100) y+=100; if (y<1000) y+=1900
+  var m=dlm.getMonth()+1; if (m<10) m='0'+m
+  var d=dlm.getDate();    if (d<10) d='0'+d
+  var rdate=y+'.'+m+'.'+d
+  document.write('<table width=100%><td align=right>')
+  document.write('<font size=2>This page was created on ')
+  document.write(rdate+'.</font>')
+  document.write('</td></table>')
+  }
+//--></script>
+</body>
+</html>
+

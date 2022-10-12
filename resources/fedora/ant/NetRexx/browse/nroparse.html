@@ -1,0 +1,77 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>NetRexx overview - Parsing strings</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx Overview</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>14 Jan 2005</td>
+</tr><tr><td>[<a href="nrostrin.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nroindex.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="refoparse"><font face=helvetica color=#006644>Parsing strings</font></a></h2>
+
+The previous section described some of the string-handling facilities
+available; NetRexx also provides string parsing, which is an easy way of
+breaking up strings of characters using simple pattern matching.
+<p>
+A <b>parse</b> instruction first specifies the string to be parsed.
+This can be any term, but is often taken simply from a variable.  The
+term is followed by a <i>template</i> which describes how the string
+is to be split up, and where the pieces are to be put.
+<h4><font face=helvetica color=#006644>Parsing into words</font></h4>
+
+The simplest form of parsing template consists of a list of variable
+names.  The string being parsed is split up into words (sequences of
+characters separated by blanks), and each word from the string is
+assigned (copied) to the next variable in turn, from left to right.  The
+final variable is treated specially in that it will be assigned a copy
+of whatever is left of the original string and may therefore contain
+several words. For example, in:
+<pre>
+  parse &#8217;This is a sentence.&#8217;   v1 v2 v3
+</pre>
+
+the variable <tt>v1</tt> would be assigned the value
+&#8216;<tt>This</tt>&#8217;, <tt>v2</tt> would be assigned the value
+&#8216;<tt>is</tt>&#8217;, and <tt>v3</tt> would be assigned the value
+&#8216;<tt>a sentence.</tt>&#8217;.
+<h4><font face=helvetica color=#006644>Literal patterns</font></h4>
+
+A literal string may be used in a template as a pattern to split up the
+string.  For example
+<pre>
+  parse &#8217;To be, or not to be?&#8217;   w1 &#8217;,&#8217; w2 w3 w4
+</pre>
+
+would cause the string to be scanned for the comma, and then split at
+that point; each section is then treated in just the same way as the
+whole string was in the previous example.
+<p>
+Thus, <tt>w1</tt> would be set to
+&#8216;<tt>To be</tt>&#8217;, <tt>w2</tt> and <tt>w3</tt> would be
+assigned the values &#8216;<tt>or</tt>&#8217; and &#8216;<tt>not</tt>&#8217;,
+and <tt>w4</tt> would be assigned the remainder: &#8216;<tt>to
+be?</tt>&#8217;.  Note that the pattern itself is not assigned to any
+variable.
+<p>
+The pattern may be specified as a variable, by putting the variable name
+in parentheses.  The following instructions:
+<pre>
+  comma=&#8217;,&#8217;
+  parse &#8217;To be, or not to be?&#8217;   w1 (comma) w2 w3 w4
+</pre>
+
+therefore have the same effect as the previous example.
+<h4><font face=helvetica color=#006644>Positional patterns</font></h4>
+
+The third kind of parsing mechanism is the numeric positional pattern.
+This allows strings to be parsed using column positions.
+<hr>
+[<a href="nrostrin.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nroindex.html">next</a>]
+<p><font size=2>From
+<a href="/netrexx/nrl.html"><em>The NetRexx Language</em></a> by 
+<a href="http://www2.hursley.ibm.com/mfcsumm.html">Mike Cowlishaw</a>,
+<a href="mailto:mfc@uk.ibm.com"><m>mfc@uk.ibm.com</m></a>
+(ISBN 0-13-806332-X, 197pp, Prentice-Hall, 1997).</font>
+</body></html>

@@ -1,0 +1,68 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>User's Guide - Using NetRexx for Web applets</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx User's Guide</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>Draft of 14 Jan 2005</td>
+</tr><tr><td>[<a href="nruapi.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nrurestr.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="useapplet"><font face=helvetica color=#006644>Using NetRexx for Web applets</font></a></h2>
+
+Web applets can be written one of two styles:
+<ul>
+<li>
+&#8216;Lean and mean&#8217;, where binary arithmetic is used, and only core
+Java classes (such as <tt>java.lang.String</tt>) are used.  This is
+recommended for World Wide Web pages, which may be accessed by people
+using a slow dial-up connection.
+Several examples using this style are included in the NetRexx package
+(<i>e.g.</i>, <tt>NervousTexxt.nrx</tt> or <tt>ArchText.nrx</tt>).
+<li>
+&#8216;Full-function&#8217;, where decimal arithmetic is used, and advantage is
+taken of the full power of the NetRexx runtime (Rexx) class.
+This is appropriate for intranets, where most users will have fast
+connections to servers.
+An example using this style is included in the NetRexx package
+(<tt>WordClock.nrx</tt>).
+</ul>
+<p>
+If you write applets which use the NetRexx runtime (or any other Java
+classes that might not be on the client browser), the rest of this
+section may help in setting up your Web server.
+<p>
+A good way of setting up an HTTP (Web) server for this is to keep all
+your applets in one subdirectory.  You can then make the NetRexx runtime
+classes (that is, the classes in the package known to the Java Virtual
+Machine as <tt>netrexx.lang</tt>) available to all the applets by
+unzipping NetRexxR.jar into a subdirectory <tt>netrexx/lang</tt> below
+your applets directory.
+<p>
+For example, if the root of your server data tree is
+<pre>
+  D:/mydata
+</pre>
+<i></i>then you might put your applets into
+<pre>
+  D:/mydata/applets
+</pre>
+and then the NetRexx classes (unzipped from NetRexxR.jar) should be in
+the directory
+<pre>
+  D:/mydata/applets/netrexx/lang
+</pre>
+
+The same principle is applied if you have any other non-core Java
+packages that you want to make available to your applets: the classes in
+a package called <tt>iris.sort.quicksorts</tt> would go in a subdirectory
+below <tt>applets</tt> called <tt>iris/sort/quicksorts</tt>, for example.
+<p>
+Note that with Java 1.1 or later it should be possible to use the
+classes direct from the NetRexxR.jar file providing that the browser
+being used is at a Java 1.1 level.  This may also depend on your server
+being set up correctly.  Please see the Java documentation for details.
+<hr>
+[<a href="nruapi.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nrurestr.html">next</a>]
+</body></html>

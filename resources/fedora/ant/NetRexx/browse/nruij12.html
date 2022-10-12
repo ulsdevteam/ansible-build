@@ -1,0 +1,124 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>User's Guide - Installing for Java 1.2+</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx User's Guide</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>Draft of 14 Jan 2005</td>
+</tr><tr><td>[<a href="nruij11.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruitest.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="inj12"><font face=helvetica color=#006644>Installing for Java 1.2+</font></a></h2>
+
+This section gives a detailed procedure for installing NetRexx using a
+Java 1.2, or later, development kit.  The steps are as follows:
+<ol>
+<li>
+<b>Locate the Java home directory.</b>
+The name of the Java home directory will vary depending on the operating
+system you are using.  Some possibilities are:
+<pre>
+  \java13\jre
+  c:\java1.2\jre
+  /opt/IBMJava2-13/jre
+</pre>
+It will contain directories such as &#8216;<tt>bin</tt>&#8217; and
+&#8216;<tt>lib</tt>&#8217;.
+<br>
+<p><b>Note:</b>  if your Java home directory is on a CD-ROM, or on an unwritable
+shared disk, you&#8217;ll need to leave the NetRexx files elsewhere and set up
+CLASSPATH and PATH environment settings to refer to them.
+Consult your Java toolkit and operating system documentation for details
+on how to do this.
+<li>
+<b>Copy or move the NetRexxC.jar file to the Java <tt>lib\ext</tt>
+directory.</b>
+For Java to be able to find the NetRexx classes, it&#8217;s simplest to just
+put them (that is, the NetRexxC.jar file which contains them) in the
+Java extension directory.  This is the <tt>\lib\ext</tt> directory below
+the Java home directory, which should already exist (if it does not,
+then you probably have the wrong <tt>lib</tt> directory &#8211; its parent
+should be called <tt>jre</tt>).
+The JVM will then automatically find it there when it is needed.
+<br>
+Alternatively, you could add the NetRexxC.jar file to the CLASSPATH, as
+described in the <a href="nruij11.html#inj11"><cite>Installing for Java 1.1</cite> section</a>.
+<br>
+Note: if you have a NetRexxC.zip in your CLASSPATH from an earlier
+version of Rexx, remove it (NetRexxC.jar replaces NetRexxC.zip).
+<li>
+<b>Copy the executables.</b>
+Copy all the files in the <tt>NetRexx\bin</tt> directory to a directory
+which is in your search PATH (perhaps the <tt>\bin</tt> directory below
+the Java home directory).  This will allow them to be invoked simply by
+typing their name at a command prompt.
+<br>
+The files in the <tt>bin</tt> directory should be:
+<pre>
+  hello.nrx    -- a simple NetRexx program for testing
+  NetRexxC.cmd -- the NetRexx compiler command in Rexx
+  NetRexxC.bat -- similar NetRexx compiler batch script (Windows .bat)
+  NetRexxC.sh  -- similar NetRexx compiler shell script for Linux and Unix
+  nrc.cmd      -- shorter name for NetRexxC.cmd
+  nrc.bat      -- shorter name for NetRexxC.bat
+  nrc          -- shorter name for NetRexxC.sh
+</pre>
+
+The <tt>.cmd</tt> files are simple Rexx scripts for making it easier to
+use the translator.  You don&#8217;t have to use these, but they save some
+typing.  They should require little modification to run under the Rexx
+interpreter for your platform; for details of Rexx interpreters,
+see: <tt>
+<a href="http://www2.hursley.ibm.com/rexx/">http://www2.hursley.ibm.com/rexx/</a> 
+</tt>
+<i></i>
+Under Windows, the <tt>.bat</tt> files should serve the same
+purpose &#8211; they are not as flexible as the Rexx <tt>.cmd</tt> files,
+but will save typing.
+<br>
+Similarly, under Linux or other Unix systems, the NetRexxC.sh and nrc
+script simplify use of the translator.  You may need to indicate these
+are executable, using (for example) the commands: <tt>chmod 751
+NetRexxC.sh</tt> and <tt>chmod 751 nrc</tt> and (unless you used
+the <tt>unzip -a</tt> command to unpack them) you may need to run dos2unix
+on both of them (this converts CRLF to LF).
+<br>
+Alternatively, the <tt>NetRexx\bin</tt> directory could be added to the
+PATH environment setting.
+<li>
+<b>Add the Java tools.jar file to the CLASSPATH.</b>
+If you would like NetRexx to use the <tt>javac</tt> compiler for
+compilations (which is the default) then you will need to add the Sun
+tools collection to the classpath.  This is usually found in a file
+called <tt>tools.jar</tt> in the Java <tt>lib</tt> directory.  For example:
+<pre>
+  set classpath=%CLASSPATH%;c:\java1.2\lib\tools.jar
+</pre>
+(with the path changed as appropriate) would add the tools.jar to the
+existing classpath in an OS/2 or Windows system.
+
+The procedure for setting the CLASSPATH variable depends on your
+operating system (and there may be more than one way), as
+described in the <a href="nruiscp.html#inscp"><cite>Setting the CLASSPATH</cite> section</a>.
+<br>
+Alternatively, the tools.jar file could be moved to the Java <tt>lib\ext</tt>
+directory.
+<li>
+<b>Add the current directory to the CLASSPATH.</b>
+If it is not already there, add a reference to the current directory to
+the CLASSPATH, for example:
+<pre>
+  set classpath=.;%CLASSPATH%
+</pre>
+
+This is needed if you cannot compile and run test programs from within a
+directory other than in the Java tree.
+</ol>
+<p>
+NetRexx installation is now complete.  Now would be a good time to check
+that it works, as described in the <a href="nruitest.html#testing"><cite>Testing the NetRexx
+Installation</cite> section</a>.
+<hr>
+[<a href="nruij11.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruitest.html">next</a>]
+</body></html>

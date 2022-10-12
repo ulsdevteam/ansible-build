@@ -1,0 +1,55 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>NetRexx overview - Arrays</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx Overview</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>14 Jan 2005</td>
+</tr><tr><td>[<a href="nroindex.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nroobjec.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="refoarray"><font face=helvetica color=#006644>Arrays</font></a></h2>
+
+NetRexx also supports fixed-size <i>arrays</i>.  These are an
+ordered set of items, indexed by integers.  To use an array, you first
+have to construct it; an individual item may then be selected by an
+index whose value must be in the range <tt>0</tt>
+through <tt>n-1</tt>, where <tt>n</tt> is the number of items in the
+array:
+<pre>
+  array=String[3]        -- make an array of three Strings
+  array[0]=&#8217;String one&#8217;  -- set each array item
+  array[1]=&#8217;Another string&#8217;
+  array[2]=&#8217;foobar&#8217;
+  loop i=0 to 2          -- display the items
+    say array[i]
+    end
+</pre>
+
+This example also shows NetRexx <i>line comments</i>; the sequence
+&#8216;<tt>--</tt>&#8217; (outside of literal strings or
+&#8216;<tt>/*</tt>&#8217; comments) indicates that the remainder of the
+line is not part of the program and is commentary.
+<p>
+NetRexx makes it easy to initialize arrays: a term which is a list of
+one or more expressions, enclosed in brackets, defines an array.  Each
+expression initializes an element of the array.
+For example:
+<pre>
+  words=[&#8217;Ogof&#8217;, &#8217;Ffynnon&#8217;, &#8217;Ddu&#8217;]
+</pre>
+<i></i>would set <tt>words</tt> to refer to an array of three elements, each
+referring to a string.  So, for example, the instruction:
+<pre>
+  say words[1]
+</pre>
+<i></i>would then display <tt>Ffynnon</tt>.
+<hr>
+[<a href="nroindex.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nroobjec.html">next</a>]
+<p><font size=2>From
+<a href="/netrexx/nrl.html"><em>The NetRexx Language</em></a> by 
+<a href="http://www2.hursley.ibm.com/mfcsumm.html">Mike Cowlishaw</a>,
+<a href="mailto:mfc@uk.ibm.com"><m>mfc@uk.ibm.com</m></a>
+(ISBN 0-13-806332-X, 197pp, Prentice-Hall, 1997).</font>
+</body></html>

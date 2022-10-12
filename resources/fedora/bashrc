@@ -1,0 +1,8 @@
+export FEDORA_HOME={{ fedora.fedora_home }}
+export CATALINA_HOME={{ tomcat.tomcat_home }}
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CATALINA_HOME/lib
+export LD_LIBRARY_PATH
+export JAVA_OPTS="{{ env.JAVA_OPTS }}"
+export JAVA_HOME=`readlink -f $(which javac)|sed 's^/bin/javac^^'`
+export JRE_HOME=$JAVA_HOME
+export PATH=$JAVA_HOME/bin:$PATH:$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin

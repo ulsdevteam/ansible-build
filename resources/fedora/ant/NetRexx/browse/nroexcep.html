@@ -1,0 +1,50 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>NetRexx overview - Exception and error handling</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx Overview</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>14 Jan 2005</td>
+</tr><tr><td>[<a href="nrobinar.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nrosumma.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="refoexcep"><font face=helvetica color=#006644>Exception and error handling</font></a></h2>
+
+NetRexx doesn&#8217;t have a <b>goto</b> instruction, but a <b>signal</b>
+instruction is provided for abnormal transfer of control, such as when
+something unusual occurs.  Using <b>signal</b> raises an
+<i>exception</i>; all control instructions are then &#8216;unwound&#8217;
+until the exception is caught by a control instruction that specifies a
+suitable <b>catch</b> instruction for handling the exception.
+<p>
+Exceptions are also raised when various errors occur, such as attempting
+to divide a number by zero.  For example:
+<pre>
+  say &#8217;Please enter a number:&#8217;
+  number=ask
+  do
+    say &#8217;The reciprocal of&#8217; number &#8217;is:&#8217; 1/number
+  catch RuntimeException
+    say &#8217;Sorry, could not divide "&#8217;number&#8217;" into 1&#8217;
+    say &#8217;Please try again.&#8217;
+  end
+</pre>
+
+Here, the <b>catch</b> instruction will catch any exception that is
+raised when the division is attempted (conversion error, divide by zero,
+<i>etc.</i>), and any instructions that follow it are then executed.  If no
+exception is raised, the <b>catch</b> instruction (and any
+instructions that follow it) are ignored.
+<p>
+Any of the control instructions that end with <b>end</b> (<b>do</b>,
+<b>loop</b>, or <b>select</b>) may be modified with one or more
+<b>catch</b> instructions to handle exceptions.
+<hr>
+[<a href="nrobinar.html">previous</a> | <a href="netrexxo.html">contents</a> | <a href="nrosumma.html">next</a>]
+<p><font size=2>From
+<a href="/netrexx/nrl.html"><em>The NetRexx Language</em></a> by 
+<a href="http://www2.hursley.ibm.com/mfcsumm.html">Mike Cowlishaw</a>,
+<a href="mailto:mfc@uk.ibm.com"><m>mfc@uk.ibm.com</m></a>
+(ISBN 0-13-806332-X, 197pp, Prentice-Hall, 1997).</font>
+</body></html>

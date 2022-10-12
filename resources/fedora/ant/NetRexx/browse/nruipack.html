@@ -1,0 +1,110 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>User's Guide - Unpacking the NetRexx package</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx User's Guide</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>Draft of 14 Jan 2005</td>
+</tr><tr><td>[<a href="nruinst.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruiexec.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="unpack"><font face=helvetica color=#006644>Unpacking the NetRexx package</font></a></h2>
+
+The NetRexx package is shipped as a collection of files compressed into
+the file <tt>NetRexx.zip</tt>.
+<p>
+You probably know how to handle <tt>.zip</tt> files, but a word of
+caution: the packages contain directory structures, and files with
+&#8216;long names&#8217; (that is, not of 8.3 maximum length names) which are
+case-sensitive.  Many utilities, including some Windows versions of
+<b>unzip</b>, can lose case information, truncate names, or fail to
+restore directories.
+<h4><font face=helvetica color=#006644>Unpacking the NetRexx.zip file</font></h4>
+
+The most common utilities for &#8216;unzipping&#8217; are <b>Info-ZIP</b>,
+<b>WinZip</b>, and <b>PKZIP</b>.  An <b>unzip</b> command is also
+included in most Linux distributions.
+You can also use the <b>jar</b> command which comes with all Java
+development kits.
+<p>
+Choose where you want the NetRexx directory tree to reside, and unpack
+the zip file in the directory which will be the parent of the NetRexx
+tree.
+Here are some tips:
+<ul>
+<li>
+Ensure that you are unzipping to a disk that supports long file names
+(for example, an HPFS disk or equivalent on OS/2 or Windows).
+<li>
+<b>Info-ZIP:</b> use version 5.12 (August 1994) or later.  The syntax for
+unzipping NetRexx.zip is simply
+<pre>
+  unzip NetRexx
+</pre>
+which should create the files and directory structure directly.
+<li>
+<b>WinZip:</b> all versions support long file names.
+<li>
+<b>PKZIP:</b> use a version that supports long file names.  The syntax
+for unzipping NetRexx.zip is
+<pre>
+  pkunzip -d NetRexx
+</pre>
+which should create the files and directory structure directly.  The
+&#8216;<tt>-d</tt>&#8217; flag indicates that directory structure should be
+preserved.
+<li>
+<b>Linux unzip:</b> use the syntax: <tt>unzip -a NetRexx</tt>.  The
+&#8216;<tt>-a</tt>&#8217; flag will automatically convert text files to Unix
+format.
+<li>
+<b>jar:</b> The syntax for unzipping NetRexx.zip is
+<pre>
+  jar xf NetRexx.zip
+</pre>
+which should create the files and directory structure directly.
+The &#8216;<tt>x</tt>&#8217; indicates that the contents should be extracted, and
+the &#8216;<tt>f</tt>&#8217; indicates that the zip file name is specified.  Note
+that the extension (<tt>.zip</tt>) is required.
+</ul>
+<p>
+After unpacking, the following directories should have been created:<a name="backref.1"><a href="#footnote.1"><font size=3><sup>[1]</sup></font></a></a>&nbsp;
+<dl>
+<p><dt><tt>NetRexx</tt>
+<dd><p>Root of the tree, which should contain the
+file <tt>read.me.first</tt>, which contains quick installation
+instructions
+<p><dt><tt>NetRexx\browse</tt>
+<dd><p>
+The directory which contains documentation and sample programs and
+applets.
+To view these, point your web browser at <tt>NetRexx\browse\netrexx.html</tt>.
+You can also go straight to this User&#8217;s Guide by
+browsing <tt>NetRexx\browse\nrusers.html</tt>.
+<p><dt><tt>NetRexx\lib</tt>
+<dd><p>
+Contains the NetRexx compiler/interpreter classes (in <tt>NetRexxC.jar</tt>).
+<p><dt><tt>NetRexx\runlib</tt>
+<dd><p>
+Contains the NetRexx runtime classes (in <tt>NetRexxR.jar</tt>).  These are
+included in the NetRexxC.jar, so are not normally needed.
+<p><dt><tt>NetRexx\netrexx\lang</tt>
+<dd><p>
+Contains the NetRexx runtime class files for access by a browser while
+running the applet samples.
+<p><dt><tt>NetRexx\bin</tt>
+<dd><p>
+Contains sample scripts making it easier to use the
+compiler/interpreter.   The simple test case <tt>hello.nrx</tt> is also
+included.
+</dl>
+<hr><font size=2>Footnotes:</font><table cellpadding=5>
+<tr valign=top><td><font size=2><a name="footnote.1"><a href="#backref.1">[1]</a></a></font></td>
+<td><font size=2>On Unix and Linux systems, the directory separator will be &#8216;/&#8217;
+instead of &#8216;\&#8217;.
+</font></tr></td>
+</table>
+<hr>
+[<a href="nruinst.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruiexec.html">next</a>]
+</body></html>

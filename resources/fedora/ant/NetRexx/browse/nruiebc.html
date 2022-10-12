@@ -1,0 +1,50 @@
+<!doctype html public "-//IETF//DTD HTML 2.0//EN"><html><head>
+<!-- Copyright (c) IBM Corporation, 2005.  All rights reserved. -->
+<title>User's Guide - Installing on an EBCDIC system</title></head>
+<body bgcolor="#FFFFFF">
+<table cellpadding=3 width=100%><tr><td>
+<font face=helvetica><b>NetRexx User's Guide</b></font>, version 2.05
+<br><em>Copyright (c) IBM Corporation, 2005.  All rights reserved. &copy;</em>
+</td><td align=right valign=top>Draft of 14 Jan 2005</td>
+</tr><tr><td>[<a href="nruitest.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruiunix.html">next</a>]
+</td></tr></table>
+<hr>
+<h2><a name="inebcdic"><font face=helvetica color=#006644>Installing on an EBCDIC system</font></a></h2>
+
+(Many thanks to Mark Cathcart and John Kearney for the details in this
+section.)
+<p>
+The NetRexx binaries are identical for all operating systems; the same
+NetRexxC.jar runs everywhere.
+However, during installation it is important to ensure that binary files
+are treated as binary files, whereas text files (such as the
+accompanying HTML and sample files) are translated to the local code
+page as required.
+<p>
+The simplest way to do this is to first install the package on a
+workstation, following the instructions above, then copy or FTP the
+files you need to the EBCDIC machine.  Specifically:
+<ul>
+<li>The NetRexxC.jar file should be copied &#8216;as-is&#8217;, that is, use
+FTP or other file transfer with the BINARY option.  The CLASSPATH should
+be set to include this NetRexxC.jar file.
+<li>
+Other files (documentation, etc.) should be copied as Text (that is,
+they will be translated from ASCII to EBCDIC).
+</ul>
+<i></i>
+In general, files with extension <tt>.au</tt>, <tt>.class</tt>, <tt>.gif</tt>, <tt>.jar</tt>,
+or <tt>.zip</tt> are binary files; all others are text files.
+<p>
+For specific hints and tips for installing on OS/390, see Mark
+Cathcart&#8217;s web site at <tt>
+<a href="http://www.ibm.com/servers/corner">http://www.ibm.com/servers/corner</a> 
+</tt>
+which includes a presentation that describes OS/390 Java and NetRexx
+installation.  Setting the classpath might look like this:
+<pre>
+  export CLASSPATH=$CLASSPATH:/u/j390/j1.1.8/lib/NetRexxC.jar
+</pre>
+<hr>
+[<a href="nruitest.html">previous</a> | <a href="nrusers.html">contents</a> | <a href="nruiunix.html">next</a>]
+</body></html>
