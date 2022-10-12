@@ -3,3 +3,6 @@ osticketvars.yml
 hostvars/*
 !hostvars/*.sample
 spacewalk/activationkey.yml
+resources/fedora/fedoragsearch-2.8.zip
+resources/fedora/fcrepo-installer-3.8.1.jar
+resources/fedora/gsearch.zip
