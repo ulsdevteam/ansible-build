@@ -157,3 +157,17 @@
       hour: 0
       minute: 30
 
+  - name: Add sysdev users to backup group.
+    user:
+      name: "{{ item }}"
+      groups: backup
+      append: yes
+    loop:
+      - rlh52
+      - ctgraham
+      - bdgregg
+      - asw76
+      - mem375
+      - chl310
+      - kmc247
+
