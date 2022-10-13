@@ -3,7 +3,7 @@
 # Restore a specified site from the backup in $BACKUPROOT to $VHOSTROOT
 # Warning: Uses sudo
 
-BACKUPROOT=/var/local/backup/ojs
+BACKUPROOT=${BACKUPROOT:-/var/local/backup/ojs}
 VHOSTROOT="/var/www/vhosts/"
 
 if [ "$#" != "1" ]
@@ -31,11 +31,11 @@ then
 	MYSQLPW=`grep -A20 -F '[database]' $OJSROOT/config.inc.php | grep '^password = ' | head -1 | sed -e 's/password = //'`
 	MYSQLUSER=`grep -A20 -F '[database]' $OJSROOT/config.inc.php | grep '^username = ' | head -1 | sed -e 's/username = //'`
 	BACKUPDIR=$BACKUPROOT/$1
-	EXISTINGTABLES=$(mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE -e 'show tables' | grep -v 'Tables_in_'$MYSQLDATABASE | awk '{print $1}' )
-	for t in $EXISTINGTABLES
-	do
-		mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE -e 'drop table '$t
-	done
+	EXISTINGTABLES=$(mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE -e 'show tables' | grep -v 'Tables_in_'$MYSQLDATABASE | awk -v d=',' '{s=(NR==1?s:s d)$0}END{print s}' )
+	if [ ! -z "$EXISTINGTABLES" ]
+	then
+		mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE -e 'SET foreign_key_checks = 0; drop table if exists '$EXISTINGTABLES'; SET foreign_key_checks = 1;'
+	fi
 	mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE < $BACKUPDIR/db.sql
 	echo 'sudo as root to remove files'
 	sudo rm -fr $VHOSTROOT/$1/files/*
