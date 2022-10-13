@@ -126,7 +126,7 @@
   - name: Creating sysdev users
     user: 
       name: "{{ item.name }}"
-      groups: ulssysdev
+      groups: ulssysdev,wheel
       append: yes
       comment: "{{ item.comment }}"
     loop:
