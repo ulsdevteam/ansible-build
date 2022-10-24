@@ -61,6 +61,11 @@
       name: unzip
       state: latest
 
+  - name: add patch (used in ojs-upgrade.sh)
+    yum:
+      name: patch
+      state: latest
+
   - name: deploy local OJS scripts
     copy:
       src: resources/ojs/local-scripts/
