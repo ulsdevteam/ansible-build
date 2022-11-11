@@ -71,6 +71,7 @@ then
 			echo "  sudo apachectl graceful"
 			echo "  sudo rm -fR ${OJSROOT}.old"
 			echo "OR..."
+			echo "  rm -fr $OJSROOT"
 			echo "  mv ${OJSROOT}.old $OJSROOT"
 			echo "  sudo apachectl graceful"
 			exit 2
