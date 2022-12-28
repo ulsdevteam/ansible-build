@@ -1,0 +1,28 @@
+#
+# Add SysDev staff to the superuser groups.
+#
+- name: add SysDev users superuser groups
+  remote_user: ulsprovision
+  hosts:  all  
+  become: yes
+
+  tasks:
+
+  - name: Create the ulssysdev group
+    group:
+      name: ulssysdev
+
+  - name: Create users & add them to wheel and backup groups.
+    user:
+      name: "{{ item }}"
+      groups: ulssysdev,wheel,backup
+      append: yes
+    loop:
+      - rlh52
+      - ctgraham
+      - bdgregg
+      - asw76
+      - mem375
+      - chl310
+      - kmc247
+
