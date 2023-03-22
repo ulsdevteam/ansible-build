@@ -32,3 +32,8 @@
     yum:
       name: drush
       state: latest
+
+  - name: Install ImageMagick
+    yum:
+      name: ImageMagick
+      state: latest
