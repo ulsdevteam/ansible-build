@@ -28,3 +28,7 @@
       state: yes
       persistent: yes
 
+  - name: Install drush
+    yum:
+      name: drush
+      state: latest
