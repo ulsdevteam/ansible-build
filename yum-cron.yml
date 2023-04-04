@@ -1,0 +1,36 @@
+- name: Install yum-cron.
+  remote_user: ulsprovision
+  hosts: OSupdates
+  become: yes
+
+  tasks:
+
+  - name: Install yum-cron.
+    yum:
+      name: yum-cron
+      state: latest
+    
+  - name: Copy yum-cron.conf to host.
+    template:
+      src: resources/updates/yum-cron/yum-cron.conf
+      dest: /etc/yum/yum-cron.conf
+    
+    
+  - name: enable and start yum-cron
+    systemd:
+      name: yum-cron
+      enabled: yes
+      state: started
+  
+#  - name: install kpatch
+#    yum:
+#      name: kpatch-patch = $(uname -r)
+#      state: latest
+
+  - name: install kpatch-patch
+    command:
+      cmd: yum install kpatch-patch = $(uname -r)
+      warn: false
+#    become: yes
+#    become_user: root
+    
