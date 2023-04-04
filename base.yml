@@ -59,3 +59,13 @@
        state: present
        regexp: '^root:'
        line: 'root:           uls-systemsdevelopment@pitt.edu'
+
+  - name: Install yum-cron.
+    yum:
+      name: yum-cron
+      state: latest
+
+  - name: Copy yum-cron.conf to host.
+    template:
+      src: resources/updates/yum-cron/yum-cron.conf
+      dest: /etc/yum/yum-cron.conf       
