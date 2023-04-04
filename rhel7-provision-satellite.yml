@@ -3,7 +3,7 @@
 #
 - name: Install client into Satellite.
   remote_user: ulsprovision
-  hosts: manual
+  hosts: all
   become: yes
 
 #  vars_prompt:
