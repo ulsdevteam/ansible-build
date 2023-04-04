@@ -3,7 +3,7 @@
 #
 - name: Provision hostname and enable Optional repo.
   remote_user: ulsprovision
-  hosts: manual
+  hosts: all
 
   vars_prompt:
     - name: hostname
