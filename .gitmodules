@@ -7,3 +7,6 @@
 [submodule "libinsight-instruction-outreach-etl-deploy"]
 	path = libinsight-instruction-outreach-etl-deploy
 	url = https://github.com/ulsdevteam/libinsight-instruction-outreach-etl-deploy.git
+[submodule "libcal-etl-deploy"]
+	path = libcal-etl-deploy
+	url = https://github.com/ulsdevteam/libcal-etl-deploy.git
