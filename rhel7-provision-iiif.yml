@@ -38,40 +38,27 @@
       dest: /opt/
       
 
-  - name: ansible create multiple directory example
+  - name: create srv directories for cantaloupe
     file:
       path: "{{ item }}"
       state: directory
+      owner: cantaloupe
+      group: cantaloupe
     with_items:
       - '/srv/cache'
       - '/srv/log'
       - '/srv/home'
+      - '/srv/tmp'
 
-
-  - name: Change file ownership, group and permissions
-    file: 
-      path: /opt/cantaloupe-4.1.9
-      owner: root
-      group: cantaloupe
-      mode: '0756'
-      state: directory
-      recurse: yes
-  
   - name: 
     copy:
       src: /opt/cantaloupe-4.1.9/deps/Linux-x86-64/lib/
       dest: /usr/lib
       remote_src: yes
-      
-  - name:
-    file:
-      path: /usr/lib
-      state: directory
-      recurse: yes
       owner: root
       group: root
-      mode: '0775'
-
+      mode: 775
+      
 
   - name: Copy Cantaloupe properties file 
     copy:
