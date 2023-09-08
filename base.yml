@@ -58,7 +58,7 @@
        path: /etc/aliases
        state: present
        regexp: '^root:'
-       line: 'root:           uls-systemsdevelopment@pitt.edu'
+       line: 'root:           uls-linux-root@pitt.edu'
 
   - name: Install yum-cron.
     yum:
@@ -68,4 +68,24 @@
   - name: Copy yum-cron.conf to host.
     template:
       src: resources/updates/yum-cron/yum-cron.conf
-      dest: /etc/yum/yum-cron.conf       
+      dest: /etc/yum/yum-cron.conf
+
+  - name: add yumcron email
+    lineinfile:
+      path: /etc/aliases
+      line: "yumcron: mem375@pitt.edu,bdgregg@pitt.edu,ctgraham@pitt.edu"
+      insertafter: EOF
+      backup: yes
+      state: present
+
+  - name: Replace root  with yum-cron alias in /etc/yum/yum-cron.conf
+    replace:
+      path: /etc/yum/yum-cron.conf
+      regexp: 'email_to = root'
+      replace: 'email_to = yumcron'
+      backup: yes
+
+  - name: restart yumcron
+    service:
+      name: yum-cron
+      state: restarted       
