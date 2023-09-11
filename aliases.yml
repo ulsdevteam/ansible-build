@@ -1,0 +1,45 @@
+- name: update aliases.
+  remote_user: ulsprovision
+  hosts: OS_group1
+  become: yes
+
+  tasks:
+  
+  
+  - name: Replace ULS-Sysdev email with ULS-linux-root in /etc/aliases
+    replace:
+      path: /etc/aliases
+      regexp: 'uls-systemsdevelopment@pitt.edu'
+      replace: 'uls-linux-root@pitt.edu'
+      backup: yes
+
+  - name: add yumcron alias
+    lineinfile:
+      path: /etc/aliases
+      line: "#yum-cron alias"
+      insertafter: EOF
+      backup: yes
+      state: present
+
+  - name: add yumcron email
+    lineinfile:
+      path: /etc/aliases
+      line: "yumcron: mem375@pitt.edu,bdgregg@pitt.edu,ctgraham@pitt.edu"
+      insertafter: EOF
+      backup: yes
+      state: present
+  
+  - name: Replace root  with yum-cron alias in /etc/yum/yum-cron.conf
+    replace:
+      path: /etc/yum/yum-cron.conf
+      regexp: 'email_to = root'
+      replace: 'email_to = yumcron'
+      backup: yes
+
+  - name: restart yumcron
+    service:
+      name: yum-cron
+      state: restarted
+
+
+
