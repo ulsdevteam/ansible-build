@@ -1,0 +1,23 @@
+- name: Swap graceful error resolution
+  remote_user: ulsprovision
+  hosts: OS_group1
+  become: yes
+
+  tasks:
+
+  - name: Locate the file causing the error
+    find:
+      paths: /usr/local/src/scripts/
+      patterns: "*.sh"
+      file_type: file
+    register: testing
+
+  - debug: 
+      var: testing.matched
+    when: testing.matched == 1
+
+  - name: Replace the file with an updated copy
+    copy:
+      src: /home/ansiblecontrol/playbooks/resources/eprints_gracefulled/swap-graceful.sh
+      dest: /usr/local/src/scripts/
+    when: testing.matched == 1
