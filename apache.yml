@@ -43,7 +43,7 @@
     cron:
       name: certbot renewals
       user: root
-      job: '/usr/local/bin/cronic /usr/bin/certbot --quiet renew --deploy-hook "/usr/sbin/apachectl graceful"'
+      job: 'PATH=$PATH:/usr/sbin/;/usr/local/bin/cronic /usr/bin/certbot --quiet renew --deploy-hook "/usr/sbin/apachectl graceful"'
       hour: 9
       minute: "{{ 29 | random }}"
       state: present
