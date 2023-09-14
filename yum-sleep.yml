@@ -1,0 +1,29 @@
+- name: Yum sleep setter
+  remote_user: ulsprovision
+  hosts: OS_group1
+  become: yes
+
+  tasks:
+
+  - debug: msg="{{ ansible_distribution_version}}"
+
+  - name: Replace random sleep value within yum-cron.conf
+    replace:
+      path: /etc/yum/yum-cron.conf
+      regexp: 'random_sleep = 360'
+      replace: 'random_sleep = 60'
+      backup: yes
+    when: (ansible_facts['distribution_major_version'] == "7")
+
+  - name: Replace random sleep value within automatic.conf
+    replace:
+      path: /etc/dnf/automatic.conf
+      regexp: 'random_sleep = 0'
+      replace: 'random_sleep = 60'
+      backup: yes
+    when: (ansible_facts['distribution_major_version'] == "8")
+
+  - name: restart yumcron
+    service:
+      name: yum-cron
+      state: restarted
