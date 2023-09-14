@@ -1,6 +1,6 @@
 - name: update aliases.
   remote_user: ulsprovision
-  hosts: OS_group1
+  hosts: OS_group3
   become: yes
 
   tasks:
@@ -28,18 +28,32 @@
       insertafter: EOF
       backup: yes
       state: present
-  
+
+  - name: Add yum-cron alias in /etc/sysconfig/yum-cron
+    replace:
+      path: /etc/sysconfig/yum-cron
+      regexp: 'MAILTO='
+      replace: 'MAILTO=yumcron'
+      backup: yes
+    when: (ansible_facts['distribution_major_version'] == "6")
+
   - name: Replace root  with yum-cron alias in /etc/yum/yum-cron.conf
     replace:
       path: /etc/yum/yum-cron.conf
       regexp: 'email_to = root'
       replace: 'email_to = yumcron'
       backup: yes
+    when: (ansible_facts['distribution_major_version'] == "7")
+
+  - name: Replace root  with yum-cron alias in /etc/dnf/automatic.conf
+    replace:
+      path: /etc/dnf/automatic.conf
+      regexp: 'email_to = root'
+      replace: 'email_to = yumcron'
+      backup: yes
+    when: (ansible_facts['distribution_major_version'] == "8")
 
   - name: restart yumcron
     service:
       name: yum-cron
       state: restarted
-
-
-
