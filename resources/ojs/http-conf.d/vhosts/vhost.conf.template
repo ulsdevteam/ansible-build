@@ -11,7 +11,9 @@
 	<Directory "/var/www/vhosts/SERVERNAME/html/public">
 		RemoveHandler .php .phtml .php3 .php5
 		RemoveType .php .phtml .php3 .php5
+		<IfModule mod_php.c>
 		php_flag engine off
+		</IfModule>
 	</Directory>
 </VirtualHost>
 
@@ -35,6 +37,8 @@
 	<Directory "/var/www/vhosts/SERVERNAME/html/public">
 		RemoveHandler .php .phtml .php3 .php5
 		RemoveType .php .phtml .php3 .php5
+		<IfModule mod_php.c>
 		php_flag engine off
+		</IfModule>
 	</Directory>
 </VirtualHost>

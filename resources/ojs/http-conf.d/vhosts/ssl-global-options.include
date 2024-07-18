@@ -1,6 +1,6 @@
 SSLEngine on
 
-SSLProtocol ALL -SSLv2 -SSLv3 -TLSv1
+SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
 SSLCipherSuite ALL:!aNULL:!ADH:!eNULL:!LOW:!EXP:!NULL:!RC4:!RC2:!IDEA:!DES:!3DES:+HIGH:+MEDIUM
 
 <Files ~ "\.(cgi|shtml|phtml|php3?)$">
