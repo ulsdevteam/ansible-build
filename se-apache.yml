@@ -1,0 +1,51 @@
+
+- name: Scholarly Exchange RockyLinux 8 apache build
+  remote_user: ulsprovision
+  hosts: SE_Rocky8
+  become: yes
+
+  tasks:
+  - name: Install httpd
+    yum:
+      name: httpd
+      state: latest
+
+  - name: Install mod_ssl
+    yum:
+      name: mod_ssl
+      state: latest
+
+  - name: Install certbot
+    yum:
+      name: 
+        - certbot
+        - python3-certbot-apache
+      state: latest
+
+  - import_tasks: clamav.tasks.yml
+
+  - name: selinux allow apache to execute external programs (clamscan)
+    seboolean:
+      name: httpd_execmem
+      state: yes
+      persistent: yes
+
+  - name: apache is a member of virusgroup
+    user:
+      name: apache
+      groups: virusgroup
+
+  - name: ensure httpd is running
+    service:
+      name: httpd
+      enabled: yes
+      state: started
+
+  - import_tasks: open-web-ports.tasks.yml
+
+  - name: preserve 10 years of logs
+    lineinfile:
+      path: /etc/logrotate.d/httpd
+      state: present
+      insertafter: '^/var/log/httpd/\*log \{'
+      line: '    rotate 520'

@@ -1,0 +1,44 @@
+
+- name: Scholarly Exchange RockyLinux 8 apache build
+  remote_user: ulsprovision
+  hosts: SE_Rocky8
+  become: yes
+
+  tasks:
+  - name: Ensure yum-utils is installed
+    ansible.builtin.dnf:
+      name: yum-utils
+      state: present
+
+  - name: Add REMI PGP key
+    ansible.builtin.rpm_key:
+      key: https://rpms.remirepo.net/enterprise/8/RPM-GPG-KEY-remi
+      state: present
+
+  - name: Add REMI Repository
+    ansible.builtin.dnf:
+      name: "http://rpms.remirepo.net/enterprise/remi-release-8.rpm"
+      state: present
+
+  - name: Add REMI php-8.2
+    ansible.builtin.dnf:
+      name: '@php:remi-8.2'
+      state: present
+
+  - name: Add REMI modules
+    ansible.builtin.dnf:
+      name:
+        - php-mysqlnd
+        - php-gd
+        - php-mbstring
+        - php-pdo
+        - php-xml
+        - php-opcache
+        - php-intl
+        - php-pecl-apcu
+        - php-fpm
+        - php-imap
+        - php-ldap
+        - php-pecl-zip
+      state: present
+

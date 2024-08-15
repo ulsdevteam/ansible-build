@@ -1,0 +1,144 @@
+#
+# Scholarly Exchange RockyLinux 8 mariadb build
+#
+- name: Scholarly Exchange RockyLinux 8 mariadb build
+  remote_user: ulsprovision
+  hosts: SE_Rocky8
+  become: yes
+
+  tasks:
+  - name: Include vars from mysqlvars.yml into the 'mysqlvars' variable.
+    include_vars:
+      file: mysqlvars.yml
+      name: mysqlvars
+
+  - name: Include vars from ulssysdevusers.yml.
+    include_vars:
+      file: ulssysdevusers.yml
+
+  - name: Ensure python3-mysqlclient is installed for any following ansible commands.
+    ansible.builtin.dnf:
+      name: python3-mysqlclient
+      state: present
+
+  - name: Ensure mariadb-server is installed
+    ansible.builtin.dnf:
+      name: 
+        - mariadb-server
+        - mariadb-server-utils
+        - mariadb-backup
+      state: present
+
+  - name: Start mariadb
+    ansible.builtin.systemd_service:
+      name: mariadb
+      state: started
+
+# Perform mysql_secure_installation essentially...
+  - name: Update MariaDB root password(s).
+    mysql_user: 
+      user: root 
+      host: "{{item}}"
+      password: "{{ mysqlvars.password }}"
+    with_items:
+      - 127.0.0.1
+      - ::1
+      - localhost
+
+  - name: Add root .my.cnf file.
+    vars:
+      mysqluser: root
+      mysqlpassword: "{{ mysqlvars.password }}"
+    template:
+      src: resources/my.cnf
+      dest: "/root/.my.cnf"
+
+  - name: Populate root .my.cnf password.
+    lineinfile:
+      path: /root/.my.cnf
+      regexp: 'password='
+      line: "password={{ mysqlvars.password }}"
+
+  - name: Delete anonymous MySQL user
+    mysql_user: 
+      name: '' 
+      host_all: yes
+      state: absent
+
+  - name: Remove MySQL test database
+    mysql_db:
+      name: test 
+      state: absent
+
+# Ensure mariadb starts at boot time.
+  - name: Enable mariadb to start at boot.
+    ansible.builtin.systemd_service:
+      name: mariadb
+      enabled: true
+
+# Setup Automatic mariadb backups.
+  - name: Add backup user
+    user:
+      name: backup
+      comment: MySQL Backup User
+      shell: /sbin/nologin
+
+  - name: Add backup .my.cnf file.
+    vars:
+      mysqluser: backup
+      mysqlpassword: "{{ mysqlvars.backup }}"
+    template:
+      src: resources/my.cnf
+      dest: "/home/backup/.my.cnf"
+
+  - name: Create and Set backup user password and access for backup in database. 
+    mysql_user:
+      user: backup
+      password: "{{ mysqlvars.backup }}"
+      priv: '*.*:SHOW DATABASES,SELECT,LOCK TABLES,SHOW VIEW,EVENT,TRIGGER'
+      host: "{{ item }}"
+    with_items:
+      - localhost
+      - ::1
+      - 127.0.0.1
+
+  - name: Add mysql-backup script
+    copy:
+      src: resources/mysql/local-scripts/mysql-backup
+      dest: /usr/local/bin/mysql-backup
+      mode: u=rwx,g=rx,o=r
+      owner: root
+      group: backup
+
+  - name: Cron mysql-backup script
+    cron:
+      name: "Backup mysql databases nightly"
+      job: /usr/local/bin/cronic /usr/local/bin/mysql-backup
+      user: backup
+      hour: 0
+      minute: 30
+
+  - name: Create /var/local/backup folder
+    file:
+      path: /var/local/backup
+      state: directory
+      recurse: yes
+      owner: root
+      group: root
+
+  - name: Create /var/local/backup/mysql folder
+    file:
+      path: /var/local/backup/mysql
+      state: directory
+      owner: backup
+      group: backup
+
+# Add sysdev users to backup group.
+  - name: Add sysdev users to backup group.
+    user: 
+      name: "{{ item.name }}"
+      groups: backup
+      append: yes
+    loop: "{{ ulssysdevusers }}"
+
+

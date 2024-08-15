@@ -1,0 +1,23 @@
+
+- name: Scholarly Exchange RockyLinux 8 base build
+  remote_user: ulsprovision
+  hosts: SE_Rocky8
+  become: yes
+
+  tasks:
+  - name: Add standard packages
+    ansible.builtin.dnf:
+      name:
+        - tar
+        - rsync
+        - git
+        - wget
+      state: present
+
+  - name: Add cronic script
+    copy:
+      src: resources/all/cronic
+      dest: /usr/local/bin/cronic
+      mode: u=rwx,g=rx,o=rx
+      owner: root
+      group: root
