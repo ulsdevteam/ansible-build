@@ -1,0 +1,140 @@
+- name: Set postfix with OpenDKIM
+  remote_user: ulsprovision
+  hosts: SE_Rocky8
+  become: yes
+
+  tasks:
+
+  - name: install opendkim and postfix
+    yum:
+      name: 
+        - opendkim
+        - postfix
+      state: latest
+
+  - name: set domain
+    lineinfile:
+      path: /etc/opendkim.conf
+      line: "Domain	scholarlyexchange.org"
+      insertafter: "# Domain	example.com"
+
+  - name: set subdomains
+    lineinfile:
+      path: /etc/opendkim.conf
+      line: "SubDomains	yes"
+      insertafter: "Domain	scholarlyexchange.org"
+
+  - name: set signing mode
+    lineinfile:
+      path: /etc/opendkim.conf
+      line: "Mode	sv"
+      search_string: "Mode	v"
+
+  - name: set protocol to ipv4
+    lineinfile:
+      path: /etc/opendkim.conf
+      line: "inet_protocols	ipv4"
+      search_string: "inet_protocols	all"
+
+  - name: copy key
+    copy:
+      src: hostvars/scholarlyexchange.org.dkim.key
+      dest: /etc/opendkim/keys/default._domainkey.private
+      mode: u=rw,g=rw,o=
+      owner: opendkim
+      group: opendkim
+
+  - name: set key
+    lineinfile:
+      path: /etc/opendkim.conf
+      line: "Keyfile	/etc/opendkim/keys/default._domainkey.private"
+      search_string: "Keyfile	/etc/opendkim/keys/default.private"
+
+  - name: set sender headers
+    lineinfile:
+      path: /etc/opendkim.conf
+      line: "SenderHeaders	Sender,From"
+      insertafter: "OversignHeaders	From"
+
+  - name: add Trusted hosts
+    blockinfile:
+      path: /etc/opendkim/TrustedHosts
+      block: |
+        scholarlyexchange.org
+        www.scholarlyexchange.org
+        box4.scholarlyexchange.org
+        box2.scholarlyexchange.org
+        69.164.217.191
+        45.33.73.134
+
+  - name: load Trusted hosts
+    blockinfile:
+      path: /etc/opendkim.conf
+      block: |
+        ExternalIgnoreList refile:/etc/opendkim/TrustedHosts
+        InternalHosts   refile:/etc/opendkim/TrustedHosts
+
+  - name: Start and enable opendkim service
+    service:
+      name: opendkim
+      state: started
+      enabled: yes
+
+  - name: Start and enable postfix service
+    service:
+      name: postfix
+      state: started
+      enabled: yes
+
+  - name: add mydomain
+    lineinfile:
+      path: /etc/postfix/main.cf
+      line: "mydomain = scholarlyexchange.org"
+      insertafter: "#mydomain = domain.tld"
+
+  - name: add myhostname
+    lineinfile:
+      path: /etc/postfix/main.cf
+      line: "myhostname = mail.scholarlyexchange.org"
+      insertafter: "#myhostname = host.domain.tld"
+
+  - name: add inet interface
+    lineinfile:
+      path: /etc/postfix/main.cf
+      line: "inet_interfaces = localhost"
+      insertafter: "#inet_interfaces = localhost"
+
+  - name: add mydestination
+    lineinfile:
+      path: /etc/postfix/main.cf
+      line: "mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain"
+      insertafter: "mydestination = $myhostname, localhost.$mydomain, localhost"
+
+  - name: add mynetworks style
+    lineinfile:
+      path: /etc/postfix/main.cf
+      line: "mynetworks_style = host"
+      insertafter: "#mynetworks_style = host"
+
+  - name: add DKIM config
+    blockinfile:
+      path: /etc/postfix/main.cf
+      block: |
+        smtpd_client_restrictions = permit_inet_interfaces permit_mynetworks reject_rbl_client zen.spamhaus.org reject_rbl_client bl.spamcop.net reject_rbl_client dnsbl.sorbs.net
+        command_time_limit = 3600s
+        policyd-spf_time_limit = 3600
+        smtpd_milters = inet:localhost:8891
+        non_smtpd_milters = inet:localhost:8891
+        mynetworks = 127.0.0.1 69.164.217.191 45.33.73.134 [::1]/128 [2600:3c03::f03c:92ff:fe60:5221]
+
+  - name: enable SMTP acccess
+    firewalld:
+      service: smtp
+      zone: public
+      permanent: yes
+      state: enabled
+
+  - name: reload postfix
+    command: /usr/sbin/postfix reload
+    
+    
