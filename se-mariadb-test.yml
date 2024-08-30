@@ -1,0 +1,28 @@
+
+- name: Scholarly Exchange RockyLinux 8 apache build
+  remote_user: ulsprovision
+  hosts: SE_Rocky8
+  become: yes
+
+  tasks:
+# mysql_secure_installation
+  - name: Update MariaDB root password
+    mysql_user: name=root host={{item}} password={{mysql_root_password}}
+    with_items:
+      - 127.0.0.1
+      - ::1
+      - localhost
+
+  - name: Delete anonymous MySQL user
+    mysql_user: name="" host={{item}} state=absent
+    with_itmes
+      - localhost
+      - "{{ansible_nodename}}"
+
+  - name: Delete Hostname based MySQL user
+    mysql_user: name=root host="{{ansible_nodename}}" state=absent
+
+  - name: Remove MySQL test database
+    mysql_db: name=test state=absent
+
+

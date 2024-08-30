@@ -1,0 +1,34 @@
+- name: Set relayhost in postfix main.cf.
+  remote_user: ulsprovision
+  hosts: SE_Rocky8
+  become: yes
+
+  tasks:
+
+  - name: Set email sender
+    ansible.builtin.blockinfile:
+      path: /etc/postfix/generic
+      create: true
+      insertafter: "EOF"
+      block: |
+        root@{{ ansible_host }} noreply@scholarlyexchange.org
+        root    noreply@scholarlyexchange.org
+
+  - name: Run postmap /etc/postfix/generic
+    command: postmap /etc/postfix/generic
+    args:
+      creates: /etc/postfix/generic.db
+
+  - name: Append smtp_generic_maps to /etc/postfix/main.cf
+    ansible.builtin.blockinfile:
+      path: /etc/postfix/main.cf
+      insertafter: "EOF"
+      block: |
+        # smtp_generic_maps
+        smtp_generic_maps = hash:/etc/postfix/generic
+
+  - name: Restart postfix
+    ansible.builtin.service:
+      name: postfix
+      state: restarted
+

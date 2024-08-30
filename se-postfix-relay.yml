@@ -1,6 +1,6 @@
 - name: Set relayhost in postfix main.cf.
   remote_user: ulsprovision
-  hosts: SE_Rocky8
+  hosts: SE_Rocky8_postclient
   become: yes
 
   tasks:

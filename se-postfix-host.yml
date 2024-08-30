@@ -1,6 +1,6 @@
 - name: Set postfix with OpenDKIM
   remote_user: ulsprovision
-  hosts: SE_Rocky8
+  hosts: SE_Rocky8_posthost
   become: yes
 
   tasks:
@@ -30,11 +30,11 @@
       line: "Mode	sv"
       search_string: "Mode	v"
 
-  - name: set protocol to ipv4
+  - name: set socket
     lineinfile:
       path: /etc/opendkim.conf
-      line: "inet_protocols	ipv4"
-      search_string: "inet_protocols	all"
+      line: "Socket  inet:8891@localhost"
+      search_string: "Socket local:/run/opendkim/opendkim.sock"
 
   - name: copy key
     copy:
@@ -109,6 +109,12 @@
       path: /etc/postfix/main.cf
       line: "mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain"
       insertafter: "mydestination = $myhostname, localhost.$mydomain, localhost"
+
+  - name: set protocol to ipv4
+    lineinfile:
+      path: /etc/postfix/main.cf
+      line: "inet_protocols = ipv4"
+      search_string: "inet_protocols = all"
 
   - name: add mynetworks style
     lineinfile:
