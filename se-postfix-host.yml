@@ -131,7 +131,7 @@
         policyd-spf_time_limit = 3600
         smtpd_milters = inet:localhost:8891
         non_smtpd_milters = inet:localhost:8891
-        mynetworks = 127.0.0.1 69.164.217.191 45.33.73.134 [::1]/128 [2600:3c03::f03c:92ff:fe60:5221]
+        mynetworks = 127.0.0.1 69.164.217.191 45.33.73.134 [::1]/128 [2600:3c03::f03c:92ff:fe60:5221] [2600:3c03::f03c:94ff:fe81:4e29]
 
   - name: enable SMTP acccess
     firewalld:

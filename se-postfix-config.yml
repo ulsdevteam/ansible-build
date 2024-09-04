@@ -1,4 +1,4 @@
-- name: Set relayhost in postfix main.cf.
+- name: Set postfix mail delivery for SE
   remote_user: ulsprovision
   hosts: SE_Rocky8
   become: yes
@@ -31,4 +31,22 @@
     ansible.builtin.service:
       name: postfix
       state: restarted
+
+  - name: set cron recipient (backup)
+    community.general.cronvar:
+      name: mailto
+      value: uls-linux-root@pitt.edu
+      user: backup
+
+  - name: set cron recipient (apache)
+    community.general.cronvar:
+      name: mailto
+      value: uls-linux-root@pitt.edu
+      user: apache
+
+  - name: set cron recipient (root)
+    community.general.cronvar:
+      name: mailto
+      value: uls-linux-root@pitt.edu
+      user: root
 
