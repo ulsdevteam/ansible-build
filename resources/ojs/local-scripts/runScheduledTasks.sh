@@ -31,9 +31,9 @@ do
     MYSQLPW=
     if [ -e "$CONFIG" ]
     then
-      MYSQLDATABASE=`grep '^name = ' $CONFIG | sed -e 's/name = //'`
-      MYSQLPW=`grep '^password = ' $CONFIG | sed -e 's/password = //'`
-      MYSQLUSER=`grep '^username = ' $CONFIG | sed -e 's/username = //'`
+      MYSQLDATABASE=`grep -A20 -F '[database]' $CONFIG | grep '^name = ' | head -1 | sed -e 's/name = //'`
+      MYSQLPW=`grep -A20 -F '[database]' $CONFIG | grep '^password = ' | head -1 | sed -e 's/password = //'`
+      MYSQLUSER=`grep -A20 -F '[database]' $CONFIG | grep '^username = ' | head -1 | sed -e 's/username = //'`
       if [ "$MYSQLUSER" != ""  -a "$MYSQLPW" != "" -a "$MYSQLDATABASE" != "" ]
       then
         ISENABLED=`echo 'select max(setting_name) from plugin_settings where plugin_name = "plnplugin" and setting_name = "enabled" and setting_value = "1"' | mysql -N -u $MYSQLUSER -p$MYSQLPW -D$MYSQLDATABASE`

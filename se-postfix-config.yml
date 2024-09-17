@@ -23,6 +23,8 @@
     ansible.builtin.blockinfile:
       path: /etc/postfix/main.cf
       insertafter: "EOF"
+      marker_begin: "BEGIN MAP"
+      marker_end: "END MAP"
       block: |
         # smtp_generic_maps
         smtp_generic_maps = hash:/etc/postfix/generic

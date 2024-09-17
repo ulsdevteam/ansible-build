@@ -101,14 +101,14 @@
   - name: add inet interface
     lineinfile:
       path: /etc/postfix/main.cf
-      line: "inet_interfaces = localhost"
-      insertafter: "#inet_interfaces = localhost"
+      line: "inet_interfaces = $myhostname, localhost"
+      insertafter: "#inet_interfaces = $myhostname, localhost"
 
   - name: add mydestination
     lineinfile:
       path: /etc/postfix/main.cf
       line: "mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain"
-      insertafter: "mydestination = $myhostname, localhost.$mydomain, localhost"
+      insertafter: "#mydestination = $myhostname, localhost.$mydomain, localhost"
 
   - name: set protocol to ipv4
     lineinfile:
@@ -125,6 +125,8 @@
   - name: add DKIM config
     blockinfile:
       path: /etc/postfix/main.cf
+      marker_begin: "BEGIN PERMS"
+      marker_end: "END PERMS"
       block: |
         smtpd_client_restrictions = permit_inet_interfaces permit_mynetworks reject_rbl_client zen.spamhaus.org reject_rbl_client bl.spamcop.net reject_rbl_client dnsbl.sorbs.net
         command_time_limit = 3600s

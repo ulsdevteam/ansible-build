@@ -31,12 +31,18 @@ then
 	MYSQLPW=`grep -A20 -F '[database]' $OJSROOT/config.inc.php | grep '^password = ' | head -1 | sed -e 's/password = //'`
 	MYSQLUSER=`grep -A20 -F '[database]' $OJSROOT/config.inc.php | grep '^username = ' | head -1 | sed -e 's/username = //'`
 	BACKUPDIR=$BACKUPROOT/$1
-	EXISTINGTABLES=$(mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE -e 'show tables' | grep -v 'Tables_in_'$MYSQLDATABASE | awk -v d=',' '{s=(NR==1?s:s d)$0}END{print s}' )
-	if [ ! -z "$EXISTINGTABLES" ]
+	sudo mysql -e 'DROP DATABASE IF EXISTS `'$MYSQLDATABASE'` ; CREATE DATABASE `'$MYSQLDATABASE'` CHARACTER SET utf8 COLLATE utf8_general_ci; GRANT ALL ON `'$MYSQLDATABASE'`.* to '$MYSQLUSER'@localhost IDENTIFIED BY "'$MYSQLPW'";'
+	grep -qF ' CHARSET=latin1' $BACKUPDIR/db.sql
+	if [ $? = 0 ]
 	then
-		mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE -e 'SET foreign_key_checks = 0; drop table if exists '$EXISTINGTABLES'; SET foreign_key_checks = 1;'
+		echo 'Found latin1 in CHARSET; Consider updating to utf8'
 	fi
-	mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE < $BACKUPDIR/db.sql
+	grep -qF ' ENGINE=MyISAM' $BACKUPDIR/db.sql
+	if [ $? = 0 ]
+	then
+		echo 'Found MyISAM in ENGINE; Consider updating to InnoDB'
+	fi
+	mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE < /db.sql
 	echo 'sudo as root to remove files'
 	sudo rm -fr $VHOSTROOT/$1/files/*
 	sudo rm -fR $OJSROOT/public/*
