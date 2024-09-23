@@ -42,7 +42,7 @@ then
 	then
 		echo 'Found MyISAM in ENGINE; Consider updating to InnoDB'
 	fi
-	mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE < /db.sql
+	mysql -u$MYSQLUSER -p$MYSQLPW $MYSQLDATABASE < $BACKUPROOT/db.sql
 	echo 'sudo as root to remove files'
 	sudo rm -fr $VHOSTROOT/$1/files/*
 	sudo rm -fR $OJSROOT/public/*
