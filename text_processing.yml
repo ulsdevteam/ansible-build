@@ -31,6 +31,14 @@
       owner: root
       group: root
 
+  - name: Add unzip
+    copy:
+      src: resources/textprocessing/unzip
+      dest: /usr/bin/unzip
+      mode: u=rwx,g=rx,o=rx
+      owner: root
+      group: root
+
   - name: Add docx2txt.pl
     copy:
       src: resources/textprocessing/docx2txt.pl
